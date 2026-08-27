@@ -8,13 +8,17 @@
         "type": "tabs",
         "children": [
           {
-            "id": "ccfb013a96bae9e4",
+            "id": "108c256139236045",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "README.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "README"
             }
           }
         ]
@@ -181,23 +185,53 @@
       "bases:Create new base": false
     }
   },
-  "active": "ccfb013a96bae9e4",
+  "active": "108c256139236045",
   "lastOpenFiles": [
+    "com/app/api/enviar-correo",
+    "com/app/api/contador",
+    "com/app/contador",
+    "com/app/api",
+    "com/node_modules/@typescript-eslint/eslint-plugin/CHANGELOG.md",
+    "com/node_modules/@typescript-eslint/typescript-estree/CHANGELOG.md",
+    "com/node_modules/@typescript-eslint/parser/CHANGELOG.md",
+    "com/node_modules/@typescript-eslint/scope-manager/CHANGELOG.md",
+    "com/node_modules/eslint-plugin-import/CHANGELOG.md",
+    "com/node_modules/@typescript-eslint/types/CHANGELOG.md",
+    "com/node_modules/@typescript-eslint/visitor-keys/CHANGELOG.md",
+    "com/node_modules/@typescript-eslint/utils/CHANGELOG.md",
+    "com/node_modules/@typescript-eslint/type-utils/CHANGELOG.md",
+    "com/node_modules/ajv/README.md",
+    "com/node_modules/enhanced-resolve/README.md",
+    "com/node_modules/next/dist/docs/01-app/03-api-reference/02-components/image.md",
+    "com/node_modules/next/dist/docs/01-app/02-guides/authentication.md",
+    "com/node_modules/typescript-eslint/CHANGELOG.md",
+    "com/node_modules/es-abstract/CHANGELOG.md",
+    "com/node_modules/next/dist/docs/01-app/03-api-reference/04-functions/generate-metadata.md",
+    "com/node_modules/eslint-plugin-jsx-a11y/CHANGELOG.md",
+    "com/node_modules/next/dist/docs/01-app/02-guides/upgrading/version-16.md",
+    "com/node_modules/eslint-plugin-react/README.md",
+    "com/node_modules/micromatch/README.md",
+    "com/node_modules/next/dist/docs/01-app/02-guides/migrating/app-router-migration.md",
+    "com/node_modules/@babel/parser/CHANGELOG.md",
+    "com/node_modules/next/dist/docs/01-app/02-guides/migrating-to-cache-components.md",
+    "com/node_modules/next/dist/docs/01-app/02-guides/streaming.md",
+    "com/node_modules/next/dist/docs/01-app/03-api-reference/02-components/link.md",
+    "com/public/next.svg",
+    "com/public/globe.svg",
+    "com/public/file.svg",
+    "com/public/window.svg",
+    "com/public/vercel.svg",
+    "com/node_modules/next/dist/next-devtools/dev-overlay/components/errors/error-overlay-footer/error-feedback",
+    "com/node_modules/next/dist/next-devtools/dev-overlay/components/errors/dev-tools-indicator/dev-tools-info",
+    "com/node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/02-route-segment-config",
+    "com/node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion/dist/commonjs",
+    "com/node_modules/@typescript-eslint/typescript-estree/node_modules/balanced-match/dist/commonjs",
+    "com/node_modules/next/dist/next-devtools/dev-overlay/components/errors/error-overlay-call-stack",
+    "com/node_modules/next/dist/next-devtools/dev-overlay/components/errors/error-overlay-pagination",
     "public/window.svg",
     "public/vercel.svg",
     "public/next.svg",
     "public/globe.svg",
-    "public/dibujo.jpg",
-    "public/file.svg",
-    "public",
-    "app/page.js",
-    "app/layout.js",
-    "app/globals.css",
-    "app/contador/page.js",
-    "app/contador",
-    "app/api/enviar-correo/route.js",
-    "app/api/enviar-correo",
-    "app/api/contador/route.js",
-    "app/api/contador"
+    "public/dibujo.jpg"
   ]
 }

@@ -1,1 +1,15 @@
 # com
+
+re_4Ad8EbeR_5tXwqhqizmLGbPMPQKtBrBCr
+
+
+
+KV_REST_API_READ_ONLY_TOKEN="ggAAAAAAAuW0AAIgcDGF_G9p1jPrWw5TSU4mktdQZ4hobvlQB_sAmvfBUsVyuw"
+
+KV_REST_API_TOKEN="gQAAAAAAAuW0AAIgcDE0OTc5Y2JiMjhhMjM0OWIzYmJlMGU4ODk5NjA0Nzc5Yw"
+
+KV_REST_API_URL="https://stirred-doe-189876.upstash.io"
+
+KV_URL="rediss://default:gQAAAAAAAuW0AAIgcDE0OTc5Y2JiMjhhMjM0OWIzYmJlMGU4ODk5NjA0Nzc5Yw@stirred-doe-189876.upstash.io:6379"
+
+REDIS_URL="rediss://default:gQAAAAAAAuW0AAIgcDE0OTc5Y2JiMjhhMjM0OWIzYmJlMGU4ODk5NjA0Nzc5Yw@stirred-doe-189876.upstash.io:6379"
