@@ -183,9 +183,21 @@
   },
   "active": "ccfb013a96bae9e4",
   "lastOpenFiles": [
+    "public/window.svg",
+    "public/vercel.svg",
+    "public/next.svg",
+    "public/globe.svg",
+    "public/dibujo.jpg",
+    "public/file.svg",
+    "public",
+    "app/page.js",
+    "app/layout.js",
+    "app/globals.css",
+    "app/contador/page.js",
+    "app/contador",
+    "app/api/enviar-correo/route.js",
+    "app/api/enviar-correo",
     "app/api/contador/route.js",
-    "app/api/contador",
-    "app/api",
-    "app"
+    "app/api/contador"
   ]
 }
