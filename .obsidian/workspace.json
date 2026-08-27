@@ -1,40 +1,20 @@
 {
   "main": {
-    "id": "aa0ebe63eaf2e794",
+    "id": "9550e243c39d560b",
     "type": "split",
     "children": [
       {
-        "id": "23d7939cb3a66926",
+        "id": "27af054e75090cdc",
         "type": "tabs",
         "children": [
           {
-            "id": "5dfd25bf7349271b",
+            "id": "ccfb013a96bae9e4",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Welcome.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Welcome"
-            }
-          }
-        ]
-      },
-      {
-        "id": "9dc90d6186c62c06",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "9b70259b6e9ff670",
-            "type": "leaf",
-            "state": {
-              "type": "graph",
+              "type": "empty",
               "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "icon": "lucide-file",
+              "title": "New tab"
             }
           }
         ]
@@ -43,15 +23,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "95c4685472d095f2",
+    "id": "a761958702deb796",
     "type": "split",
     "children": [
       {
-        "id": "3c9ad69a168b09d2",
+        "id": "b0937932fde28fa1",
         "type": "tabs",
         "children": [
           {
-            "id": "59f0dc7050d45a07",
+            "id": "2a67081108624e97",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -66,7 +46,7 @@
             }
           },
           {
-            "id": "d3c1a3e1a649703c",
+            "id": "c52fef9fe7e74a3c",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -83,7 +63,7 @@
             }
           },
           {
-            "id": "8d8727579fed4230",
+            "id": "1b7cedfe37b5e317",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -102,20 +82,19 @@
     "width": 300
   },
   "right": {
-    "id": "61444b45af56bafd",
+    "id": "5508568f508d9c74",
     "type": "split",
     "children": [
       {
-        "id": "4334c275e4d910e6",
+        "id": "d24cd7490bd7e18a",
         "type": "tabs",
         "children": [
           {
-            "id": "0a9bfde62b5503fd",
+            "id": "43e17a2c72326b73",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Welcome.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -129,12 +108,11 @@
             }
           },
           {
-            "id": "627bf1849dad03b3",
+            "id": "a81e814f371e62f0",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Welcome.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -143,7 +121,7 @@
             }
           },
           {
-            "id": "efe23bf3e294bbb1",
+            "id": "95986d5649dea3bc",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -158,7 +136,7 @@
             }
           },
           {
-            "id": "d56ae71a7ebfde40",
+            "id": "ffc36f74d278860d",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -172,12 +150,11 @@
             }
           },
           {
-            "id": "6958e8278ca9ffdd",
+            "id": "114cf502e49147f4",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "Welcome.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -204,8 +181,11 @@
       "bases:Create new base": false
     }
   },
-  "active": "5dfd25bf7349271b",
+  "active": "ccfb013a96bae9e4",
   "lastOpenFiles": [
-    "Welcome.md"
+    "app/api/contador/route.js",
+    "app/api/contador",
+    "app/api",
+    "app"
   ]
 }
