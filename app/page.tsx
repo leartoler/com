@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type ColorKey = 'rojo' | 'verde' | 'azul';
 
@@ -49,16 +49,27 @@ function generarRonda() {
   return { texto, colorPintura, ordenBotones, coloresTextoBotones, desniveles };
 }
 
+const RONDA_INICIAL = {
+  texto: 'rojo' as ColorKey,
+  colorPintura: 'rojo' as ColorKey,
+  ordenBotones: PALABRAS,
+  coloresTextoBotones: { rojo: 'rojo', verde: 'verde', azul: 'azul' } as Record<ColorKey, ColorKey>,
+  desniveles: { rojo: 0, verde: 0, azul: 0 } as Record<ColorKey, number>,
+};
+
 export default function Home() {
   const [nombre, setNombre] = useState('');
   const [puntaje, setPuntaje] = useState(0);
-  const [ronda, setRonda] = useState(generarRonda());
+  const [ronda, setRonda] = useState<ReturnType<typeof generarRonda> | null>(null);
   const [resultado, setResultado] = useState<'acierto' | 'fallo' | null>(null);
 
+useEffect(() => {
+  setRonda(generarRonda());
+}, []);
+
   const manejarClick = (colorBoton: ColorKey) => {
-    if (!nombre.trim()) {
-      return;
-    }
+    if (!ronda) return; //
+    if (!nombre.trim()) return;
 
     const acerto = colorBoton === ronda.texto;
 
@@ -77,6 +88,14 @@ export default function Home() {
 
     setRonda(generarRonda());
   };
+
+  if (!ronda) {
+    return (
+      <main style={{ padding: '1.5rem', textAlign: 'center' }}>
+        Cargando...
+      </main>    
+      );
+  }
 
   return (
     <main

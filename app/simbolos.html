@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>stroop / colores</title>
+<style>
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0; min-height:100%;
+    -webkit-tap-highlight-color:transparent;
+  }
+  main{
+    padding: 1.5rem;
+    text-align: center;
+    max-width: 420px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+  p{ margin:0 0 0.5rem; }
+  #nombre{
+    padding: 12px;
+    font-size: 16px;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  #puntaje-linea{ font-size: 20px; margin-bottom: 0; }
+  #palabra{
+    font-size: clamp(36px, 10vw, 48px);
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 2rem 0;
+  }
+  #botones{
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+  }
+  .boton-color{
+    width: 28vw;
+    max-width: 90px;
+    height: 28vw;
+    max-height: 90px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-size: clamp(12px, 3vw, 14px);
+    font-weight: bold;
+    text-transform: capitalize;
+    touch-action: manipulation;
+  }
+  #resultado{
+    margin-top: 1.5rem;
+    font-size: 32px;
+    font-weight: bold;
+    min-height: 1.2em;
+  }
+</style>
+</head>
+<body>
+<main>
+  <p>Pon tu nombre para jugar</p>
+  <input type="text" id="nombre" placeholder="Tu nombre" />
+
+  <p id="puntaje-linea">Puntaje: <strong id="puntaje">0</strong></p>
+
+  <div id="palabra"></div>
+
+  <div id="botones"></div>
+
+  <p id="resultado"></p>
+</main>
+
+<script>
+/* ---------------------------------------------------------
+   CONFIGURA AQUÍ la URL de tu API en Vercel.
+--------------------------------------------------------- */
+const API_URL = 'https://com-three-inky.vercel.app/';
+
+const COLORES = {
+  rojo: '#c62828',
+  verde: '#2e7d32',
+  azul: '#1565c0',
+};
+
+const COLORES_TEXTO = {
+  rojo: '#ff8a80',
+  verde: '#b9f6ca',
+  azul: '#82b1ff',
+};
+
+const PALABRAS = ['rojo', 'verde', 'azul'];
+
+function colorAleatorio(){
+  return PALABRAS[Math.floor(Math.random() * PALABRAS.length)];
+}
+
+function mezclarArray(arr){
+  const copia = [...arr];
+  for(let i = copia.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia;
+}
+
+function generarRonda(){
+  const texto = colorAleatorio();
+  const colorPintura = colorAleatorio();
+  const ordenBotones = mezclarArray(PALABRAS);
+  const coloresTextoBotones = {
+    rojo: colorAleatorio(),
+    verde: colorAleatorio(),
+    azul: colorAleatorio(),
+  };
+  const desniveles = {
+    rojo: Math.floor(Math.random() * 30),
+    verde: Math.floor(Math.random() * 30),
+    azul: Math.floor(Math.random() * 30),
+  };
+  return { texto, colorPintura, ordenBotones, coloresTextoBotones, desniveles };
+}
+
+/* --------------------- estado --------------------- */
+let puntaje = 0;
+let ronda = null;
+
+const nombreEl = document.getElementById('nombre');
+const puntajeEl = document.getElementById('puntaje');
+const palabraEl = document.getElementById('palabra');
+const botonesEl = document.getElementById('botones');
+const resultadoEl = document.getElementById('resultado');
+
+/* --------------------- render --------------------- */
+function render(){
+  palabraEl.textContent = ronda.texto;
+  palabraEl.style.color = COLORES[ronda.colorPintura];
+
+  botonesEl.innerHTML = '';
+  ronda.ordenBotones.forEach((color) => {
+    const btn = document.createElement('button');
+    btn.className = 'boton-color';
+    btn.textContent = color;
+    btn.style.backgroundColor = COLORES[color];
+    btn.style.color = COLORES_TEXTO[ronda.coloresTextoBotones[color]];
+    btn.style.marginTop = ronda.desniveles[color] + 'px';
+    btn.addEventListener('click', () => manejarClick(color));
+    botonesEl.appendChild(btn);
+  });
+}
+
+/* --------------------- lógica --------------------- */
+function manejarClick(colorBoton){
+  const nombre = nombreEl.value.trim();
+  if(!nombre) return;
+
+  const acerto = colorBoton === ronda.texto;
+
+  if(acerto){
+    puntaje += 1;
+    puntajeEl.textContent = puntaje;
+    resultadoEl.textContent = ':D';
+
+    enviarCorreo(nombre);
+  } else {
+    resultadoEl.textContent = 'X';
+  }
+
+  ronda = generarRonda();
+  render();
+}
+
+async function enviarCorreo(nombre){
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre }),
+    });
+  } catch (err) {
+    console.warn('[stroop] no se pudo enviar el correo:', err);
+  }
+}
+
+/* --------------------- inicio --------------------- */
+function jugar(){
+  puntaje = 0;
+  puntajeEl.textContent = puntaje;
+  resultadoEl.textContent = '';
+  ronda = generarRonda();
+  render();
+}
+
+jugar();
+</script>
+</body>
+</html>

@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
     const imagenBuffer = fs.readFileSync(imagenPath);
 
     await resend.emails.send({
-      from: process.env.EMAIL_ORIGEN as string,
-      to: process.env.EMAIL_DESTINO as string,
+      from: 'noreply@0x000042.com',
+      to: process.env.EMAIL_DESTINO?.split(',').map(email => email.trim()) as string[],
       subject: `Nueva solicitud de ${nombreLimpio}`,
       html: `<img src="cid:logo" alt="Imagen" style="max-width: 100%;" />`,
       attachments: [

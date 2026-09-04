@@ -8,16 +8,35 @@
         "type": "tabs",
         "children": [
           {
-            "id": "108c256139236045",
+            "id": "ccfb013a96bae9e4",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Untitled.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "Untitled"
+            }
+          },
+          {
+            "id": "8e193d9c8c6ac72f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "idea|.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "idea|"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -181,53 +200,53 @@
       "bases:Create new base": false
     }
   },
-  "active": "108c256139236045",
+  "active": "8e193d9c8c6ac72f",
   "lastOpenFiles": [
-    "node_modules/lightningcss/node/targets.js.flow",
-    "node_modules/lightningcss/node/index.js.flow",
-    "node_modules/lightningcss/node/targets.d.ts",
-    "node_modules/lightningcss/node/index.mjs",
-    "node_modules/lightningcss/node/index.js",
-    "node_modules/lightningcss/node/index.d.ts",
-    "node_modules/lightningcss/node/flags.js",
-    "node_modules/lightningcss/node/browserslistToTargets.js",
-    "node_modules/lightningcss/node/composeVisitors.js",
-    "node_modules/lightningcss/node/ast.d.ts",
-    "node_modules/lightningcss/node/ast.js.flow",
-    "node_modules/lightningcss/README.md",
-    "README.md",
-    "public/window.svg",
-    "public/vercel.svg",
-    "public/next.svg",
-    "public/file.svg",
-    "public/globe.svg",
-    "public/dibujo.jpg",
-    "node_modules/supports-color/readme.md",
-    "node_modules/side-channel-weakmap/README.md",
-    "node_modules/side-channel-weakmap/CHANGELOG.md",
-    "node_modules/shebang-command/readme.md",
-    "node_modules/queue-microtask/README.md",
-    "node_modules/punycode/README.md",
-    "node_modules/picocolors/README.md",
-    "node_modules/path-key/readme.md",
-    "node_modules/natural-compare/README.md",
-    "node_modules/jsesc/README.md",
-    "node_modules/iterator.prototype/README.md",
-    "node_modules/iterator.prototype/CHANGELOG.md",
-    "node_modules/isexe/README.md",
-    "node_modules/ignore/README.md",
-    "node_modules/has-property-descriptors/README.md",
-    "node_modules/has-property-descriptors/CHANGELOG.md",
-    "node_modules/zod-validation-error/README.v3.md",
-    "node_modules/zod-validation-error/README.md",
-    "node_modules/zod/README.md",
-    "node_modules/yocto-queue/readme.md",
-    "node_modules/yallist/README.md",
-    "node_modules/word-wrap/README.md",
-    "node_modules/which-typed-array/README.md",
-    "com/public/next.svg",
-    "com/public/globe.svg",
-    "com/public/file.svg",
-    "com/public/window.svg"
+    "app/simbolos.html",
+    "app/Simbolos.html",
+    "app/d7.png",
+    "app/d8.png",
+    "app/d9.png",
+    "Untitled.md",
+    "idea|.md",
+    "app/d6.png",
+    "app/d5.png",
+    "app/d4.png",
+    "app/d3.png",
+    "app/d2.png",
+    "app/d1.png",
+    "app/escena_1.css",
+    "app/escena_1.html",
+    "app/Escena_1.html",
+    "app/Escena_1",
+    "postcss.config.mjs",
+    "Untitled 1.md",
+    "node_modules/next/dist/next-devtools/dev-overlay/components/errors/error-overlay-bottom-stack",
+    "node_modules/next/dist/bundle-analyzer/_next/static/ShlsHWUU3q2GhICNPxAIf",
+    "node_modules/next/dist/next-devtools/dev-overlay/components/fader",
+    "node_modules/@unrs/resolver-binding-win32-x64-msvc",
+    "node_modules/next/dist/docs/01-app/03-api-reference/05-config/01-next-config-js/poweredByHeader.md",
+    "node_modules/next/dist/docs/02-pages/02-guides/upgrading/version-10.md",
+    "node_modules/next/dist/docs/02-pages/02-guides/third-party-libraries.md",
+    "node_modules/next/dist/docs/02-pages/02-guides/self-hosting.md",
+    "node_modules/next/dist/docs/02-pages/02-guides/production-checklist.md",
+    "node_modules/next/dist/docs/02-pages/02-guides/multi-zones.md",
+    "node_modules/next/dist/docs/02-pages/02-guides/content-security-policy.md",
+    "node_modules/next/dist/docs/02-pages/02-guides/authentication.md",
+    "node_modules/next/dist/docs/02-pages/01-getting-started/05-fonts.md",
+    "node_modules/next/dist/docs/02-pages/01-getting-started/01-installation.md",
+    "node_modules/next/dist/compiled/react-refresh/README.md",
+    "node_modules/next/dist/docs/02-pages/index.md",
+    "node_modules/@img/sharp-wasm32/README.md",
+    "node_modules/@unrs/resolver-binding-wasm32-wasi/node_modules/@emnapi/runtime/README.md",
+    "node_modules/@img/sharp-libvips-linuxmusl-x64/README.md",
+    "node_modules/lightningcss-linux-x64-musl/README.md",
+    "node_modules/@next/swc-linux-x64-musl/README.md",
+    "node_modules/@tailwindcss/oxide-linux-x64-musl/README.md",
+    "node_modules/@img/sharp-linuxmusl-x64/README.md",
+    "node_modules/@unrs/resolver-binding-linux-x64-musl/README.md",
+    "node_modules/next/README.md",
+    "node_modules/next/dist/compiled/@babel/runtime/README.md",
+    "public/window.svg"
   ]
 }
