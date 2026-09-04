@@ -6,13 +6,30 @@ import path from 'path';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const ORIGEN_PERMITIDO = 'https://0x000042.com/';
+
+function withCors(response: Response) {
+  response.headers.set('Access-Control-Allow-Origin', ORIGEN_PERMITIDO);
+  response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  return response;
+}
+
+export async function OPTIONS() {
+  return withCors(new Response(null, { status: 204 }));
+}
+
+
 export async function POST(request: NextRequest) {
   try {
     const { nombre } = await request.json();
 
     if (!nombre || !nombre.trim()) {
-      return Response.json({ success: false, error: 'Nombre requerido' }, { status: 400 });
+      return withCors(
+        Response.json({ success: false, error: 'Nombre requerido' }, { status: 400 })
+      );
     }
+
 
     const nombreLimpio = nombre.trim();
     const fecha = new Date().toLocaleString('es-MX');
@@ -37,9 +54,11 @@ export async function POST(request: NextRequest) {
     const puntosActuales = await kv.hincrby('puntajes', nombreLimpio, 1);
     await kv.lpush('lista_envios', JSON.stringify({ nombre: nombreLimpio, fecha }));
 
-    return Response.json({ success: true, puntos: puntosActuales });
+  return withCors(Response.json({ success: true, puntos: puntosActuales }));
   } catch (error: any) {
     console.error(error);
-    return Response.json({ success: false, error: error.message }, { status: 500 });
+    return withCors(
+      Response.json({ success: false, error: error.message }, { status: 500 })
+    );
   }
 }
