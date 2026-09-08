@@ -119,7 +119,7 @@
 
   .grid {
     display: grid;
-    gap: 7px;
+    gap: 58px 7px;
   }
 
   .cuadro {
@@ -137,6 +137,7 @@
   }
 
   .cuadro.acierto {
+    overflow: visible;
     background: var(--acierto-bg);
     border-color: var(--acierto);
   }
@@ -177,17 +178,27 @@
     pointer-events: none;
   }
 
-  .palabra-revelada {
+  .imagen-revelada {
     position: absolute;
     inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 6px;
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  .palabra-revelada {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
     font-size: 14px;
     font-weight: 700;
     color: var(--acierto);
     text-align: center;
-    padding: 4px;
+    padding: 0 4px;
     line-height: 1.15;
     word-break: break-word;
   }
@@ -430,6 +441,12 @@ const PALABRAS = [
 
     if (resultado === 'acierto') {
       celda.classList.add('acierto');
+      const img = document.createElement('img');
+      img.className = 'imagen-revelada';
+      img.src = IMAGENES[indice];
+      img.alt = 'dibujo';
+      celda.appendChild(img);
+
       const palabra = document.createElement('div');
       palabra.className = 'palabra-revelada';
       palabra.textContent = PALABRAS[indice];

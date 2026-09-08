@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menú 0x000042</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --blue:#1c39d6;
+    --blue-deep:#0c1c74;
+    --white:#ffffff;
+    --ink:#0a1030;
+    --muted:#5b62a0;
+    --line:#d3d6f4;
+    color-scheme: light;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+
+  body{
+    background: var(--blue);
+    color: var(--white);
+    font-family:'Barlow Condensed',sans-serif;
+    overflow:hidden;
+    height:100vh;
+    width:100vw;
+  }
+
+  button{ font-family:inherit; }
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  ::selection{ background:var(--white); color:var(--blue); }
+
+  .stage{
+    position:relative;
+    width:100vw; height:100vh;
+    background:
+      radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.3px) 0 0/5px 5px,
+      var(--blue);
+  }
+
+  /* ---------------- angular chamfered shapes: rectangles with extra cut corners ---------------- */
+  .chamfer{
+    --chamfer:12px;
+    clip-path: polygon(
+      var(--chamfer) 0, calc(100% - var(--chamfer)) 0,
+      100% var(--chamfer), 100% calc(100% - var(--chamfer)),
+      calc(100% - var(--chamfer)) 100%, var(--chamfer) 100%,
+      0 calc(100% - var(--chamfer)), 0 var(--chamfer)
+    );
+  }
+
+  /* ---------------- intermittent glitch / signal error ---------------- */
+  .stage.glitching{ animation: glitch-flicker .32s steps(2,end); }
+  @keyframes glitch-flicker{
+    0%{ filter:none; transform:translate(0,0); }
+    10%{ filter:brightness(1.5) contrast(1.3); transform:translate(-3px,1px); }
+    22%{ filter:brightness(.3) saturate(0); transform:translate(3px,-1px); }
+    38%{ filter:brightness(1.8) hue-rotate(15deg); transform:translate(-2px,0); }
+    52%{ filter:none; transform:translate(1px,1px); }
+    68%{ filter:brightness(.4); transform:translate(-1px,0); }
+    100%{ filter:none; transform:translate(0,0); }
+  }
+  .glitch-line{
+    position:fixed; left:0; width:100%; height:0; background:var(--white);
+    opacity:0; mix-blend-mode:difference; z-index:50; pointer-events:none;
+  }
+  .stage.glitching .glitch-line{ animation: glitch-line-anim .3s steps(4,end); }
+  @keyframes glitch-line-anim{
+    0%{ height:0; opacity:0; }
+    15%{ height:8px; opacity:.85; }
+    40%{ height:2px; opacity:.5; }
+    65%{ height:14px; opacity:.7; }
+    100%{ height:0; opacity:0; }
+  }
+  .glitch-noise{
+    position:fixed; inset:0; z-index:49; pointer-events:none; opacity:0;
+    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.5) 0 1px, transparent 1px 4px);
+  }
+  .stage.glitching .glitch-noise{ animation: glitch-noise-anim .32s steps(2,end); }
+  @keyframes glitch-noise-anim{
+    0%,100%{ opacity:0; }
+    20%,55%{ opacity:.12; }
+  }
+
+  /* ---------------- intro: fading white title ---------------- */
+  .intro{
+    position:absolute; inset:0; z-index:30;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+    background:var(--blue);
+  }
+  .intro-text{
+    font-family:'Archivo Black',sans-serif; font-size:clamp(1.3rem,3.4vw,1.8rem); color:var(--white);
+    letter-spacing:.06em; opacity:0; animation: intro-fade 6.2s ease forwards;
+  }
+  .intro-poem{
+    margin:18px 0 0; max-width:26ch; text-align:center;
+    font-family:'Barlow Condensed',sans-serif; font-style:italic; font-weight:500;
+    font-size:clamp(1.3rem,4vw,2.1rem); line-height:1.55; color:var(--white);
+    opacity:0; animation: intro-fade 6.2s ease forwards; animation-delay:.2s;
+  }
+  .intro-sub{
+    margin-top:22px; font-size:.9rem; letter-spacing:.5em; color:var(--white); font-weight:600;
+    opacity:0; animation: intro-fade 6.2s ease forwards; animation-delay:.4s;
+  }
+  @keyframes intro-fade{
+    0%{ opacity:0; transform:translateY(8px); }
+    10%{ opacity:1; transform:translateY(0); }
+    85%{ opacity:1; }
+    100%{ opacity:0; }
+  }
+  .intro[hidden]{ display:none; }
+
+  /* ---------------- menu field: buttons spread across the screen ---------------- */
+  .menu-app{
+    position:relative; z-index:5; height:100%;
+    opacity:0; transition: opacity .7s ease;
+  }
+  .menu-app.visible{ opacity:1; }
+
+  .menu-brand{
+    position:absolute; top:26px; left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:2px; text-align:center;
+  }
+  .menu-brand-mark{ font-family:'Archivo Black',sans-serif; font-size:1.1rem; letter-spacing:.02em; }
+  .menu-brand-sub{ font-size:.62rem; letter-spacing:.4em; color:rgba(255,255,255,.7); font-weight:600; }
+
+  .menu-field{
+    position:absolute; inset:0;
+    display:flex; justify-content:space-between;
+    padding:120px 4vw 70px;
+  }
+  .menu-side{ display:flex; flex-direction:column; justify-content:space-evenly; height:100%; }
+  .menu-side-left{ align-items:flex-start; }
+  .menu-side-right{ align-items:flex-end; }
+
+  .game-btn{
+    --chamfer:10px;
+    display:flex; align-items:center; gap:16px;
+    background:transparent; border:2px solid var(--white); color:var(--white);
+    padding:16px 26px; cursor:pointer;
+    transition: transform .3s cubic-bezier(.2,.9,.3,1.3), background .2s ease, color .2s ease, box-shadow .3s ease;
+  }
+  .menu-side-right .game-btn{ flex-direction:row-reverse; }
+  .game-btn-icon{ width:26px; height:26px; flex-shrink:0; }
+  .game-btn-label{ font-family:'Archivo Black',sans-serif; font-size:1rem; letter-spacing:.03em; white-space:nowrap; }
+
+  .menu-side-left .game-btn:hover,
+  .menu-side-left .game-btn:focus-visible{ transform:translateX(16px) scale(1.04); }
+  .menu-side-right .game-btn:hover,
+  .menu-side-right .game-btn:focus-visible{ transform:translateX(-16px) scale(1.04); }
+  .game-btn:hover, .game-btn:focus-visible{
+    background:var(--white); color:var(--blue);
+    box-shadow: 0 0 0 7px rgba(255,255,255,.14), 0 14px 26px rgba(6,12,60,.4);
+  }
+  .game-btn:focus-visible{ outline:2px solid var(--white); outline-offset:4px; }
+  .game-btn:active{ transform:scale(.94); box-shadow:none; }
+
+  /* buttons slide in, staggered, the moment the menu becomes visible */
+  .menu-app:not(.visible) .game-btn{ opacity:0; }
+  .menu-side-left .game-btn:nth-child(1){ --enter-x:-26px; animation-delay:.05s; }
+  .menu-side-left .game-btn:nth-child(2){ --enter-x:-26px; animation-delay:.18s; }
+  .menu-side-right .game-btn:nth-child(1){ --enter-x:26px; animation-delay:.1s; }
+  .menu-side-right .game-btn:nth-child(2){ --enter-x:26px; animation-delay:.22s; }
+  .menu-side-right .game-btn:nth-child(3){ --enter-x:26px; animation-delay:.34s; }
+  .menu-app.visible .game-btn{ animation: btn-slide-in .6s cubic-bezier(.16,.9,.25,1.1) both; }
+  @keyframes btn-slide-in{
+    from{ opacity:0; transform:translateX(var(--enter-x,0)); }
+    to{ opacity:1; transform:translateX(0); }
+  }
+
+  /* ---------------- overlay panel ---------------- */
+  .panel-overlay{ position:fixed; inset:0; z-index:40; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .panel-overlay[hidden]{ display:none; }
+  .panel-backdrop{
+    position:absolute; inset:0; background:rgba(10,16,60,.55);
+    opacity:0; transition: opacity .28s ease;
+  }
+  .panel-overlay.open .panel-backdrop{ opacity:1; }
+
+  /* electric impulse that shoots out of the pressed button before the panel unfolds: a thin, flat circuit-trace line, no glow */
+  .panel-bolt{ position:fixed; inset:0; width:100vw; height:100vh; z-index:41; pointer-events:none; overflow:visible; }
+  .bolt-core{ fill:none; stroke:var(--white); stroke-linecap:square; stroke-linejoin:miter; stroke-width:1.4; opacity:0; }
+
+  .bolt-spark{
+    position:fixed; width:9px; height:9px; background:var(--white); z-index:42; pointer-events:none;
+    opacity:0; transform:translate(-50%,-50%) scale(0);
+  }
+  .bolt-spark.flash{ animation: spark-flash .4s ease-out; }
+  @keyframes spark-flash{
+    0%{ opacity:0; transform:translate(-50%,-50%) scale(0); }
+    22%{ opacity:1; transform:translate(-50%,-50%) scale(1.5); }
+    100%{ opacity:0; transform:translate(-50%,-50%) scale(.3); }
+  }
+
+  .panel-card{
+    --chamfer:26px;
+    position:relative; background:var(--white); color:var(--ink); width:100%; max-width:560px;
+    max-height:82vh; overflow:auto; padding:36px 40px; box-shadow:0 30px 70px rgba(6,12,60,.5);
+    opacity:0; transform:scaleY(.04);
+    transition: transform .42s cubic-bezier(.22,.85,.28,1.15) .2s, opacity .22s ease .2s;
+  }
+  .panel-overlay.open .panel-card{ opacity:1; transform:scaleY(1); }
+  .panel-overlay.closing .panel-card{
+    opacity:0; transform:scaleY(.04);
+    transition: transform .22s ease, opacity .18s ease;
+  }
+  .panel-overlay.closing .panel-backdrop{ opacity:0; }
+  .panel-close{
+    --chamfer:6px;
+    position:absolute; top:14px; right:14px; width:34px; height:34px; border:2px solid var(--ink); background:var(--white);
+    color:var(--ink); cursor:pointer; font-family:'Archivo Black',sans-serif; font-size:.9rem;
+    transition: transform .15s ease, background .15s ease, color .15s ease;
+  }
+  .panel-close:hover{ background:var(--blue); color:var(--white); border-color:var(--blue); transform:rotate(90deg); }
+  .panel-close:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+
+  .content-card[hidden]{ display:none; }
+  .content-title{ font-family:'Archivo Black',sans-serif; font-size:1.6rem; margin:0 0 4px; }
+  .content-kicker{ font-size:.68rem; letter-spacing:.28em; color:var(--muted); font-weight:700; margin-bottom:18px; display:block; }
+
+  /* -------- calendario -------- */
+  .cal-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:14px; }
+  .cal-month{ font-family:'Archivo Black',sans-serif; font-size:1.2rem; text-transform:capitalize; }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+  .cal-dow{ font-size:.62rem; letter-spacing:.1em; color:var(--muted); font-weight:700; text-align:center; padding-bottom:6px; }
+  .cal-day{
+    aspect-ratio:1; display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono',monospace; font-size:.85rem; border:1px solid var(--line); color:var(--ink);
+  }
+  .cal-day.empty{ border-color:transparent; }
+  .cal-day.today{ background:var(--blue); color:var(--white); border-color:var(--blue); font-weight:700; }
+
+  /* -------- carta -------- */
+  .carta-body{ font-size:1.05rem; line-height:1.55; max-width:52ch; color:var(--ink); }
+  .carta-link{
+    --chamfer:8px;
+    align-self:flex-start; margin-top:20px; background:var(--blue); color:var(--white); text-decoration:none;
+    font-family:'Archivo Black',sans-serif; font-size:.78rem; letter-spacing:.06em; padding:13px 22px;
+    border:2px solid var(--blue); display:inline-block;
+  }
+  .carta-link:hover{ background:var(--white); color:var(--blue); }
+  .carta-link:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+
+  /* -------- reloj -------- */
+  .clock-wrap{ display:flex; align-items:center; gap:36px; flex-wrap:wrap; }
+  .clock-face{ width:140px; height:140px; flex-shrink:0; }
+  .clock-digital{ font-family:'IBM Plex Mono',monospace; font-size:2.1rem; color:var(--ink); }
+
+  /* -------- noticias -------- */
+  .news-list{ display:flex; flex-direction:column; gap:0; }
+  .news-item{ display:flex; gap:16px; padding:14px 0; border-top:1px solid var(--line); }
+  .news-item:last-child{ border-bottom:1px solid var(--line); }
+  .news-date{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--muted); white-space:nowrap; padding-top:2px; }
+  .news-text{ font-size:.98rem; line-height:1.4; }
+  .news-text b{ font-family:'Barlow Condensed',sans-serif; font-weight:700; }
+
+  @media (prefers-reduced-motion: reduce){
+    .stage.glitching{ animation:none; }
+    .glitch-line, .glitch-noise{ display:none; }
+    .intro-text, .intro-poem, .intro-sub{ animation:none; opacity:1; }
+    .menu-app{ transition:none; }
+    .menu-app.visible .game-btn{ animation:none; opacity:1; }
+    .game-btn{ transition:background .1s, color .1s; }
+    .menu-side-left .game-btn:hover, .menu-side-left .game-btn:focus-visible,
+    .menu-side-right .game-btn:hover, .menu-side-right .game-btn:focus-visible{ transform:none; }
+    .panel-card, .panel-backdrop{ transition:none; }
+    .panel-bolt, .bolt-spark{ display:none; }
+  }
+
+  @media (max-width: 760px){
+    .menu-field{ flex-direction:column; align-items:center; gap:28px; padding:110px 6vw 40px; overflow:auto; }
+    .menu-side{ justify-content:flex-start; gap:16px; height:auto; width:100%; align-items:center; }
+    .menu-side-right .game-btn{ flex-direction:row; }
+    .menu-side-left .game-btn:hover, .menu-side-left .game-btn:focus-visible,
+    .menu-side-right .game-btn:hover, .menu-side-right .game-btn:focus-visible{ transform:scale(1.03); }
+    .panel-card{ padding:28px 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="intro" id="intro">
+    <span class="intro-text">0x000042</span>
+    <p class="intro-poem">Antes de llegar,<br>toda carta fue silencio.</p>
+    <span class="intro-sub">SISTEMA DE CARTAS</span>
+  </div>
+
+  <div class="menu-app" id="menuApp">
+    <div class="menu-brand">
+      <span class="menu-brand-mark">0x000042</span>
+      <span class="menu-brand-sub">MENÚ PRINCIPAL</span>
+    </div>
+
+    <div class="menu-field">
+      <nav class="menu-side menu-side-left" aria-label="Correspondencia">
+        <button class="game-btn chamfer" data-item="carta">
+          <svg class="game-btn-icon" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="22" height="16" rx="1"/><path d="M2 6l11 9 11-9"/></svg>
+          <span class="game-btn-label">CARTA</span>
+        </button>
+        <button class="game-btn chamfer" data-item="escribir">
+          <svg class="game-btn-icon" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 22l1-5L18 4l4 4L9 21l-5 1z"/><path d="M15 7l4 4"/></svg>
+          <span class="game-btn-label">ESCRIBIR CARTA</span>
+        </button>
+      </nav>
+
+      <nav class="menu-side menu-side-right" aria-label="Sistema">
+        <button class="game-btn chamfer" data-item="calendario">
+          <svg class="game-btn-icon" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="22" height="19" rx="1"/><path d="M2 10h22M8 2v5M18 2v5"/></svg>
+          <span class="game-btn-label">CALENDARIO</span>
+        </button>
+        <button class="game-btn chamfer" data-item="reloj">
+          <svg class="game-btn-icon" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="13" cy="13" r="11"/><path d="M13 7v6l5 3"/></svg>
+          <span class="game-btn-label">RELOJ</span>
+        </button>
+        <button class="game-btn chamfer" data-item="noticias">
+          <svg class="game-btn-icon" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="22" height="18" rx="1"/><path d="M7 9h8M7 13h12M7 17h12"/><circle cx="20" cy="9" r="0" /></svg>
+          <span class="game-btn-label">NOTICIAS</span>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <div class="glitch-noise" aria-hidden="true"></div>
+  <div class="glitch-line" id="glitchLine" aria-hidden="true"></div>
+
+  <div class="panel-overlay" id="panelOverlay" hidden>
+    <div class="panel-backdrop" id="panelBackdrop"></div>
+    <svg class="panel-bolt" aria-hidden="true">
+      <polyline id="boltCore" class="bolt-core"></polyline>
+    </svg>
+    <div class="bolt-spark" id="sparkStart" aria-hidden="true"></div>
+    <div class="bolt-spark" id="sparkEnd" aria-hidden="true"></div>
+    <div class="panel-card chamfer" role="dialog" aria-modal="true" aria-labelledby="panelTitleFocus">
+      <button class="panel-close chamfer" id="panelClose" aria-label="Cerrar">✕</button>
+
+      <div class="content-card" id="panel-carta">
+        <span class="content-kicker">CORRESPONDENCIA</span>
+        <h1 class="content-title">Carta</h1>
+        <p class="carta-body">Un juego de clics sobre una cuadrícula: los dibujos oscilan entre celdas y hay que alinear el indicador con la zona central. Completarlo con éxito envía una carta por correo, con intención poética.</p>
+      </div>
+
+      <div class="content-card" id="panel-escribir" hidden>
+        <span class="content-kicker">CORRESPONDENCIA</span>
+        <h1 class="content-title">Escribir carta</h1>
+        <p class="carta-body">Entra al juego para escribir la tuya: alinea el indicador con la zona central de la cuadrícula y, al lograrlo, tu carta se envía.</p>
+        <a class="carta-link chamfer" href="https://0x000042.com" target="_blank" rel="noopener">ESCRIBIR CARTA ↗</a>
+      </div>
+
+      <div class="content-card" id="panel-calendario" hidden>
+        <span class="content-kicker">SISTEMA</span>
+        <h1 class="content-title">Calendario</h1>
+        <div class="cal-head"><span class="cal-month" id="calMonth"></span></div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+
+      <div class="content-card" id="panel-reloj" hidden>
+        <span class="content-kicker">SISTEMA</span>
+        <h1 class="content-title">Reloj</h1>
+        <div class="clock-wrap">
+          <svg class="clock-face" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="47" fill="none" stroke="#0a1030" stroke-width="2.5"/>
+            <g id="clockTicks" stroke="#0a1030" stroke-width="2"></g>
+            <line id="handHour" x1="50" y1="50" x2="50" y2="28" stroke="#0a1030" stroke-width="4" stroke-linecap="round"/>
+            <line id="handMin" x1="50" y1="50" x2="50" y2="18" stroke="#0a1030" stroke-width="3" stroke-linecap="round"/>
+            <line id="handSec" x1="50" y1="50" x2="50" y2="14" stroke="#1c39d6" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="50" cy="50" r="3" fill="#0a1030"/>
+          </svg>
+          <div class="clock-digital mono" id="clockDigital">00:00:00</div>
+        </div>
+      </div>
+
+      <div class="content-card" id="panel-noticias" hidden>
+        <span class="content-kicker">SISTEMA</span>
+        <h1 class="content-title">Noticias</h1>
+        <div class="news-list" id="newsList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function(id){ return document.getElementById(id); };
+  var stage = $('stage');
+  var intro = $('intro');
+  var menuApp = $('menuApp');
+  var overlay = $('panelOverlay');
+  var lastTrigger = null;
+
+  /* ---------------- intro sequence ---------------- */
+  function revealMenu(){
+    intro.hidden = true;
+    menuApp.classList.add('visible');
+  }
+  if(reduceMotion){
+    revealMenu();
+  } else {
+    setTimeout(revealMenu, 6700);
+  }
+
+  /* ---------------- intermittent glitch: screen flicker / signal error ---------------- */
+  var glitchLine = $('glitchLine');
+  function triggerGlitch(){
+    glitchLine.style.top = (Math.random()*88 + 4) + '%';
+    stage.classList.remove('glitching');
+    void stage.offsetWidth;
+    stage.classList.add('glitching');
+    setTimeout(function(){ stage.classList.remove('glitching'); }, 340);
+  }
+  function scheduleGlitch(){
+    var delay = 5000 + Math.random()*11000;
+    setTimeout(function(){ triggerGlitch(); scheduleGlitch(); }, delay);
+  }
+  if(!reduceMotion){ scheduleGlitch(); }
+
+  /* ---------------- panel open/close ---------------- */
+  var panels = {
+    carta: $('panel-carta'),
+    escribir: $('panel-escribir'),
+    calendario: $('panel-calendario'),
+    reloj: $('panel-reloj'),
+    noticias: $('panel-noticias')
+  };
+
+  var closeTimer = null;
+  var boltCore = $('boltCore');
+  var sparkStart = $('sparkStart');
+  var sparkEnd = $('sparkEnd');
+
+  // orthogonal circuit-trace path: only right-angle turns, no diagonals
+  function buildBoltPoints(x1, y1, x2, y2){
+    var stepX1 = x1 + (x2 - x1) * (0.22 + Math.random()*0.16);
+    var stepY  = y1 + (y2 - y1) * (0.35 + Math.random()*0.3);
+    var stepX2 = x1 + (x2 - x1) * (0.68 + Math.random()*0.16);
+    var pts = [
+      [x1, y1],
+      [stepX1, y1],
+      [stepX1, stepY],
+      [stepX2, stepY],
+      [stepX2, y2],
+      [x2, y2]
+    ];
+    return pts.map(function(p){ return p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ');
+  }
+
+  function fireBolt(trigger){
+    var rect = trigger.getBoundingClientRect();
+    var fromLeft = !!trigger.closest('.menu-side-left');
+    var x1 = fromLeft ? rect.right : rect.left;
+    var y1 = rect.top + rect.height/2;
+    var x2 = window.innerWidth/2;
+    var y2 = window.innerHeight/2;
+
+    var pts = buildBoltPoints(x1, y1, x2, y2);
+    boltCore.setAttribute('points', pts);
+    var len = boltCore.getTotalLength();
+    boltCore.style.transition = 'none';
+    boltCore.style.strokeDasharray = len;
+    boltCore.style.strokeDashoffset = len;
+    boltCore.style.opacity = 1;
+    void boltCore.getBoundingClientRect(); // force reflow before animating
+    requestAnimationFrame(function(){
+      boltCore.style.transition = 'stroke-dashoffset .3s cubic-bezier(.2,.75,.15,1)';
+      boltCore.style.strokeDashoffset = '0';
+    });
+    setTimeout(function(){ boltCore.style.opacity = 0; }, 280);
+
+    sparkStart.style.left = x1 + 'px'; sparkStart.style.top = y1 + 'px';
+    sparkEnd.style.left = x2 + 'px'; sparkEnd.style.top = y2 + 'px';
+    [sparkStart, sparkEnd].forEach(function(el){
+      el.classList.remove('flash');
+      void el.offsetWidth;
+      el.classList.add('flash');
+    });
+  }
+
+  function openPanel(key, trigger){
+    clearTimeout(closeTimer);
+    Object.keys(panels).forEach(function(k){ panels[k].hidden = (k !== key); });
+    overlay.classList.remove('closing');
+    overlay.hidden = false;
+    lastTrigger = trigger;
+
+    if(reduceMotion){
+      overlay.classList.add('open');
+      $('panelClose').focus();
+      return;
+    }
+
+    fireBolt(trigger);
+
+    overlay.classList.remove('open');
+    overlay.classList.add('opening');
+    void overlay.offsetWidth; // force reflow so the panel-expand animation restarts every time
+    requestAnimationFrame(function(){
+      overlay.classList.add('open');
+    });
+    $('panelClose').focus();
+  }
+
+  function closePanel(){
+    if(overlay.hidden) return;
+    clearTimeout(closeTimer);
+    if(reduceMotion){
+      overlay.hidden = true;
+      overlay.classList.remove('open','opening');
+    } else {
+      overlay.classList.add('closing');
+      overlay.classList.remove('open','opening');
+      closeTimer = setTimeout(function(){
+        overlay.hidden = true;
+        overlay.classList.remove('closing');
+      }, 240);
+    }
+    if(lastTrigger) lastTrigger.focus();
+  }
+
+  document.querySelectorAll('.game-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ openPanel(btn.getAttribute('data-item'), btn); });
+  });
+  $('panelClose').addEventListener('click', closePanel);
+  $('panelBackdrop').addEventListener('click', closePanel);
+  window.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && !overlay.hidden) closePanel();
+  });
+
+  /* ---------------- calendario ---------------- */
+  (function initCalendar(){
+    var now = new Date();
+    var monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    var dow = ['L','M','X','J','V','S','D'];
+    $('calMonth').textContent = monthNames[now.getMonth()] + ' ' + now.getFullYear();
+
+    var grid = $('calGrid');
+    dow.forEach(function(d){
+      var el = document.createElement('div');
+      el.className = 'cal-dow';
+      el.textContent = d;
+      grid.appendChild(el);
+    });
+
+    var first = new Date(now.getFullYear(), now.getMonth(), 1);
+    var startOffset = (first.getDay() + 6) % 7;
+    var daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+
+    for(var i=0;i<startOffset;i++){
+      var empty = document.createElement('div');
+      empty.className = 'cal-day empty';
+      grid.appendChild(empty);
+    }
+    for(var d=1; d<=daysInMonth; d++){
+      var cell = document.createElement('div');
+      cell.className = 'cal-day' + (d === now.getDate() ? ' today' : '');
+      cell.textContent = d;
+      grid.appendChild(cell);
+    }
+  })();
+
+  /* ---------------- reloj ---------------- */
+  (function initClock(){
+    var ticks = $('clockTicks');
+    for(var i=0;i<12;i++){
+      var ang = (i/12) * Math.PI * 2;
+      var x1 = 50 + Math.sin(ang)*40, y1 = 50 - Math.cos(ang)*40;
+      var x2 = 50 + Math.sin(ang)*45, y2 = 50 - Math.cos(ang)*45;
+      var line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+      line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+      ticks.appendChild(line);
+    }
+
+    function pad(n){ return n<10 ? '0'+n : ''+n; }
+
+    function tick(){
+      var now = new Date();
+      var h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+      $('clockDigital').textContent = pad(h)+':'+pad(m)+':'+pad(s);
+
+      var hourAngle = ((h % 12) + m/60) / 12 * 360;
+      var minAngle = (m + s/60) / 60 * 360;
+      var secAngle = s / 60 * 360;
+      $('handHour').setAttribute('transform', 'rotate('+hourAngle+' 50 50)');
+      $('handMin').setAttribute('transform', 'rotate('+minAngle+' 50 50)');
+      $('handSec').setAttribute('transform', 'rotate('+secAngle+' 50 50)');
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  /* ---------------- noticias ---------------- */
+  (function initNews(){
+    var monthNames = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    var now = new Date();
+    function fmt(daysAgo){
+      var d = new Date(now); d.setDate(d.getDate()-daysAgo);
+      return d.getDate() + ' ' + monthNames[d.getMonth()];
+    }
+    var items = [
+      { d: fmt(0), t: 'El menú principal se reorganiza: botones distribuidos por toda la pantalla.' },
+      { d: fmt(2), t: '<b>Carta</b> sigue enviando correos con intención poética al completar la cuadrícula.' },
+      { d: fmt(6), t: 'Ajustes de CORS en el backend de 0x000042.com para las rutas de correo.' },
+      { d: fmt(13), t: '<b>Diario de Viaje</b> avanza hacia un diseño responsive en trenmaya.neocities.org.' }
+    ];
+    var list = $('newsList');
+    items.forEach(function(it){
+      var row = document.createElement('div');
+      row.className = 'news-item';
+      row.innerHTML = '<span class="news-date mono">'+it.d+'</span><span class="news-text">'+it.t+'</span>';
+      list.appendChild(row);
+    });
+  })();
+})();
+</script>
+</body>
+</html>
