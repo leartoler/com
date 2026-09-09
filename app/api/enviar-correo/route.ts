@@ -70,22 +70,18 @@ export async function POST(request: NextRequest) {
     const config = JUEGOS[juego];
 
     // Leer imagen del juego correspondiente
-    const imagenPath = path.join(process.cwd(), 'public', config.imagen);
+    /*const imagenPath = path.join(process.cwd(), 'public', config.imagen);
     const imagenBuffer = fs.readFileSync(imagenPath);
+*/
+
 
     // Enviar correo
     await resend.emails.send({
       from: process.env.EMAIL_ORIGEN as string,
       to: config.destino,
       subject: `${config.asunto} — ${nombreLimpio}`,
-      html: `<img src="cid:imagen" alt="${juego}" style="max-width:100%;" />`,
-      attachments: [
-        {
-          filename: config.imagen,
-          content: imagenBuffer,
-          contentId: 'imagen',
-        },
-      ],
+        html: `<img src="https://com-three-inky.vercel.app/${config.imagen}" style="max-width:100%;" />`,
+
     });
 
     // Guardar puntaje por nombre y por juego
@@ -129,5 +125,7 @@ export async function OPTIONS(request: NextRequest) {
     },
   });
 }
+
+
 
 
