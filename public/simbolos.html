@@ -4,35 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Carta</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
 <style>
   :root {
-    --fondo: #5a8265ff;
-    --panel: rgb(115, 130, 90);
-    --borde: rgb(70, 100, 78);
-    --texto: #d48ac8ff;
-    --texto-tenue: #8b93a1;
-    --acento: rgb(170, 169, 76);
-    --acierto: #4fae6b;
-    --fallo: #883752;
-    --acierto-bg: rgb(219, 198, 216);
-    --fallo-bg: rgb(77, 51, 72);
+    --bg:#5f8265;
+    --linea:#d48ac8;
+    --ink:#7a3d70;
+    --white:#ffffff;
+    --muted:#6b6f3a;
+    --error:#b3251f;
+    --ok:#2f6b2a;
+    color-scheme: light;
   }
 
   * { box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
 
   body {
-    margin: 0;
     min-height: 100vh;
-    background: var(--fondo);
-    color: var(--texto);
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Barlow Condensed', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px 12px;
+    position: relative;
+  }
+
+  .fondo-textura{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background: repeating-radial-gradient(circle at 50% 42%, rgba(0,0,0,.05) 0 1.5px, transparent 1.5px 22px);
+  }
+
+  .marca{
+    position:fixed; top:18px; left:50%; transform:translateX(-50%);
+    z-index:2;
+    font-family:'Archivo Black',sans-serif; font-size:.95rem; letter-spacing:.04em;
+    color: var(--ink);
   }
 
   .pantalla {
+    position: relative; z-index: 1;
     width: 100%;
     max-width: 900px;
     text-align: center;
@@ -41,8 +54,10 @@
   .oculto { display: none !important; }
 
   .subtitulo {
-    color: var(--texto);
-    font-size: 24px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 1.3rem;
     margin: 0 0 24px;
     line-height: 1.4;
   }
@@ -50,56 +65,73 @@
   input[type="text"] {
     width: 100%;
     max-width: 320px;
-    padding: 14px 16px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: 1px solid var(--borde);
-    background: var(--panel);
-    color: var(--texto);
+    padding: 12px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .95rem;
+    border: 2px solid var(--ink);
+    background: var(--white);
+    color: var(--ink);
     outline: none;
+    border-radius: 0;
   }
 
+  input[type="text"]::placeholder{ color: var(--muted); }
+
   input[type="text"]:focus {
-    border-color: var(--acento);
+    border-color: var(--linea);
   }
 
   button {
     display: inline-block;
     margin-top: 20px;
     margin-inline: 6px;
-    padding: 13px 28px;
-    font-size: 15px;
-    font-weight: 600;
-    border-radius: 10px;
-    border: none;
-    background: var(--acento);
-    color: rgb(116, 62, 107);
+    font-family: 'Archivo Black', sans-serif;
+    font-size: .7rem;
+    letter-spacing: .08em;
+    padding: 13px 24px;
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    background: var(--ink);
+    color: var(--bg);
     cursor: pointer;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
   }
 
   button.secundario {
     background: transparent;
-    color: var(--texto);
-    border: 1px solid var(--borde);
+    color: var(--ink);
   }
 
   button:hover {
-    filter: brightness(1.08);
+    background: var(--linea);
+    border-color: var(--linea);
+    color: var(--white);
+  }
+
+  button.secundario:hover{
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
   }
 
   .instruccion {
     max-width: 520px;
     margin: 0 auto 28px;
-    font-size: 15px;
-    line-height: 1.6;
-    color: var(--texto-tenue);
+    font-size: .95rem;
+    line-height: 1.5;
+    font-style: italic;
+    color: var(--ink);
   }
 
   .instruccion strong {
     display: block;
     margin-top: 14px;
-    color: var(--texto);
-    font-weight: 700;
+    font-style: normal;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: .72rem;
+    letter-spacing: .06em;
+    color: var(--linea);
   }
 
   .grupos-scroll {
@@ -125,26 +157,26 @@
   .cuadro {
     position: relative;
     border-radius: 3px;
-    background: var(--panel);
-    border: 1px solid var(--borde);
+    background: var(--linea);
+    border: 2px solid var(--linea);
     overflow: hidden;
     cursor: default;
   }
 
   .cuadro.activo {
     cursor: pointer;
-    border-color: var(--acento);
+    border-color: var(--ink);
   }
 
   .cuadro.acierto {
     overflow: visible;
-    background: var(--acierto-bg);
-    border-color: var(--acierto);
+    background: var(--muted);
+    border-color: var(--ok);
   }
 
   .cuadro.fallo {
-    background: var(--fallo-bg);
-    border-color: var(--fallo);
+    background: rgba(179, 37, 31, 0.12);
+    border-color: var(--error);
   }
 
   .zona-central {
@@ -153,7 +185,7 @@
     width: 20%;
     top: 0;
     bottom: 0;
-    background: rgba(126, 23, 91, 0.14);
+    background: var(--ink);
   }
 
   .linea-centro {
@@ -163,7 +195,7 @@
     bottom: 8%;
     width: 2px;
     transform: translateX(-50%);
-    background: rgba(200, 74, 204, 0.486);
+    background: rgba(200, 85, 28, .55);
   }
 
   .imagen-movil {
@@ -194,9 +226,10 @@
     top: calc(100% + 6px);
     left: 0;
     width: 100%;
-    font-size: 14px;
+    font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
-    color: var(--acierto);
+    font-size: 14px;
+    color: var(--ok);
     text-align: center;
     padding: 0 4px;
     line-height: 1.15;
@@ -204,7 +237,9 @@
   }
 
   .mensaje-final {
-    font-size: 19px;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1rem;
+    letter-spacing: .02em;
     margin: 0 0 16px;
     line-height: 1.5;
   }
@@ -213,11 +248,11 @@
     margin: 0 auto 24px;
     max-width: 420px;
     padding: 14px 18px;
-    background: var(--panel);
-    border: 1px solid var(--borde);
-    border-radius: 10px;
-    font-size: 14px;
-    color: var(--texto-tenue);
+    background: var(--white);
+    border: 2px solid var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .78rem;
+    color: var(--muted);
   }
 
   .lista-correos div {
@@ -226,6 +261,9 @@
 </style>
 </head>
 <body>
+
+  <div class="fondo-textura" aria-hidden="true"></div>
+  <div class="marca">0x000042</div>
 
   <!-- Pantalla: nombre -->
   <div id="pantalla-nombre" class="pantalla">
@@ -320,9 +358,9 @@
 
   const TOTAL_CUADROS = indiceGlobal;
 
-  
 
-  
+
+
 
   // Palabra asociada a cada cuadro jugable, por posición (índice 0 a TOTAL_CUADROS - 1).
   // Reemplaza estos placeholders por las palabras reales, manteniendo la posición.
@@ -332,7 +370,7 @@ const PALABRAS = [
     'solo la',
     'tierra árida',
     'de infertil naranja quedó.',
-    'Prometieron', 
+    'Prometieron',
     'trabajos,',
     'tierras fértiles;',
     'Nos prometieron',
@@ -357,7 +395,7 @@ const PALABRAS = [
     'a1.png',
     'a2.png',
     'a3.png',
-    'a4.png',       
+    'a4.png',
     'a5.png',
     'a6.png',
     'a7.png',
@@ -367,7 +405,7 @@ const PALABRAS = [
     'a11.png',
     'a12.png',
     'a13.png',
-    'a14.png',    
+    'a14.png',
     'a15.png',
     'a16.png',
     'a17.png',
@@ -647,5 +685,3 @@ const PALABRAS = [
 
 </body>
 </html>
-
-

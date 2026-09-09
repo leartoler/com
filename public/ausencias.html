@@ -4,22 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Poema oculto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
 <style>
   :root{
-    --fondo: #0f0f11;
-    --fondo-panel: #17171a;
-    --borde: #2a2a2e;
-    --texto: #d8d6d0;
-    --texto-tenue: #6f6d68;
-    --acento: #e7b65c;
-    --acento-suave: rgba(231, 182, 92, 0.18);
-    --exito: #7fb787;
-    --error: #d98080;
-    --fuente: Helvetica, "Helvetica Neue", Arial, sans-serif;
+    --bg:#cdcf2e;
+    --linea:#c8551c;
+    --ink:#191c14;
+    --white:#ffffff;
+    --muted:#6b6f3a;
+    --error:#b3251f;
+    --ok:#2f6b2a;
+    color-scheme: light;
+ 
+    /* alias del sistema anterior, para no tener que retocar cada regla */
+    --fondo: var(--bg);
+    --fondo-panel: var(--white);
+    --borde: var(--ink);
+    --texto: var(--ink);
+    --texto-tenue: var(--muted);
+    --acento: var(--linea);
+    --acento-suave: rgba(200, 85, 28, 0.14);
+    --exito: var(--ok);
+    --fuente: 'Barlow Condensed', sans-serif;
+    --fuente-titulo: 'Archivo Black', sans-serif;
+    --fuente-mono: 'IBM Plex Mono', monospace;
   }
-
+ 
   *{ box-sizing: border-box; }
-
+ 
   html, body{
     margin: 0;
     padding: 0;
@@ -27,336 +39,370 @@
     color: var(--texto);
     font-family: var(--fuente);
     min-height: 100vh;
+    position: relative;
   }
-
+ 
+  .fondo-textura{
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: repeating-radial-gradient(circle at 50% 42%, rgba(0,0,0,.05) 0 1.5px, transparent 1.5px 22px);
+  }
+ 
+  .marca{
+    position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
+    z-index: 2;
+    font-family: var(--fuente-titulo); font-size: .95rem; letter-spacing: .04em;
+    color: var(--ink);
+  }
+ 
   .contenedor{
+    position: relative;
+    z-index: 1;
     max-width: 980px;
     margin: 0 auto;
-    padding: 28px 18px 60px;
+    padding: 56px 18px 60px;
   }
-
+ 
   header{
     text-align: center;
     margin-bottom: 22px;
   }
-
+ 
   header h1{
-    font-family: var(--fuente);
-    font-weight: 700;
-    font-size: 1.6rem;
+    font-family: var(--fuente-titulo);
+    font-weight: normal;
+    font-size: 1.5rem;
     letter-spacing: 0.01em;
-    margin: 0 0 8px;
-    color: #f2efe8;
+    margin: 0 0 12px;
+    color: var(--ink);
   }
-
+ 
   header p{
-    margin: 0;
-    color: var(--texto-tenue);
-    font-size: 0.92rem;
-    line-height: 1.5;
-    max-width: 520px;
     margin: 0 auto;
+    color: var(--ink);
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    max-width: 560px;
   }
-
+ 
   /* --- Pantallas (juego / resultado) --- */
-
+ 
   .pantalla{
     display: none;
   }
-
+ 
   .pantalla.activa{
     display: block;
     animation: aparecerPantalla 0.5s ease;
   }
-
+ 
   @keyframes aparecerPantalla{
     from{ opacity: 0; transform: translateY(6px); }
     to{ opacity: 1; transform: translateY(0); }
   }
-
+ 
   .oculto{
     display: none !important;
   }
-
+ 
   .panel{
     background: var(--fondo-panel);
-    border: 1px solid var(--borde);
-    border-radius: 14px;
+    border: 2px solid var(--borde);
+    border-radius: 0;
     padding: 22px 22px 24px;
   }
-
+ 
   .panel h2{
-    font-family: var(--fuente);
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin: 0 0 12px;
-    color: #f2efe8;
+    font-family: var(--fuente-titulo);
+    font-weight: normal;
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+    margin: 0 0 14px;
+    color: var(--ink);
   }
-
+ 
   .panel p.aviso{
-    font-size: 0.88rem;
+    font-size: 0.92rem;
+    font-style: italic;
     color: var(--texto-tenue);
     line-height: 1.5;
     margin: 0 0 18px;
   }
-
+ 
   /* --- Compuerta: mensaje antes de jugar --- */
-
+ 
   .panel-mensaje{
     max-width: 460px;
     margin: 0 auto 18px;
   }
-
+ 
   .campo{
     margin-bottom: 12px;
   }
-
+ 
   .campo label{
     display: block;
-    font-size: 0.78rem;
+    font-family: var(--fuente-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.7rem;
     color: var(--texto-tenue);
-    margin-bottom: 5px;
+    margin-bottom: 6px;
   }
-
+ 
   .campo input,
   .campo textarea{
     width: 100%;
-    background: #0f0f11;
-    border: 1px solid var(--borde);
-    border-radius: 8px;
+    background: var(--white);
+    border: 2px solid var(--borde);
+    border-radius: 0;
     padding: 10px 12px;
     color: var(--texto);
     font-size: 0.95rem;
-    font-family: var(--fuente);
+    font-family: var(--fuente-mono);
   }
-
+ 
   .campo textarea{
     resize: vertical;
     min-height: 70px;
     line-height: 1.5;
   }
-
+ 
   .campo input:focus,
   .campo textarea:focus{
     outline: none;
-    border-color: var(--acento);
+    border-color: var(--linea);
   }
-
+ 
   button.enviar{
+    display: block;
     width: 100%;
-    background: var(--acento);
-    color: #1a1509;
-    border: none;
-    border-radius: 8px;
-    padding: 11px 14px;
-    font-family: var(--fuente);
-    font-size: 0.95rem;
-    font-weight: 700;
+    background: var(--ink);
+    color: var(--bg);
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    padding: 13px 14px;
+    font-family: var(--fuente-titulo);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
     cursor: pointer;
     margin-top: 6px;
-    transition: opacity 0.2s ease, transform 0.1s ease;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   }
-
+ 
+  button.enviar:hover:not(:disabled){
+    background: var(--linea);
+    border-color: var(--linea);
+    color: var(--white);
+  }
+ 
   button.enviar:disabled{
-    opacity: 0.55;
+    opacity: 0.5;
     cursor: default;
   }
-
+ 
   button.enviar:not(:disabled):active{
     transform: scale(0.98);
   }
-
+ 
   /* --- Pantalla de juego --- */
-
+ 
   .tablero{
     display: grid;
     grid-template-columns: 1fr;
     gap: 18px;
     margin-top: 6px;
   }
-
+ 
   @media (min-width: 800px){
     .tablero{
       grid-template-columns: 1.3fr 1fr;
       align-items: start;
     }
   }
-
+ 
   .texto{
     font-size: 1.05rem;
     line-height: 2.05;
-    color: #a9a7a1;
+    color: var(--ink);
   }
-
+ 
   /* el texto es uniforme: las palabras del poema no se distinguen
      visualmente de las demás, solo responden al clic */
   .palabra-poema,
   .palabra-normal{
     transition: opacity 0.6s ease, filter 0.6s ease;
   }
-
+ 
   .palabra-poema{
     cursor: pointer;
   }
-
+ 
   .palabra-poema.desaparece,
   .palabra-normal.desaparece{
     opacity: 0;
     filter: blur(3px);
     pointer-events: none;
   }
-
+ 
   .progreso-envoltura{
     margin-bottom: 14px;
   }
-
+ 
   .progreso-barra{
     height: 6px;
-    background: #26262a;
-    border-radius: 999px;
+    background: rgba(25, 28, 20, 0.12);
+    border-radius: 0;
     overflow: hidden;
   }
-
+ 
   .progreso-relleno{
     height: 100%;
     width: 0%;
     background: var(--acento);
-    border-radius: 999px;
+    border-radius: 0;
     transition: width 0.4s ease;
   }
-
+ 
   .progreso-texto{
     margin-top: 8px;
-    font-size: 0.78rem;
+    font-family: var(--fuente-mono);
+    font-size: 0.75rem;
     color: var(--texto-tenue);
     display: flex;
     justify-content: space-between;
   }
-
+ 
   /* --- Temporizador --- */
-
+ 
   .temporizador{
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     margin-bottom: 18px;
     padding-bottom: 14px;
-    border-bottom: 1px solid var(--borde);
+    border-bottom: 2px solid var(--borde);
   }
-
+ 
   .temporizador-etiqueta{
-    font-size: 0.78rem;
+    font-family: var(--fuente-mono);
+    font-size: 0.72rem;
     color: var(--texto-tenue);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
-
+ 
   .temporizador-numero{
-    font-size: 1.8rem;
-    font-weight: 700;
+    font-family: var(--fuente-titulo);
+    font-size: 1.7rem;
     color: var(--acento);
     font-variant-numeric: tabular-nums;
   }
-
+ 
   .temporizador-numero.urgente{
     color: var(--error);
   }
-
+ 
   /* --- Palabras que hay que encontrar --- */
-
+ 
   .objetivo{
     margin-bottom: 18px;
   }
-
+ 
   .objetivo-etiqueta{
     display: block;
-    font-size: 0.78rem;
+    font-family: var(--fuente-mono);
+    font-size: 0.72rem;
     color: var(--texto-tenue);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 8px;
   }
-
+ 
   .objetivo-lista{
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
   }
-
+ 
   .objetivo-lista .ficha{
     padding: 5px 12px;
-    border: 1px solid var(--borde);
-    border-radius: 999px;
-    font-size: 0.9rem;
+    background: var(--white);
+    border: 2px solid var(--borde);
+    border-radius: 0;
+    font-family: var(--fuente-mono);
+    font-size: 0.85rem;
     color: var(--texto);
-    transition: opacity 0.3s ease, border-color 0.3s ease, background 0.3s ease, text-decoration-color 0.3s ease;
+    transition: opacity 0.3s ease, border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
   }
-
+ 
   .objetivo-lista .ficha.encontrada{
-    border-color: var(--acento);
-    background: var(--acento-suave);
-    color: var(--acento);
+    border-color: var(--exito);
+    background: rgba(47, 107, 42, 0.12);
+    color: var(--exito);
     text-decoration: line-through;
-    opacity: 0.8;
+    opacity: 0.85;
   }
-
+ 
   .poema-resultado{
     min-height: 140px;
     font-family: var(--fuente);
     font-size: 1.1rem;
     line-height: 1.9;
-    color: #f2efe8;
+    color: var(--ink);
   }
-
+ 
   .poema-resultado .linea{
     opacity: 0;
     transform: translateY(4px);
     animation: aparecer 0.5s ease forwards;
   }
-
+ 
   @keyframes aparecer{
     to{ opacity: 1; transform: translateY(0); }
   }
-
+ 
   .poema-vacio{
     color: var(--texto-tenue);
     font-style: italic;
     font-size: 0.95rem;
   }
-
+ 
   /* --- Pantalla de resultado --- */
-
+ 
   #pantalla-resultado .panel{
     max-width: 520px;
     margin: 20px auto 0;
     text-align: center;
   }
-
+ 
   #pantalla-resultado .poema-resultado{
     text-align: left;
     margin: 6px auto 20px;
     max-width: 320px;
   }
-
+ 
   .mensaje-guardado{
     text-align: left;
     max-width: 320px;
     margin: 0 auto 20px;
     padding: 12px 14px;
-    background: #0f0f11;
-    border: 1px solid var(--borde);
-    border-radius: 8px;
+    background: rgba(200, 85, 28, 0.06);
+    border: 2px solid var(--borde);
+    border-radius: 0;
   }
-
+ 
   .mensaje-guardado h3{
     margin: 0 0 6px;
-    font-size: 0.75rem;
+    font-family: var(--fuente-mono);
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--texto-tenue);
     font-weight: 400;
   }
-
+ 
   .mensaje-guardado p{
     margin: 0;
     font-size: 0.92rem;
@@ -364,42 +410,63 @@
     color: var(--texto);
     white-space: pre-wrap;
   }
-
+ 
   #pantalla-resultado form{
     max-width: 320px;
     margin: 0 auto;
     text-align: left;
   }
-
+ 
   #bloque-reintento{
     max-width: 320px;
     margin: 0 auto;
   }
-
+ 
   .mensaje-estado{
-    font-size: 0.88rem;
+    font-family: var(--fuente-mono);
+    font-size: 0.85rem;
     min-height: 1.3em;
     margin-top: 10px;
     text-align: center;
   }
-
+ 
   .mensaje-estado.exito{ color: var(--exito); }
   .mensaje-estado.error{ color: var(--error); }
   .mensaje-estado.enviando{ color: var(--texto-tenue); }
+ 
+  .lista-correos{
+    margin: 14px auto 0;
+    max-width: 320px;
+    padding: 12px 14px;
+    background: var(--white);
+    border: 2px solid var(--borde);
+    border-radius: 0;
+    font-family: var(--fuente-mono);
+    font-size: 0.8rem;
+    color: var(--texto-tenue);
+    text-align: left;
+  }
+ 
+  .lista-correos div{
+    padding: 2px 0;
+  }
 </style>
 </head>
 <body>
-
+ 
+<div class="fondo-textura" aria-hidden="true"></div>
+<div class="marca">0x000042</div>
+ 
 <div class="contenedor">
-
+ 
   <header>
     <h1>lo que queda cuando algo desaparece</h1>
-    <p id="texto-encabezado">Escribe un mensaje para poder jugar. Tienes 15 segundos: todas las palabras del texto se van a ir borrando solas, así que toca las resaltadas antes de que desaparezcan. Cada una que alcances se vuelve parte de un poema. Al reunir más de la mitad, ganas y puedes enviarlo por correo.</p>
+    <p id="texto-encabezado">Escribe un mensaje para poder jugar. Tienes 15 segundos: todas las palabras del texto se van a ir borrando solas, así que toca las resaltadas antes de que desaparezcan. Cada una que alcances se vuelve parte de un poema. Al reunir más de la mitad, ganas y el poema se envía solo por correo.</p>
   </header>
-
+ 
   <!-- Pantalla del juego (incluye la compuerta del mensaje) -->
   <section class="pantalla activa" id="pantalla-juego">
-
+ 
     <div class="panel panel-mensaje" id="panel-mensaje">
       <form id="form-mensaje">
         <div class="campo">
@@ -409,9 +476,9 @@
         <button type="submit" class="enviar">Jugar</button>
       </form>
     </div>
-
+ 
     <div class="tablero oculto" id="tablero">
-
+ 
       <div class="panel panel-texto">
         <p class="texto" id="texto-fuente">
           Cada vez que subo a ese vagón pienso en la
@@ -464,20 +531,20 @@
           abierta.
         </p>
       </div>
-
+ 
       <div class="panel panel-poema">
         <div class="temporizador">
           <span class="temporizador-etiqueta">tiempo restante</span>
           <span class="temporizador-numero" id="tiempo-restante">15</span>
         </div>
-
+ 
         <div class="objetivo">
           <span class="objetivo-etiqueta">palabras que debes encontrar</span>
           <div class="objetivo-lista" id="objetivo-lista"></div>
         </div>
-
+ 
         <h2>el poema</h2>
-
+ 
         <div class="progreso-envoltura">
           <div class="progreso-barra">
             <div class="progreso-relleno" id="progreso-relleno"></div>
@@ -487,78 +554,71 @@
             <span id="progreso-porcentaje">0%</span>
           </div>
         </div>
-
+ 
         <div class="poema-resultado" id="poema-resultado">
           <p class="poema-vacio">Aquí va apareciendo el poema, palabra por palabra…</p>
         </div>
       </div>
-
+ 
     </div>
   </section>
-
+ 
   <!-- Pantalla de resultado -->
   <section class="pantalla" id="pantalla-resultado">
     <div class="panel">
       <h2 id="resultado-titulo">¡ganaste el poema!</h2>
-
+ 
       <div class="poema-resultado" id="poema-final"></div>
-
+ 
       <div class="mensaje-guardado" id="mensaje-guardado">
         <h3>tu mensaje</h3>
         <p id="mensaje-guardado-texto"></p>
       </div>
-
+ 
       <div id="bloque-envio">
-        <form id="form-envio-final">
-          <div class="campo">
-            <label for="campo-correo-final">Correo de destino</label>
-            <input type="email" id="campo-correo-final" placeholder="correo@ejemplo.com" required>
-          </div>
-          <button type="submit" class="enviar" id="boton-enviar-final">Enviar poema</button>
-        </form>
         <div class="mensaje-estado" id="mensaje-estado-final"></div>
+        <div class="lista-correos oculto" id="lista-correos"></div>
       </div>
-
+ 
       <div id="bloque-reintento" class="oculto">
         <p class="aviso" id="texto-reintento"></p>
         <button type="button" class="enviar" id="boton-jugar-de-nuevo">Jugar de nuevo</button>
       </div>
     </div>
   </section>
-
+ 
 </div>
-
+ 
 <script>
 (function(){
   // ---------------------------------------------------------------
   // Configuración
   // ---------------------------------------------------------------
-
-  // Endpoint del backend (Vercel + Resend), siguiendo el mismo patrón
-  // que ya usa "com" para /api/enviar-correo. Cambia esta URL por la
-  // ruta real una vez que la agregues a tu proyecto de Next.js.
-    const API_ENVIAR_CORREO = 'https://com-three-inky.vercel.app/api/enviar-correo';
-
+ 
+  // Mismo endpoint (Vercel + Resend) que ya usa "Carta" para enviar
+  // correos — se reutiliza tal cual, sin ruta nueva que desplegar.
+  const API_URL = "https://com-three-inky.vercel.app/api/enviar-correo";
+ 
   // Se gana el juego al superar el 60% de las palabras-poema
   const UMBRAL_VICTORIA = 0.6;
-
+ 
   // Duración de la partida. 15 segundos es solo para probar —
   // súbelo a lo que quieras para la versión final (30, 60, etc.)
-  const TIEMPO_TOTAL_MS = 60 * 1000;
-
+  const TIEMPO_TOTAL_MS = 15 * 1000;
+ 
   // ---------------------------------------------------------------
   // Preparar el texto: envuelve cada palabra suelta (las que no son
   // "palabra-poema") en su propio span, para poder ir borrándolas
   // una por una con el temporizador.
   // ---------------------------------------------------------------
-
+ 
   function envolverPalabrasSueltas(contenedor){
     Array.from(contenedor.childNodes).forEach(function(nodo){
       if (nodo.nodeType !== Node.TEXT_NODE) return;
-
+ 
       const partes = nodo.textContent.split(/(\s+)/); // conserva los espacios
       const fragmento = document.createDocumentFragment();
-
+ 
       partes.forEach(function(parte){
         if (parte === "") return;
         if (/^\s+$/.test(parte)){
@@ -570,66 +630,65 @@
         span.textContent = parte;
         fragmento.appendChild(span);
       });
-
+ 
       contenedor.replaceChild(fragmento, nodo);
     });
   }
-
+ 
   document.querySelectorAll(".texto").forEach(envolverPalabrasSueltas);
-
+ 
   // ---------------------------------------------------------------
   // Estado
   // ---------------------------------------------------------------
-
+ 
   let mensajeJugador = "";
   let juegoActivo = false;
   let juegoGanado = false;
-
+ 
   const palabrasPoema = Array.from(document.querySelectorAll(".palabra-poema"));
   const totalPalabrasPoema = palabrasPoema.length;
   const todasLasPalabras = Array.from(document.querySelectorAll(".palabra-poema, .palabra-normal"));
   let recolectadas = new Set();
-
+ 
   const temporizadoresDePalabra = new Map();
   let idIntervaloReloj = null;
   let inicioPartidaMs = 0;
-
+ 
   const elPantallaJuego = document.getElementById("pantalla-juego");
   const elPantallaResultado = document.getElementById("pantalla-resultado");
-
+ 
   const elPanelMensaje = document.getElementById("panel-mensaje");
   const elFormMensaje = document.getElementById("form-mensaje");
   const elTablero = document.getElementById("tablero");
-
+ 
   const elProgresoRelleno = document.getElementById("progreso-relleno");
   const elProgresoConteo = document.getElementById("progreso-conteo");
   const elProgresoPorcentaje = document.getElementById("progreso-porcentaje");
   const elPoemaResultado = document.getElementById("poema-resultado");
   const elTiempoRestante = document.getElementById("tiempo-restante");
   const elObjetivoLista = document.getElementById("objetivo-lista");
-
+ 
   const elResultadoTitulo = document.getElementById("resultado-titulo");
   const elPoemaFinal = document.getElementById("poema-final");
   const elMensajeGuardadoTexto = document.getElementById("mensaje-guardado-texto");
   const elBloqueEnvio = document.getElementById("bloque-envio");
   const elBloqueReintento = document.getElementById("bloque-reintento");
   const elTextoReintento = document.getElementById("texto-reintento");
-  const elFormEnvioFinal = document.getElementById("form-envio-final");
-  const elBotonEnviarFinal = document.getElementById("boton-enviar-final");
   const elMensajeEstadoFinal = document.getElementById("mensaje-estado-final");
+  const elListaCorreos = document.getElementById("lista-correos");
   const elBotonJugarDeNuevo = document.getElementById("boton-jugar-de-nuevo");
-
+ 
   function mostrarPantalla(elemento){
     [elPantallaJuego, elPantallaResultado].forEach(function(p){
       p.classList.remove("activa");
     });
     elemento.classList.add("activa");
   }
-
+ 
   // ---------------------------------------------------------------
   // Muestra, del lado derecho, cuáles son las palabras a encontrar
   // ---------------------------------------------------------------
-
+ 
   palabrasPoema.forEach(function(nodo){
     const ficha = document.createElement("span");
     ficha.className = "ficha";
@@ -637,88 +696,88 @@
     ficha.dataset.palabra = nodo.dataset.palabra;
     elObjetivoLista.appendChild(ficha);
   });
-
+ 
   function actualizarObjetivo(elegidas){
     const encontradas = elegidas.map(function(n){ return n.dataset.palabra; });
     elObjetivoLista.querySelectorAll(".ficha").forEach(function(ficha){
       ficha.classList.toggle("encontrada", encontradas.indexOf(ficha.dataset.palabra) !== -1);
     });
   }
-
+ 
   // ---------------------------------------------------------------
   // Compuerta: hay que escribir un mensaje para poder jugar
   // ---------------------------------------------------------------
-
+ 
   elFormMensaje.addEventListener("submit", function(evento){
     evento.preventDefault();
     mensajeJugador = document.getElementById("campo-mensaje").value.trim();
     if (!mensajeJugador) return;
-
+ 
     elPanelMensaje.classList.add("oculto");
     elTablero.classList.remove("oculto");
     iniciarPartida();
   });
-
+ 
   // ---------------------------------------------------------------
   // Arranque de la partida: reloj + desvanecido automático de
   // todas las palabras, repartido a lo largo de TIEMPO_TOTAL_MS
   // ---------------------------------------------------------------
-
+ 
   function iniciarPartida(){
     juegoActivo = true;
     inicioPartidaMs = Date.now();
-
+ 
     // orden aleatorio para repartir los tiempos de desvanecido
     const indices = todasLasPalabras.map(function(_, i){ return i; });
     for (let i = indices.length - 1; i > 0; i--){
       const j = Math.floor(Math.random() * (i + 1));
       const tmp = indices[i]; indices[i] = indices[j]; indices[j] = tmp;
     }
-
+ 
     todasLasPalabras.forEach(function(nodo, posicionOriginal){
       const rango = indices.indexOf(posicionOriginal);
       const retardo = (rango / todasLasPalabras.length) * TIEMPO_TOTAL_MS * 0.92;
-
+ 
       const idTimeout = setTimeout(function(){
         desvanecerPalabra(nodo);
       }, retardo);
-
+ 
       temporizadoresDePalabra.set(nodo, idTimeout);
     });
-
+ 
     idIntervaloReloj = setInterval(actualizarReloj, 100);
     actualizarReloj();
   }
-
+ 
   function actualizarReloj(){
     const transcurrido = Date.now() - inicioPartidaMs;
     const restanteMs = Math.max(0, TIEMPO_TOTAL_MS - transcurrido);
     const restanteSeg = Math.ceil(restanteMs / 1000);
-
+ 
     elTiempoRestante.textContent = restanteSeg;
     elTiempoRestante.classList.toggle("urgente", restanteSeg <= 5);
-
+ 
     if (restanteMs <= 0){
       tiempoAgotado();
     }
   }
-
+ 
   // ---------------------------------------------------------------
   // Una palabra se desvanece: a mano (clic) o sola (temporizador)
   // ---------------------------------------------------------------
-
+ 
   function desvanecerPalabra(nodo){
     if (nodo.classList.contains("desaparece")) return;
-
+ 
     // solo se desvanece (opacidad a 0): no se le quita el espacio,
     // para que el resto del texto no se recorra ni cambie de posición
     nodo.classList.add("desaparece");
   }
-
+ 
   palabrasPoema.forEach(function(nodo){
     nodo.addEventListener("click", function(){
       if (!juegoActivo || nodo.classList.contains("desaparece")) return;
-
+ 
       // se recolectó a tiempo: cancela su desvanecido automático
       clearTimeout(temporizadoresDePalabra.get(nodo));
       recolectadas.add(nodo);
@@ -726,16 +785,16 @@
       actualizarPoema();
     });
   });
-
+ 
   // ---------------------------------------------------------------
   // Reconstruir el poema (siempre en el orden original del texto,
   // sin importar en qué orden se hayan elegido las palabras)
   // ---------------------------------------------------------------
-
+ 
   function palabrasElegidas(){
     return palabrasPoema.filter(function(n){ return recolectadas.has(n); });
   }
-
+ 
   function renderizarPoemaEn(contenedor, elegidas){
     if (elegidas.length === 0){
       contenedor.innerHTML = '<p class="poema-vacio">Aquí va apareciendo el poema, palabra por palabra…</p>';
@@ -745,119 +804,127 @@
       .map(function(n){ return '<div class="linea">' + n.dataset.palabra + '</div>'; })
       .join("");
   }
-
+ 
   function actualizarPoema(){
     const elegidas = palabrasElegidas();
     renderizarPoemaEn(elPoemaResultado, elegidas);
     actualizarObjetivo(elegidas);
-
+ 
     const proporcion = elegidas.length / totalPalabrasPoema;
-
+ 
     elProgresoRelleno.style.width = (proporcion * 100) + "%";
     elProgresoConteo.textContent = elegidas.length + " / " + totalPalabrasPoema + " palabras";
     elProgresoPorcentaje.textContent = Math.round(proporcion * 100) + "%";
-
+ 
     if (juegoActivo && proporcion > UMBRAL_VICTORIA){
       ganarJuego(elegidas);
     }
   }
-
+ 
   // ---------------------------------------------------------------
   // Fin de la partida: se ganó o se acabó el tiempo
   // ---------------------------------------------------------------
-
+ 
   function detenerPartida(){
     juegoActivo = false;
     clearInterval(idIntervaloReloj);
     temporizadoresDePalabra.forEach(function(id){ clearTimeout(id); });
     temporizadoresDePalabra.clear();
   }
-
+ 
   function ganarJuego(elegidas){
     juegoGanado = true;
     detenerPartida();
-
+ 
     // deja que se vea terminar la animación de la última palabra
     // recolectada antes de cambiar de pantalla
     setTimeout(function(){
       mostrarResultado(true, elegidas);
     }, 700);
   }
-
+ 
   function tiempoAgotado(){
     if (!juegoActivo) return;
     detenerPartida();
-
+ 
     // barrido final: cualquier palabra que quedara sin desvanecerse
     // desaparece de inmediato, para que el texto quede vacío
     todasLasPalabras.forEach(desvanecerPalabra);
-
+ 
     mostrarResultado(false, palabrasElegidas());
   }
-
+ 
   function mostrarResultado(gano, elegidas){
     renderizarPoemaEn(elPoemaFinal, elegidas);
     elMensajeGuardadoTexto.textContent = mensajeJugador;
-
+ 
     if (gano){
       elResultadoTitulo.textContent = "¡ganaste el poema!";
       elBloqueEnvio.classList.remove("oculto");
       elBloqueReintento.classList.add("oculto");
+      mostrarPantalla(elPantallaResultado);
+      enviarPoema(elegidas);
     } else {
       elResultadoTitulo.textContent = "se acabó el tiempo";
       elTextoReintento.textContent = "Reuniste " + elegidas.length + " de " + totalPalabrasPoema + " palabras — no fue suficiente esta vez.";
       elBloqueEnvio.classList.add("oculto");
       elBloqueReintento.classList.remove("oculto");
+      mostrarPantalla(elPantallaResultado);
     }
-
-    mostrarPantalla(elPantallaResultado);
   }
-
+ 
   elBotonJugarDeNuevo.addEventListener("click", function(){
     location.reload();
   });
-
+ 
   // ---------------------------------------------------------------
-  // Envío del poema por correo (Vercel + Resend)
+  // Envío del poema por correo: mismo endpoint (Vercel + Resend) que
+  // ya usa "Carta" — se envía solo, apenas se gana, sin pedir correo.
+  // El campo "mensaje" que el jugador escribió antes de jugar hace
+  // las veces del "nombre" con el que firma, igual que en "Carta".
   // ---------------------------------------------------------------
-
-  elFormEnvioFinal.addEventListener("submit", function(evento){
-    evento.preventDefault();
-
-    const correo = document.getElementById("campo-correo-final").value.trim();
-    const elegidas = palabrasElegidas();
+ 
+  function enviarPoema(elegidas){
     const poemaTexto = elegidas.map(function(n){ return n.dataset.palabra; }).join("\n");
-
-    elBotonEnviarFinal.disabled = true;
-    elBotonEnviarFinal.textContent = "Enviando…";
-    elMensajeEstadoFinal.textContent = "";
-    elMensajeEstadoFinal.className = "mensaje-estado";
-
+ 
+    elMensajeEstadoFinal.textContent = "Enviando el poema…";
+    elMensajeEstadoFinal.className = "mensaje-estado enviando";
+    elListaCorreos.classList.add("oculto");
+    elListaCorreos.innerHTML = "";
+ 
     fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ correo: correo, poema: poemaTexto, mensaje: mensajeJugador })
+      body: JSON.stringify({ nombre: mensajeJugador, poema: poemaTexto })
     })
-      .then(function(respuesta){
-        if (!respuesta.ok) throw new Error("Respuesta no exitosa del servidor");
-        return respuesta.json();
-      })
-      .then(function(){
-        elMensajeEstadoFinal.textContent = "Poema enviado a " + correo + ".";
-        elMensajeEstadoFinal.className = "mensaje-estado exito";
-        elBotonEnviarFinal.textContent = "Enviado";
+      .then(function(respuesta){ return respuesta.json(); })
+      .then(function(datos){
+        if (datos && datos.success){
+          elMensajeEstadoFinal.textContent = "Poema enviado a quien lo necesite ver.";
+          elMensajeEstadoFinal.className = "mensaje-estado exito";
+          if (Array.isArray(datos.destinatarios) && datos.destinatarios.length > 0){
+            elListaCorreos.classList.remove("oculto");
+            datos.destinatarios.forEach(function(correo){
+              const linea = document.createElement("div");
+              linea.textContent = correo;
+              elListaCorreos.appendChild(linea);
+            });
+          }
+        } else {
+          elMensajeEstadoFinal.textContent = "El poema no se pudo enviar.";
+          elMensajeEstadoFinal.className = "mensaje-estado error";
+        }
       })
       .catch(function(error){
         console.error("Error al enviar el poema:", error);
-        elMensajeEstadoFinal.textContent = "No se pudo enviar (¿ya está desplegado el backend?).";
+        elMensajeEstadoFinal.textContent = "El poema no se pudo enviar.";
         elMensajeEstadoFinal.className = "mensaje-estado error";
-        elBotonEnviarFinal.disabled = false;
-        elBotonEnviarFinal.textContent = "Reintentar envío";
       });
-  });
-
+  }
+ 
 })();
 </script>
-
+ 
 </body>
 </html>
+ 
