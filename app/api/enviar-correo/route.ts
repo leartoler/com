@@ -19,16 +19,12 @@ const JUEGOS: Record<string, {
   cultura: {
     asunto: 'Nueva participación en Ausencias',
     imagen: 'desaparecidos.png',
-    destino: (process.env.EMAIL_DESTINO_AUSENCIAS as string).split(',').map(email => email.trim()),
-  },
-  desaparecidos: {
-    asunto: 'Nueva participación en efectos',
-    imagen: 'clima.png',
     destino: (process.env.EMAIL_DESTINO_EFECTOS as string).split(',').map(email => email.trim()),
   },
-};
-
-export async function POST(request: NextRequest) {
+  ausencias: {
+    asunto: 'Nueva participación en efectos',
+    imagen: 'clima.png',
+    destino: (process.env.EMAIL_DESTINO_AUSENCIAS
   // CORS
   const origin = request.headers.get('origin') || '';
   const allowedOrigins = [
