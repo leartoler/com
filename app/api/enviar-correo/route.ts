@@ -17,14 +17,14 @@ const JUEGOS: Record<string, {
     destino: (process.env.EMAIL_DESTINO_SIMBOLOS as string).split(',').map(email => email.trim()),
   },
   cultura: {
-    asunto: 'Nueva participación en Cultura',
+    asunto: 'Nueva participación en Ausencias',
     imagen: 'desaparecidos.png',
-    destino: (process.env.EMAIL_DESTINO_CULTURA as string).split(',').map(email => email.trim()),
+    destino: (process.env.EMAIL_DESTINO_AUSENCIAS as string).split(',').map(email => email.trim()),
   },
   desaparecidos: {
-    asunto: 'Nueva participación en Desaparecidos',
+    asunto: 'Nueva participación en efectos',
     imagen: 'clima.png',
-    destino: (process.env.EMAIL_DESTINO_DESAPARECIDOS as string).split(',').map(email => email.trim()),
+    destino: (process.env.EMAIL_DESTINO_EFECTOS as string).split(',').map(email => email.trim()),
   },
 };
 
@@ -37,6 +37,10 @@ export async function POST(request: NextRequest) {
     'https://cultura.0x000042.com',
     'https://desaparecidos.0x000042.com',
     'http://localhost:3000',
+    'https://desaparecidos.0x000042.com',
+    'https://ausencias.0x000042.com',
+    'https://clima.0x000042.com',
+    'https://efectos.0x000042.com',
   ];
   const corsHeaders = {
     'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : '',
@@ -111,9 +115,10 @@ export async function OPTIONS(request: NextRequest) {
     'https://0x000042.com',
     'https://simbolos.0x000042.com',
     'https://cultura.0x000042.com',
-    'https://desaparecidos.0x000042.com',
     'http://localhost:3000',
-    'https://presencias.0x000042.com',
+    'https://desaparecidos.0x000042.com',
+    'https://ausencias.0x000042.com',
+    'https://clima.0x000042.com',
     'https://efectos.0x000042.com',
   ];
   return new Response(null, {
