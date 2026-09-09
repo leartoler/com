@@ -16,15 +16,19 @@ const JUEGOS: Record<string, {
     imagen: 'cultura.png',
     destino: (process.env.EMAIL_DESTINO_SIMBOLOS as string).split(',').map(email => email.trim()),
   },
-  cultura: {
+  ausencias: {
     asunto: 'Nueva participación en Ausencias',
     imagen: 'desaparecidos.png',
-    destino: (process.env.EMAIL_DESTINO_EFECTOS as string).split(',').map(email => email.trim()),
+    destino: (process.env.EMAIL_DESTINO_AUSENCIAS as string).split(',').map(email => email.trim()),
   },
-  ausencias: {
+  efectos: {
     asunto: 'Nueva participación en efectos',
     imagen: 'clima.png',
-    destino: (process.env.EMAIL_DESTINO_AUSENCIAS
+    destino: (process.env.EMAIL_DESTINO_EFECTOS as string).split(',').map(email => email.trim()),
+  },
+};
+
+export async function POST(request: NextRequest) {
   // CORS
   const origin = request.headers.get('origin') || '';
   const allowedOrigins = [
