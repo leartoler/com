@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verso — sin cruzar la línea</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#cdcf2e;
+    --linea:#c8551c;
+    --ink:#191c14;
+    --white:#ffffff;
+    --muted:#6b6f3a;
+    --error:#b3251f;
+    --ok:#2f6b2a;
+    color-scheme: light;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family:'Barlow Condensed',sans-serif;
+    min-height:100vh;
+    overflow:hidden;
+    height:100vh; width:100vw;
+    display:flex; flex-direction:column;
+  }
+
+  .fondo-textura{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background: repeating-radial-gradient(circle at 50% 42%, rgba(0,0,0,.05) 0 1.5px, transparent 1.5px 22px);
+  }
+
+  header{
+    position:relative; z-index:2;
+    text-align:center; padding:20px 16px 4px;
+  }
+  .marca{ font-family:'Archivo Black',sans-serif; font-size:1.05rem; letter-spacing:.04em; }
+  .subtitulo{ font-size:.62rem; letter-spacing:.4em; color:var(--muted); font-weight:600; margin-top:2px; }
+  .instrucciones{
+    margin:10px auto 0; max-width:50ch; font-size:.92rem; line-height:1.4; color:var(--ink);
+    font-style:italic;
+  }
+
+  main{
+    position:relative; z-index:1;
+    flex:1;
+    display:flex; align-items:center; justify-content:center;
+    padding:8px 16px;
+  }
+
+  #lienzo{
+    position:relative;
+    width:min(92vw, 1000px);
+    height:min(56vh, 560px);
+    touch-action:none;
+  }
+
+  #trazos{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    pointer-events:none;
+    overflow:visible;
+  }
+
+  .palabra{
+    position:absolute;
+    transform:translate(-50%,-50%);
+    background:var(--linea);
+    color:var(--white);
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(.78rem, 1.6vw, 1.05rem);
+    letter-spacing:.02em;
+    padding:14px 22px;
+    border-radius:999px;
+    cursor:pointer;
+    user-select:none;
+    -webkit-user-select:none;
+    box-shadow:0 3px 0 rgba(0,0,0,.12);
+    transition: transform .12s ease, opacity .3s ease, background .2s ease, box-shadow .2s ease;
+    opacity:.6;
+    white-space:nowrap;
+  }
+  .palabra.usada{ opacity:1; background:var(--ink); }
+  .palabra.activa{ transform:translate(-50%,-50%) scale(1.14); }
+  .palabra.siguiente{
+    box-shadow: 0 0 0 4px rgba(25,28,20,.25), 0 3px 0 rgba(0,0,0,.12);
+    animation: pulso 1.1s ease-in-out infinite;
+  }
+  @keyframes pulso{
+    0%,100%{ transform:translate(-50%,-50%) scale(1); }
+    50%{ transform:translate(-50%,-50%) scale(1.07); }
+  }
+
+  footer{
+    position:relative; z-index:2;
+    padding:8px 16px 22px;
+    display:flex; flex-direction:column; align-items:center; gap:12px;
+    min-height:120px;
+  }
+
+  #estado{
+    max-width:70ch; min-height:1.6em; text-align:center;
+    font-family:'Archivo Black',sans-serif; font-size:1rem; letter-spacing:.03em;
+  }
+  #estado.gano{ color:var(--ok); }
+  #estado.perdio{ color:var(--error); }
+
+  #verso-objetivo{
+    max-width:70ch; text-align:center;
+    font-family:'Barlow Condensed',sans-serif; font-style:italic; font-weight:600;
+    font-size:clamp(1.05rem, 2.4vw, 1.4rem); line-height:1.5; color:var(--ink);
+  }
+
+  .boton{
+    --chamfer:8px;
+    font-family:'Archivo Black',sans-serif; font-size:.7rem; letter-spacing:.08em;
+    background:transparent; color:var(--ink); border:2px solid var(--ink);
+    padding:10px 18px; cursor:pointer;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    transition: background .15s ease, color .15s ease;
+  }
+  .boton:hover{ background:var(--ink); color:var(--bg); }
+
+  #panel-envio{
+    display:flex; gap:8px; flex-wrap:wrap; justify-content:center; align-items:center;
+  }
+  #panel-envio input[type=email]{
+    font-family:'IBM Plex Mono',monospace; font-size:.9rem;
+    padding:10px 14px; border:2px solid var(--ink); background:var(--white); color:var(--ink);
+    min-width:240px;
+  }
+  #panel-envio input[type=email]::placeholder{ color:var(--muted); }
+  #panel-envio[hidden]{ display:none; }
+
+  @media (max-width: 600px){
+    .palabra{ padding:11px 16px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="fondo-textura" aria-hidden="true"></div>
+
+  <header>
+    <div class="marca">0x000042</div>
+    <div class="subtitulo">EL VERSO SIN CRUZAR</div>
+    <p class="instrucciones">Sin soltar el mouse, conecta las palabras en el orden correcto para formar el verso. La palabra que parpadea es la siguiente. Si sueltas el mouse antes de terminar, o tu línea se cruza a sí misma, pierdes.</p>
+  </header>
+
+  <main>
+    <div id="lienzo">
+      <svg id="trazos"></svg>
+    </div>
+  </main>
+
+  <footer>
+    <div id="estado"></div>
+    <div id="verso-objetivo"></div>
+    <button class="boton" id="reintentar" hidden type="button">INTENTAR DE NUEVO</button>
+    <div id="panel-envio" hidden>
+      <input type="email" id="email" placeholder="tu@correo.com" autocomplete="email">
+      <button class="boton" id="enviar" type="button">ENVIAR CARTA</button>
+    </div>
+  </footer>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------------------------------------------------------------
+  // El verso objetivo: cámbialo por el texto real. El orden de VERSO
+  // es el orden correcto en el que hay que conectar las palabras.
+  // ---------------------------------------------------------------
+  var VERSO_TEXTO = 'Antes de llegar, toda carta fue silencio, después cada palabra buscó su propio destino y quedó.';
+  var VERSO = ['antes', 'de', 'llegar', 'toda', 'carta', 'fue', 'silencio', 'después', 'cada', 'palabra', 'buscó', 'su', 'propio', 'destino', 'y', 'quedó'];
+
+  // Posiciones puramente al azar (solo para probar) — SIN ninguna garantía
+  // geométrica de que el camino correcto no se cruce a sí mismo. Puede que
+  // el verso ya no tenga un "camino fácil": quizás solo se pueda ganar
+  // curveando con cuidado, o incluso puede quedar imposible si dos tramos
+  // necesarios se cruzan sin remedio. Es a propósito, para ver qué tan
+  // difícil se pone.
+  var POSICIONES = {
+    'antes':     { top:54, left:86 },
+    'de':        { top:44, left:83 },
+    'llegar':    { top:38, left:38 },
+    'toda':      { top:27, left:74 },
+    'carta':     { top:72, left:78 },
+    'fue':       { top:69, left:43 },
+    'silencio':  { top:27, left:53 },
+    'después':   { top:17, left:45 },
+    'cada':      { top:84, left:21 },
+    'palabra':   { top:79, left:30 },
+    'buscó':     { top:74, left:59 },
+    'su':        { top:49, left:21 },
+    'propio':    { top:78, left:10 },
+    'destino':   { top:59, left:20 },
+    'y':         { top:26, left:90 },
+    'quedó':     { top:11, left:35 }
+  };
+
+  // ---------------------------------------------------------------
+  // Al ganar se manda un correo con el verso. Reemplaza esta URL por
+  // el endpoint real de Vercel + Resend que ya usan los otros juegos
+  // (el mismo que arma "escribir carta" en 0x000042.com).
+  // ---------------------------------------------------------------
+  var ENDPOINT_ENVIO = 'https://TU-BACKEND.vercel.app/api/enviar-carta';
+
+  var lienzo = document.getElementById('lienzo');
+  var svg = document.getElementById('trazos');
+  var estadoEl = document.getElementById('estado');
+  var versoObjetivoEl = document.getElementById('verso-objetivo');
+  var reintentarBtn = document.getElementById('reintentar');
+  var panelEnvio = document.getElementById('panel-envio');
+  var emailInput = document.getElementById('email');
+  var enviarBtn = document.getElementById('enviar');
+
+  var nodos = {};        // texto -> elemento .palabra
+  var secuencia = [];     // elementos ya conectados en este intento
+  var segmentos = [];     // {p1,p2} de cada tramo YA FIJADO del trazo real
+  var arrastrando = false;
+  var terminado = false;  // true tras ganar o perder, bloquea más input
+  var lineaViva = null;
+  var grupo = null;
+  var ultimoPunto = null; // último punto fijado del trazo (de aquí sale la línea viva)
+
+  // cada cuántos px de movimiento se "fija" un nuevo tramo del trazo — así
+  // la línea sigue de verdad la trayectoria del mouse (como un hilo real,
+  // al estilo tripas de gato) en vez de saltar recto de palabra a palabra
+  var DIST_MINIMA = 14;
+
+  versoObjetivoEl.textContent = '';
+
+  // 1) crear las palabras como nodos reales del DOM
+  VERSO.forEach(function(texto){
+    var pos = POSICIONES[texto];
+    var nodo = document.createElement('div');
+    nodo.className = 'palabra';
+    nodo.textContent = texto;
+    nodo.style.top = pos.top + '%';
+    nodo.style.left = pos.left + '%';
+    lienzo.appendChild(nodo);
+    nodos[texto] = nodo;
+  });
+
+  function marcarSiguiente(){
+    Object.keys(nodos).forEach(function(t){ nodos[t].classList.remove('siguiente'); });
+    if (!terminado && secuencia.length < VERSO.length) {
+      nodos[VERSO[secuencia.length]].classList.add('siguiente');
+    }
+  }
+  marcarSiguiente();
+
+  function posicionEnLienzo(clientX, clientY){
+    var r = lienzo.getBoundingClientRect();
+    return { x: clientX - r.left, y: clientY - r.top };
+  }
+  function centroDe(nodo){
+    var r = nodo.getBoundingClientRect();
+    var rl = lienzo.getBoundingClientRect();
+    return { x: r.left - rl.left + r.width/2, y: r.top - rl.top + r.height/2 };
+  }
+  function distancia(a, b){
+    var dx = a.x - b.x, dy = a.y - b.y;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+
+  // --------- test geométrico: ¿el segmento a-b cruza el segmento c-d? ---------
+  function orientacion(a, b, c){
+    var val = (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
+    if (Math.abs(val) < 1e-9) return 0;
+    return val > 0 ? 1 : 2;
+  }
+  function enSegmento(a, b, c){
+    return Math.min(a.x,b.x) - 0.01 <= c.x && c.x <= Math.max(a.x,b.x) + 0.01 &&
+           Math.min(a.y,b.y) - 0.01 <= c.y && c.y <= Math.max(a.y,b.y) + 0.01;
+  }
+  function seCruzan(p1, p2, p3, p4){
+    var o1 = orientacion(p1,p2,p3), o2 = orientacion(p1,p2,p4);
+    var o3 = orientacion(p3,p4,p1), o4 = orientacion(p3,p4,p2);
+    if (o1 !== o2 && o3 !== o4) return true;
+    if (o1 === 0 && enSegmento(p1,p2,p3)) return true;
+    if (o2 === 0 && enSegmento(p1,p2,p4)) return true;
+    if (o3 === 0 && enSegmento(p3,p4,p1)) return true;
+    if (o4 === 0 && enSegmento(p3,p4,p2)) return true;
+    return false;
+  }
+  // ¿el segmento (origen -> destino) cruza alguno de los ya trazados?
+  // se excluye cualquier tramo que TERMINE justo en "origen" (por punto, no
+  // por índice): ese tramo simplemente continúa ahí, tocarse en ese punto
+  // no cuenta como cruce — solo cuenta cruzar por en medio de otro tramo
+  function cruzaAlgunSegmento(origen, destino){
+    for (var i = 0; i < segmentos.length; i++) {
+      var s = segmentos[i];
+      if (distancia(s.p2, origen) < 0.5) continue;
+      if (seCruzan(origen, destino, s.p1, s.p2)) return true;
+    }
+    return false;
+  }
+
+  function dibujarSegmento(p1, p2, temporal){
+    var l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    l.setAttribute('x1', p1.x); l.setAttribute('y1', p1.y);
+    l.setAttribute('x2', p2.x); l.setAttribute('y2', p2.y);
+    l.setAttribute('stroke', temporal ? 'var(--linea)' : 'var(--linea)');
+    l.setAttribute('stroke-width', 6);
+    l.setAttribute('stroke-linecap', 'round');
+    if (temporal) l.setAttribute('stroke-dasharray', '2 10');
+    (temporal ? svg : grupo).appendChild(l);
+    return l;
+  }
+
+  function empezar(nodo, puntoInicio){
+    terminado = false;
+    secuencia = [nodo];
+    segmentos = [];
+    ultimoPunto = puntoInicio;
+    nodo.classList.add('usada', 'activa');
+    grupo = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    svg.appendChild(grupo);
+    estadoEl.textContent = '';
+    estadoEl.className = '';
+    reintentarBtn.hidden = true;
+    panelEnvio.hidden = true;
+    marcarSiguiente();
+  }
+
+  // fija permanentemente el tramo entre el último punto y "destino": pasa
+  // a formar parte del trazo real (y de la lista de segmentos contra la
+  // que se comprueban futuros cruces). Si el destino prácticamente ya es
+  // el último punto (p. ej. justo al llegar a una palabra) no agrega un
+  // tramo de largo casi cero — solo actualiza el punto.
+  function fijarTramo(destino){
+    if (distancia(ultimoPunto, destino) < 0.5) { ultimoPunto = destino; return; }
+    dibujarSegmento(ultimoPunto, destino, false);
+    segmentos.push({ p1: ultimoPunto, p2: destino });
+    ultimoPunto = destino;
+  }
+
+  // se llama cuando el mouse pasa sobre la palabra que sigue en el verso.
+  // NO fuerza el trazo a saltar hasta el centro exacto (el trazo ya venía
+  // pasando por ahí, por eso se detectó) — solo marca la palabra como
+  // alcanzada y avanza la secuencia. Forzar ese salto causaba un pequeño
+  // "rebote" hacia atrás cuando el mouse, todavía en movimiento, terminaba
+  // de llegar al punto exacto, y ese rebote se cruzaba con el siguiente
+  // tramo. La excepción es la ÚLTIMA palabra: ahí sí se cierra el trazo
+  // en su centro, porque el juego termina de inmediato y ya no hay más
+  // movimiento que pueda generar ese rebote.
+  function avanzar(nodo){
+    document.querySelectorAll('.palabra.activa').forEach(function(n){ n.classList.remove('activa'); });
+    nodo.classList.add('usada', 'activa');
+    secuencia.push(nodo);
+    marcarSiguiente();
+
+    if (secuencia.length === VERSO.length) {
+      var destino = centroDe(nodo);
+      if (lineaViva) { lineaViva.remove(); lineaViva = null; }
+      if (cruzaAlgunSegmento(ultimoPunto, destino)) {
+        fijarTramo(destino);
+        perder();
+        return;
+      }
+      fijarTramo(destino);
+      ganar();
+    }
+  }
+
+  // se llama en cada movimiento del mouse: dibuja el tramo "vivo" desde el
+  // último punto fijado hasta el mouse y comprueba el cruce en tiempo real;
+  // al alejarse lo suficiente, ese tramo se fija y el trazo sigue desde ahí
+  // — así la línea sigue de verdad el camino que dibuja el jugador
+  function actualizarLineaViva(pos){
+    if (!ultimoPunto || terminado) return;
+    if (!lineaViva) lineaViva = dibujarSegmento(ultimoPunto, pos, true);
+    lineaViva.setAttribute('x1', ultimoPunto.x); lineaViva.setAttribute('y1', ultimoPunto.y);
+    lineaViva.setAttribute('x2', pos.x); lineaViva.setAttribute('y2', pos.y);
+
+    if (cruzaAlgunSegmento(ultimoPunto, pos)) {
+      fijarTramo(pos);
+      perder();
+      return;
+    }
+
+    if (distancia(ultimoPunto, pos) >= DIST_MINIMA) {
+      lineaViva.remove(); lineaViva = null;
+      fijarTramo(pos);
+    }
+  }
+
+  function perder(motivo){
+    terminado = true;
+    arrastrando = false;
+    if (lineaViva) { lineaViva.setAttribute('stroke', 'var(--error)'); }
+    estadoEl.textContent = 'PERDISTE — ' + (motivo || 'tu línea se cruzó a sí misma');
+    estadoEl.className = 'perdio';
+    reintentarBtn.hidden = false;
+    Object.keys(nodos).forEach(function(t){ nodos[t].classList.remove('siguiente'); });
+  }
+
+  function ganar(){
+    terminado = true;
+    arrastrando = false;
+    if (lineaViva) { lineaViva.remove(); lineaViva = null; }
+    estadoEl.textContent = '¡GANASTE!';
+    estadoEl.className = 'gano';
+    versoObjetivoEl.textContent = '— ' + VERSO_TEXTO;
+    reintentarBtn.hidden = false;
+    panelEnvio.hidden = false;
+    Object.keys(nodos).forEach(function(t){ nodos[t].classList.remove('siguiente'); });
+  }
+
+  function reiniciarTodo(){
+    Object.keys(nodos).forEach(function(t){ nodos[t].classList.remove('usada','activa','siguiente'); });
+    secuencia = []; segmentos = []; terminado = false; ultimoPunto = null;
+    if (grupo) grupo.remove();
+    if (lineaViva) lineaViva.remove();
+    grupo = null; lineaViva = null;
+    svg.innerHTML = '';
+    estadoEl.textContent = ''; estadoEl.className = '';
+    versoObjetivoEl.textContent = '';
+    reintentarBtn.hidden = true;
+    panelEnvio.hidden = true;
+    marcarSiguiente();
+  }
+
+  // 2) interacción
+  lienzo.addEventListener('pointerdown', function(e){
+    if (terminado) return;
+    var nodo = e.target.closest('.palabra');
+    if (!nodo) return;
+    // solo se puede empezar por la primera palabra del verso
+    if (nodo !== nodos[VERSO[0]]) return;
+    if (secuencia.length > 0) reiniciarTodo();
+    arrastrando = true;
+    lienzo.setPointerCapture(e.pointerId);
+    empezar(nodo, posicionEnLienzo(e.clientX, e.clientY));
+    e.preventDefault();
+  });
+
+  lienzo.addEventListener('pointermove', function(e){
+    if (!arrastrando || terminado) return;
+    var pos = posicionEnLienzo(e.clientX, e.clientY);
+    actualizarLineaViva(pos);
+    if (terminado) return; // pudo perder recién en la línea de arriba
+
+    var bajoElPuntero = document.elementFromPoint(e.clientX, e.clientY);
+    var nodo = bajoElPuntero && bajoElPuntero.closest ? bajoElPuntero.closest('.palabra') : null;
+    var siguienteEsperada = nodos[VERSO[secuencia.length]];
+    if (nodo && nodo === siguienteEsperada) {
+      avanzar(nodo);
+    }
+  });
+
+  function terminarArrastre(e){
+    if (!arrastrando) return;
+    arrastrando = false;
+    try { lienzo.releasePointerCapture(e.pointerId); } catch(err){}
+    if (lineaViva) { lineaViva.remove(); lineaViva = null; }
+    // hay que sostener el mouse todo el trayecto: soltarlo antes de llegar
+    // a la última palabra también pierde el juego
+    if (!terminado && secuencia.length > 0 && secuencia.length < VERSO.length) {
+      perder('soltaste el mouse antes de terminar el verso');
+    }
+  }
+  lienzo.addEventListener('pointerup', terminarArrastre);
+  lienzo.addEventListener('pointercancel', terminarArrastre);
+
+  reintentarBtn.addEventListener('click', reiniciarTodo);
+
+  // ---------------------------------------------------------------
+  // Envío del correo al ganar. Placeholder: reemplazar ENDPOINT_ENVIO
+  // y el formato del body por los reales del backend en Vercel/Resend.
+  // ---------------------------------------------------------------
+  enviarBtn.addEventListener('click', function(){
+    var email = emailInput.value.trim();
+    if (!email) { emailInput.focus(); return; }
+    enviarBtn.disabled = true;
+    enviarBtn.textContent = 'ENVIANDO...';
+
+    fetch(ENDPOINT_ENVIO, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, verso: VERSO_TEXTO })
+    })
+      .then(function(res){
+        if (!res.ok) throw new Error('respuesta no OK');
+        enviarBtn.textContent = 'ENVIADA ✓';
+      })
+      .catch(function(err){
+        console.error('Error al enviar la carta:', err);
+        enviarBtn.textContent = 'ERROR — REINTENTAR';
+        enviarBtn.disabled = false;
+      });
+  });
+})();
+</script>
+
+</body>
+</html>
