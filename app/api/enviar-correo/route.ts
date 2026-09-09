@@ -9,22 +9,22 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const JUEGOS: Record<string, {
   asunto: string;
   imagen: string;
-  destino: string;
+  destino: string[];
 }> = {
   simbolos: {
     asunto: 'Nueva participación en Símbolos',
     imagen: 'cultura.png',
-    destino: process.env.EMAIL_DESTINO_SIMBOLOS as string,
+    destino: (process.env.EMAIL_DESTINO_SIMBOLOS as string).split(',').map(email => email.trim()),
   },
   cultura: {
     asunto: 'Nueva participación en Cultura',
     imagen: 'desaparecidos.png',
-    destino: process.env.EMAIL_DESTINO_CULTURA as string,
+    destino: (process.env.EMAIL_DESTINO_CULTURA as string).split(',').map(email => email.trim()),
   },
   desaparecidos: {
     asunto: 'Nueva participación en Desaparecidos',
     imagen: 'clima.png',
-    destino: process.env.EMAIL_DESTINO_DESAPARECIDOS as string,
+    destino: (process.env.EMAIL_DESTINO_DESAPARECIDOS as string).split(',').map(email => email.trim()),
   },
 };
 
