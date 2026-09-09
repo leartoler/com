@@ -601,7 +601,7 @@ const PALABRAS = [
     fetch(API_ENVIAR_CORREO, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre }),
+      body: JSON.stringify({ nombre, juego: 'simbolos' }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -644,3 +644,5 @@ const PALABRAS = [
 
 </body>
 </html>
+
+

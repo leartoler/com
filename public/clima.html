@@ -3,20 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cultura</title>
+<title>Nodos — intro, glitch y panel</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
 <style>
   :root{
-    --bg:#1c39d6;        
-    --accent:#ffffff;    
-    --accent-deep:#7a3d70;
+    --bg:#cdcf2e;
+    --linea:#c8551c;
+    --accent:#c8551c;
     --white:#ffffff;
-    --ink:#191c14;
-    --muted:#6b7d67;
-    --line:#cfd8cc;
+    --muted:#6b6f3a;
+    --line:#d8dba0;
     color-scheme: light;
   }
-
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; }
 
@@ -31,13 +29,13 @@
 
   button{ font-family:inherit; }
   .mono{ font-family:'Helvetica', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
-  ::selection{ background:var(--accent); color:var(--accent-deep); }
+  ::selection{ background:var(--accent); color:var(--bg); }
 
   .stage{
     position:relative;
     width:100vw; height:100vh;
     background:
-      repeating-radial-gradient(circle at 50% 42%, rgba(255,255,255,.06) 0 1.5px, transparent 1.5px 22px),
+      repeating-radial-gradient(circle at 50% 42%, rgba(0,0,0,.05) 0 1.5px, transparent 1.5px 22px),
       var(--bg);
   }
 
@@ -63,7 +61,7 @@
     100%{ filter:none; transform:translate(0,0); }
   }
   .glitch-line{
-    position:fixed; left:0; width:100%; height:0; background:var(--accent);
+    position:fixed; left:0; width:100%; height:0; background:var(--linea);
     opacity:0; mix-blend-mode:difference; z-index:50; pointer-events:none;
   }
   .stage.glitching .glitch-line{ animation: glitch-line-anim .3s steps(4,end); }
@@ -76,7 +74,7 @@
   }
   .glitch-noise{
     position:fixed; inset:0; z-index:49; pointer-events:none; opacity:0;
-    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.5) 0 1px, transparent 1px 4px);
+    background: repeating-linear-gradient(to bottom, rgba(0,0,0,.45) 0 1px, transparent 1px 4px);
   }
   .stage.glitching .glitch-noise{ animation: glitch-noise-anim .32s steps(2,end); }
   @keyframes glitch-noise-anim{
@@ -122,8 +120,8 @@
   }
   .intro[hidden]{ display:none; }
 
-  /* ---------------- Grilla ---------------- */
-  .menu-app{
+  /* ---------------- la grilla, revelada después de la intro ---------------- */
+    .menu-app{
     position:relative; z-index:5; height:100%;
     display:flex; align-items:center; justify-content:center;
     opacity:0; transition: opacity .7s ease;
@@ -137,24 +135,33 @@
   .menu-brand-mark{ font-family:'Archivo Black',sans-serif; font-size:1.1rem; letter-spacing:.02em; }
   .menu-brand-sub{ font-size:.62rem; letter-spacing:.4em; color:rgba(255,255,255,.7); font-weight:600; }
 
+  /* contenedor de la grilla: position:relative para que el svg de líneas
+     (position:absolute) se ubique respecto a él */
   #grilla{
+    position:relative;
     display:grid;
-    grid-template-columns: repeat(8, 1fr);
-    grid-template-rows: repeat(8, 1fr);
-    width:min(78vw, 78vh);
-    aspect-ratio: 1 / 1;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap:18px;
+    width:min(80vw, 900px);
+    aspect-ratio: 3 / 2;
+  }
+
+  #conexiones{
+    position:absolute;
+    inset:0;
+    width:100%; height:100%;
+    pointer-events:none;
+    overflow:visible;
   }
 
   .celda{
     position:relative;
-    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
   }
 
   .celda img{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
+    width:70%; height:70%;
     object-fit:contain;
     display:block;
     pointer-events:none;
@@ -163,20 +170,24 @@
     transition: transform .15s ease, opacity .3s ease;
   }
 
+  /* la raíz: siempre a la vista, no es clickeable */
+  .celda.nodo-raiz img{ width:100%; height:100%; opacity:1; }
 
-  .celda-d1 img{ opacity:.4; }
+  /* todo lo que no es raíz ni interactivo queda apagado */
+  .celda-apagada img{ opacity:.4; }
 
+  /* solo estos 4 se ven en su totalidad y responden al click */
   .celda-interactiva{ cursor:pointer; }
   .celda-interactiva img{ opacity:1; }
   .celda-interactiva:hover img,
-  .celda-interactiva:focus-visible img{ transform: scale(1.08); }
+  .celda-interactiva:focus-visible img{ transform: scale(1.1); }
   .celda-interactiva:focus-visible{ outline:2px solid var(--accent); outline-offset:-4px; }
 
   /* ---------------- panel superpuesto ---------------- */
   .panel-overlay{ position:fixed; inset:0; z-index:40; display:flex; align-items:center; justify-content:center; padding:24px; }
   .panel-overlay[hidden]{ display:none; }
   .panel-backdrop{
-    position:absolute; inset:0; background:rgba(10,20,10,.55);
+    position:absolute; inset:0; background:rgba(20,20,10,.5);
     opacity:0; transition: opacity .28s ease;
   }
   .panel-overlay.open .panel-backdrop{ opacity:1; }
@@ -197,13 +208,14 @@
 
   .panel-card{
     --chamfer:26px;
-    position:relative; background:var(--accent); color:var(--bg); width:100%; max-width:560px;
-    max-height:82vh; overflow:auto; padding:36px 40px; box-shadow:0 30px 70px rgba(10,20,10,.5);
+    position:relative; background:var(--white); color:var(--accent); width:100%; max-width:560px;
+    max-height:82vh; overflow:auto; padding:36px 40px; box-shadow:0 30px 70px rgba(20,20,10,.45);
     opacity:0; transform:scaleY(.04);
     transition: transform .42s cubic-bezier(.22,.85,.28,1.15) .2s, opacity .22s ease .2s;
   }
   .panel-card::before{
     content:""; position:absolute; top:0; left:0; right:0; height:6px;
+    background: repeating-linear-gradient(90deg, var(--linea) 0 4px, transparent 4px 10px, transparent 10px 14px, var(--linea) 14px 15px);
   }
   .panel-overlay.open .panel-card{ opacity:1; transform:scaleY(1); }
   .panel-overlay.closing .panel-card{
@@ -213,44 +225,44 @@
   .panel-overlay.closing .panel-backdrop{ opacity:0; }
   .panel-close{
     --chamfer:6px;
-    position:absolute; top:14px; right:14px; width:34px; height:34px; border:2px solid var(--accent); background:var(--bg);
-    color:var(--accent); cursor:pointer; font-family:'Helvetica',sans-serif; font-size:.9rem;
+    position:absolute; top:14px; right:14px; width:34px; height:34px; border:2px solid var(--accent); background:var(--white);
+    color:var(--accent); cursor:pointer; font-family:'Archivo Black',sans-serif; font-size:.9rem;
     transition: transform .15s ease, background .15s ease, color .15s ease;
   }
-  .panel-close:hover{ background:var(--accent-deep); color:var(--bg); border-color:var(--accent); transform:rotate(90deg); }
-  .panel-close:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .panel-close:hover{ background:var(--linea); color:var(--white); border-color:var(--linea); transform:rotate(90deg); }
+  .panel-close:focus-visible{ outline:2px solid var(--linea); outline-offset:2px; }
 
   .content-card[hidden]{ display:none; }
-  .content-title{ font-family:'Helvetica',sans-serif; font-size:1.6rem; margin:0 0 4px; }
+  .content-title{ font-family:'Archivo Black',sans-serif; font-size:1.6rem; margin:0 0 4px; }
   .content-kicker{ font-size:.68rem; letter-spacing:.28em; color:var(--muted); font-weight:700; margin-bottom:18px; display:block; }
 
   /* -------- calendario -------- */
   .cal-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:14px; }
-  .cal-month{ font-family:'Helvetica',sans-serif; font-size:1.2rem; text-transform:capitalize; }
+  .cal-month{ font-family:'Archivo Black',sans-serif; font-size:1.2rem; text-transform:capitalize; }
   .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
   .cal-dow{ font-size:.62rem; letter-spacing:.1em; color:var(--muted); font-weight:700; text-align:center; padding-bottom:6px; }
   .cal-day{
     aspect-ratio:1; display:flex; align-items:center; justify-content:center;
-    font-family:'Helvetica',monospace; font-size:.85rem; border:1px solid var(--line); color:var(--bg);
+    font-family:'IBM Plex Mono',monospace; font-size:.85rem; border:1px solid var(--line); color:var(--accent);
   }
   .cal-day.empty{ border-color:transparent; }
-  .cal-day.today{ background:var(--accent); color:var(--white); border-color:var(--accent); font-weight:700; }
+  .cal-day.today{ background:var(--linea); color:var(--white); border-color:var(--linea); font-weight:700; }
 
   /* -------- carta / juego (texto) -------- */
-  .carta-body{ font-size:1.05rem; line-height:1.55; max-width:52ch; color:var(--bg); }
+  .carta-body{ font-size:1.05rem; line-height:1.55; max-width:52ch; color:var(--accent); }
   .carta-link{
     --chamfer:8px;
-    align-self:flex-start; margin-top:20px; background:var(--bg); color:var(--accent); text-decoration:none;
-    font-family:'Helvetica',sans-serif; font-size:.78rem; letter-spacing:.06em; padding:13px 22px;
-    border:2px solid var(--accent); display:inline-block;
+    align-self:flex-start; margin-top:20px; background:var(--linea); color:var(--white); text-decoration:none;
+    font-family:'Archivo Black',sans-serif; font-size:.78rem; letter-spacing:.06em; padding:13px 22px;
+    border:2px solid var(--linea); display:inline-block;
   }
-  .carta-link:hover{ background:var(--bg); color:var(--accent-deep); border-color:var(--bg); }
-  .carta-link:focus-visible{ outline:2px solid var(--accent-deep); outline-offset:2px; }
+  .carta-link:hover{ background:var(--white); color:var(--linea); border-color:var(--linea); }
+  .carta-link:focus-visible{ outline:2px solid var(--linea); outline-offset:2px; }
 
   /* -------- reloj -------- */
   .clock-wrap{ display:flex; align-items:center; gap:36px; flex-wrap:wrap; }
   .clock-face{ width:140px; height:140px; flex-shrink:0; }
-  .clock-digital{ font-family:'Helvetica',monospace; font-size:2.1rem; color:var(--bg); }
+  .clock-digital{ font-family:'IBM Plex Mono',monospace; font-size:2.1rem; color:var(--accent); }
 
   @media (prefers-reduced-motion: reduce){
     .stage.glitching{ animation:none; }
@@ -275,8 +287,8 @@
   <div class="intro" id="intro">
     <div class="intro-op" aria-hidden="true"></div>
     <span class="intro-text">0x000042</span>
-    <p class="intro-poem">El juego,<br>como forma de manifestación.</p>
-    <span class="intro-sub">Obra lúdica interactiva</span>
+    <p class="intro-poem">La red,<br>antes de ser camino.</p>
+    <span class="intro-sub">MAPA DE NODOS</span>
   </div>
 
   <div class="menu-app" id="menuApp">
@@ -284,7 +296,10 @@
       <span class="menu-brand-mark">0x000042</span>
       <span class="menu-brand-sub"></span>
     </div>
-    <div id="grilla"></div>
+
+    <div id="grilla">
+      <svg id="conexiones"></svg>
+    </div>
   </div>
 
   <div class="glitch-noise" aria-hidden="true"></div>
@@ -304,7 +319,7 @@
       <div class="content-card" id="panel-juego">
         <span class="content-kicker">JUEGO</span>
         <h1 class="content-title">Juego</h1>
-        <a class="carta-link chamfer" href="https://simbolos.0x000042.com/" target="_blank" rel="noopener">ESCRIBIR CARTA </a>
+        <p class="carta-body">Acá va el minijuego (placeholder por ahora): pantalla de un juego que se abre desde uno de los nodos.</p>
       </div>
 
       <div class="content-card" id="panel-reloj" hidden>
@@ -316,7 +331,7 @@
             <g id="clockTicks" stroke="#191c14" stroke-width="2"></g>
             <line id="handHour" x1="50" y1="50" x2="50" y2="28" stroke="#191c14" stroke-width="4" stroke-linecap="round"/>
             <line id="handMin" x1="50" y1="50" x2="50" y2="18" stroke="#191c14" stroke-width="3" stroke-linecap="round"/>
-            <line id="handSec" x1="50" y1="50" x2="50" y2="14" stroke="#d48ac8" stroke-width="1.5" stroke-linecap="round"/>
+            <line id="handSec" x1="50" y1="50" x2="50" y2="14" stroke="#c8551c" stroke-width="1.5" stroke-linecap="round"/>
             <circle cx="50" cy="50" r="3" fill="#191c14"/>
           </svg>
           <div class="clock-digital mono" id="clockDigital">00:00:00</div>
@@ -333,7 +348,7 @@
       <div class="content-card" id="panel-carta" hidden>
         <span class="content-kicker">CORRESPONDENCIA</span>
         <h1 class="content-title">Carta</h1>
-        <p class="carta-body">Antes de llegar, toda carta fue silencio: un texto que todavía no existe, esperando a que alguien lo escriba y lo suelte en la grilla.</p>
+        <p class="carta-body">Antes de llegar, toda carta fue silencio: un texto que todavía no existe, esperando a que alguien lo escriba y lo suelte en la red.</p>
       </div>
     </div>
   </div>
@@ -350,49 +365,56 @@
   var overlay = $('panelOverlay');
   var lastTrigger = null;
 
-  /* ----------------algunas celdas interactivas ---------------- */
-  var COLUMNAS = 8;
-  var FILAS = 8;
+  var COLUMNAS = 6;
+  var FILAS = 4;
+  var RAIZ = { fila:0, columna:0 };
 
-
+  // Solo estas 4 celdas se ven al 100% y abren su panel al hacer click.
+  // Para moverlas a otra celda, solo cambia fila/columna aquí.
   var CELDAS_INTERACTIVAS = [
-    { fila:1, columna:1, tipo:'juego' },
-    { fila:2, columna:5, tipo:'reloj' },
-    { fila:5, columna:1, tipo:'calendario' },
-    { fila:6, columna:5, tipo:'carta' }
+    { fila:0, columna:5, tipo:'juego' },      // horizontal: misma fila que la raíz
+    { fila:3, columna:0, tipo:'reloj' },      // vertical: misma columna que la raíz, hacia abajo
+    { fila:2, columna:2, tipo:'calendario' }, // diagonal
+    { fila:1, columna:1, tipo:'carta' }       // diagonal corta, sobre la misma línea entre la raíz y calendario
   ];
 
+  // las líneas salen de la raíz hacia cada uno de los 4 puntos interactivos
+  var CONEXIONES = CELDAS_INTERACTIVAS.map(function(c){
+    return [RAIZ, { fila:c.fila, columna:c.columna }];
+  });
+
   var grilla = $('grilla');
+  var svg = $('conexiones');
   var TOTAL_CELDAS = COLUMNAS * FILAS;
 
+  function celdaInteractivaEn(fila, columna){
+    for (var i = 0; i < CELDAS_INTERACTIVAS.length; i++) {
+      var c = CELDAS_INTERACTIVAS[i];
+      if (c.fila === fila && c.columna === columna) return c;
+    }
+    return null;
+  }
+
+  // 1) construir las celdas, cada una con su <img> real
   for (var i = 0; i < TOTAL_CELDAS; i++) {
     var fila = Math.floor(i / COLUMNAS);
     var columna = i % COLUMNAS;
-    var esC1 = i === 0; 
-
-    var interactiva = null;
-    if (!esC1) {
-      for (var j = 0; j < CELDAS_INTERACTIVAS.length; j++) {
-        if (CELDAS_INTERACTIVAS[j].fila === fila && CELDAS_INTERACTIVAS[j].columna === columna) {
-          interactiva = CELDAS_INTERACTIVAS[j].tipo;
-          break;
-        }
-      }
-    }
+    var esRaiz = fila === RAIZ.fila && columna === RAIZ.columna;
+    var interactiva = esRaiz ? null : celdaInteractivaEn(fila, columna);
 
     var celda = document.createElement('div');
-    celda.className = 'celda' + (esC1 ? '' : ' celda-d1') + (interactiva ? ' celda-interactiva' : '');
-    if (esC1) celda.id = 'celda-c1';
+    celda.className = 'celda' + (esRaiz ? ' nodo-raiz' : (interactiva ? ' celda-interactiva' : ' celda-apagada'));
+    celda.dataset.fila = fila;
+    celda.dataset.columna = columna;
 
     var img = document.createElement('img');
-    img.src = esC1 ? 'd1.png' : 'd1.png';
-    img.alt = esC1 ? 'd1' : (interactiva ? interactiva : 'd1');
+    img.src = esRaiz ? 'q1.png' : 'q2.png';
+    img.alt = esRaiz ? 'raíz' : (interactiva ? interactiva.tipo : 'nodo');
     img.draggable = false;
-
     celda.appendChild(img);
 
     if (interactiva) {
-      celda.dataset.item = interactiva;
+      celda.dataset.item = interactiva.tipo;
       celda.setAttribute('role', 'button');
       celda.setAttribute('tabindex', '0');
       celda.addEventListener('click', function(e){ openPanel(e.currentTarget.dataset.item, e.currentTarget); });
@@ -404,10 +426,45 @@
     grilla.appendChild(celda);
   }
 
+  // 2) centro en píxeles (relativo a #grilla) de una celda por fila/columna
+  function celdaEl(fila, columna){
+    return grilla.querySelector('.celda[data-fila="' + fila + '"][data-columna="' + columna + '"]');
+  }
+  function centroDeCelda(fila, columna){
+    var celda = celdaEl(fila, columna);
+    var rectCelda = celda.getBoundingClientRect();
+    var rectGrilla = grilla.getBoundingClientRect();
+    return {
+      x: rectCelda.left - rectGrilla.left + rectCelda.width / 2,
+      y: rectCelda.top - rectGrilla.top + rectCelda.height / 2
+    };
+  }
+
+  // 3) dibujar las líneas de la raíz hacia cada punto interactivo
+  function dibujarConexiones(){
+    svg.innerHTML = '';
+    CONEXIONES.forEach(function(par){
+      var p1 = centroDeCelda(par[0].fila, par[0].columna);
+      var p2 = centroDeCelda(par[1].fila, par[1].columna);
+      var linea = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      linea.setAttribute('x1', p1.x);
+      linea.setAttribute('y1', p1.y);
+      linea.setAttribute('x2', p2.x);
+      linea.setAttribute('y2', p2.y);
+      linea.setAttribute('stroke', 'var(--linea)');
+      linea.setAttribute('stroke-width', 8);
+      linea.setAttribute('stroke-linecap', 'round');
+      svg.appendChild(linea);
+    });
+  }
+  dibujarConexiones();
+  window.addEventListener('resize', dibujarConexiones);
+
   /* ---------------- intro ---------------- */
   function revealMenu(){
     intro.hidden = true;
     menuApp.classList.add('visible');
+    dibujarConexiones();
   }
   if(reduceMotion){
     revealMenu();
@@ -536,7 +593,7 @@
 
   /* ---------------- calendario (funcional) ---------------- */
   (function initCalendar(){
-    var now = new Date(2050, 11, 11);
+    var now = new Date();
     var monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     var dow = ['L','M','X','J','V','S','D'];
     $('calMonth').textContent = monthNames[now.getMonth()] + ' ' + now.getFullYear();
@@ -601,8 +658,3 @@
 
 </body>
 </html>
-
-
-
-
-

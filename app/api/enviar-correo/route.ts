@@ -6,70 +6,128 @@ import path from 'path';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const ORIGENES_PERMITIDOS = [
-  'https://trenmaya.neocities.org',
-  'https://com-three-inky.vercel.app',
-  'http://127.0.0.1:5500',
-  'http://localhost:5500',
-  'http://localhost:3000',
-  'https://0x000042.com',
-];
-
-function withCors(response: Response, origin: string | null) {
-  if (origin && ORIGENES_PERMITIDOS.includes(origin)) {
-    response.headers.set('Access-Control-Allow-Origin', origin);
-  }
-  response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
-  return response;
-}
-
-export async function OPTIONS(request: NextRequest) {
-  const origin = request.headers.get('origin');
-  return withCors(new Response(null, { status: 204 }), origin);
-}
+const JUEGOS: Record<string, {
+  asunto: string;
+  imagen: string;
+  destino: string;
+}> = {
+  simbolos: {
+    asunto: 'Nueva participación en Símbolos',
+    imagen: 'cultura.png',
+    destino: process.env.EMAIL_DESTINO_SIMBOLOS as string,
+  },
+  cultura: {
+    asunto: 'Nueva participación en Cultura',
+    imagen: 'desaparecidos.png',
+    destino: process.env.EMAIL_DESTINO_CULTURA as string,
+  },
+  desaparecidos: {
+    asunto: 'Nueva participación en Desaparecidos',
+    imagen: 'clima.png',
+    destino: process.env.EMAIL_DESTINO_DESAPARECIDOS as string,
+  },
+};
 
 export async function POST(request: NextRequest) {
-  const origin = request.headers.get('origin');
+  // CORS
+  const origin = request.headers.get('origin') || '';
+  const allowedOrigins = [
+    'https://0x000042.com',
+    'https://simbolos.0x000042.com',
+    'https://cultura.0x000042.com',
+    'https://desaparecidos.0x000042.com',
+    'http://localhost:3000',
+  ];
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : '',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }
+
   try {
-    const { nombre } = await request.json();
+    const { nombre, juego } = await request.json();
 
     if (!nombre || !nombre.trim()) {
-      return withCors(
-        Response.json({ success: false, error: 'Nombre requerido' }, { status: 400 }),
-        origin
+      return Response.json(
+        { success: false, error: 'Nombre requerido' },
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    if (!juego || !JUEGOS[juego]) {
+      return Response.json(
+        { success: false, error: 'Juego no reconocido' },
+        { status: 400, headers: corsHeaders }
       );
     }
 
     const nombreLimpio = nombre.trim();
     const fecha = new Date().toLocaleString('es-MX');
+    const config = JUEGOS[juego];
 
-    const imagenPath = path.join(process.cwd(), 'public', 'dibujo.jpg');
+    // Leer imagen del juego correspondiente
+    const imagenPath = path.join(process.cwd(), 'public', config.imagen);
     const imagenBuffer = fs.readFileSync(imagenPath);
 
+    // Enviar correo
     await resend.emails.send({
-      from: 'noreply@0x000042.com',
-      to: process.env.EMAIL_DESTINO?.split(',').map(email => email.trim()) as string[],
-      subject: `Nueva solicitud de ${nombreLimpio}`,
-      html: `<img src="cid:logo" alt="Imagen" style="max-width: 100%;" />`,
+      from: process.env.EMAIL_ORIGEN as string,
+      to: config.destino,
+      subject: `${config.asunto} — ${nombreLimpio}`,
+      html: `<img src="cid:imagen" alt="${juego}" style="max-width:100%;" />`,
       attachments: [
         {
-          filename: 'dibujo.jpg',
+          filename: config.imagen,
           content: imagenBuffer,
-          contentId: 'dibujo',
+          contentId: 'imagen',
         },
       ],
     });
 
-    const puntosActuales = await kv.hincrby('puntajes', nombreLimpio, 1);
-    await kv.lpush('lista_envios', JSON.stringify({ nombre: nombreLimpio, fecha }));
+    // Guardar puntaje por nombre y por juego
+    const claveKV = `puntajes_${juego}`;
+    const puntosActuales = await kv.hincrby(claveKV, nombreLimpio, 1);
 
-    return withCors(Response.json({ success: true, puntos: puntosActuales }), origin);
+    // Log general con juego incluido
+    await kv.lpush('lista_envios', JSON.stringify({ nombre: nombreLimpio, juego, fecha }));
+
+    return Response.json(
+      { success: true, puntos: puntosActuales },
+      { headers: corsHeaders }
+    );
+
   } catch (error: any) {
     console.error(error);
-    return withCors(
-      Response.json({ success: false, error: error.message }, { status: 500 }),
-      origin
+    return Response.json(
+      { success: false, error: error.message },
+      { status: 500, headers: corsHeaders }
     );
   }
 }
+
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin') || '';
+  const allowedOrigins = [
+    'https://0x000042.com',
+    'https://simbolos.0x000042.com',
+    'https://cultura.0x000042.com',
+    'https://desaparecidos.0x000042.com',
+    'http://localhost:3000',
+    'https://presencias.0x000042.com',
+    'https://efectos.0x000042.com',
+  ];
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : '',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
+}
+
+
