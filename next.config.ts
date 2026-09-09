@@ -1,21 +1,18 @@
 const nextConfig = {
-  async rewrites() {
+  async redirects() {
     return [
       {
         source: '/',
         destination: '/ausencias.html',
+        permanent: false,
         has: [{ type: 'host', value: 'ausencias.0x000042.com' }],
       },
       {
         source: '/',
         destination: '/efectos.html',
+        permanent: false,
         has: [{ type: 'host', value: 'efectos.0x000042.com' }],
       },
-      {
-        source: '/',
-        destination: '/simbolos.html',
-        has: [{ type: 'host', value: 'simbolos.0x000042.com' }],
-      },      
     ];
   },
 };
