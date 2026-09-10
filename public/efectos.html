@@ -74,7 +74,16 @@
     position:relative; z-index:2;
     text-align:center; padding:20px 16px 4px;
   }
-  .marca{ font-family:'Archivo Black',sans-serif; font-size:1.05rem; letter-spacing:.04em; }
+
+  .marca{
+    position:fixed; top:18px; left:50%; transform:translateX(-50%);
+    z-index:2;
+    font-family:'Archivo Black',sans-serif;  
+    font-size:.95rem; 
+    letter-spacing:.04em;
+    color:var(--ink);   
+  }
+
   .subtitulo{ font-size:.62rem; letter-spacing:.4em; color:var(--muted); font-weight:600; margin-top:2px; }
   .instrucciones{
     margin:10px auto 0; max-width:50ch; font-size:.92rem; line-height:1.4; color:var(--ink);
