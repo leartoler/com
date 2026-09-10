@@ -20,18 +20,54 @@
   html,body{ margin:0; padding:0; }
 
   body{
+    position:relative;
     background: var(--bg);
     color: var(--ink);
     font-family:'Barlow Condensed',sans-serif;
     min-height:100vh;
     overflow:hidden;
     height:100vh; width:100vw;
-    display:flex; flex-direction:column;
   }
 
   .fondo-textura{
     position:fixed; inset:0; z-index:0; pointer-events:none;
     background: repeating-radial-gradient(circle at 50% 42%, rgba(0,0,0,.05) 0 1.5px, transparent 1.5px 22px);
+  }
+
+  [hidden]{ display:none !important; }
+
+  /* --- Compuerta: firma antes de jugar --- */
+
+  #pantalla-firma{
+    position:relative; z-index:1;
+    height:100%; width:100%;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:18px;
+    padding:24px 16px;
+    text-align:center;
+  }
+
+  #pantalla-firma .marca{ font-family:'Archivo Black',sans-serif; font-size:1.05rem; letter-spacing:.04em; }
+
+  #pantalla-firma .subtitulo-firma{
+    font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:1.2rem; line-height:1.4;
+    max-width:50ch; margin:0; color:var(--ink);
+  }
+
+  #pantalla-firma input[type="text"]{
+    width:100%; max-width:320px;
+    font-family:'IBM Plex Mono',monospace; font-size:.95rem;
+    padding:12px 14px; border:2px solid var(--ink); background:var(--white); color:var(--ink);
+    outline:none;
+  }
+  #pantalla-firma input[type="text"]::placeholder{ color:var(--muted); }
+  #pantalla-firma input[type="text"]:focus{ border-color:var(--linea); }
+
+  /* --- Pantalla de juego --- */
+
+  #juego{
+    display:flex; flex-direction:column;
+    height:100%; width:100%;
   }
 
   header{
@@ -125,16 +161,28 @@
   }
   .boton:hover{ background:var(--ink); color:var(--bg); }
 
-  #panel-envio{
-    display:flex; gap:8px; flex-wrap:wrap; justify-content:center; align-items:center;
+  /* --- Envío automático al ganar --- */
+
+  .mensaje-estado{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem;
+    text-align:center;
   }
-  #panel-envio input[type=email]{
-    font-family:'IBM Plex Mono',monospace; font-size:.9rem;
-    padding:10px 14px; border:2px solid var(--ink); background:var(--white); color:var(--ink);
-    min-width:240px;
+  .mensaje-estado.exito{ color:var(--ok); }
+  .mensaje-estado.error{ color:var(--error); }
+  .mensaje-estado.enviando{ color:var(--muted); }
+
+  .lista-correos{
+    max-width:70ch;
+    padding:12px 16px;
+    background:var(--white);
+    border:2px solid var(--ink);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.8rem;
+    color:var(--muted);
+    text-align:left;
   }
-  #panel-envio input[type=email]::placeholder{ color:var(--muted); }
-  #panel-envio[hidden]{ display:none; }
+  .lista-correos div{ padding:2px 0; }
 
   @media (max-width: 600px){
     .palabra{ padding:11px 16px; }
@@ -145,27 +193,35 @@
 
   <div class="fondo-textura" aria-hidden="true"></div>
 
-  <header>
+  <!-- Compuerta: hay que firmar antes de poder jugar -->
+  <div id="pantalla-firma">
     <div class="marca">0x000042</div>
-    <div class="subtitulo">EL VERSO SIN CRUZAR</div>
-    <p class="instrucciones">Sin soltar el mouse, conecta las palabras en el orden correcto para formar el verso. La palabra que parpadea es la siguiente. Si sueltas el mouse antes de terminar, o tu línea se cruza a sí misma, pierdes.</p>
-  </header>
+    <p class="subtitulo-firma">Nombre, expresión o concepto con el que quieras firmar y jugar</p>
+    <input type="text" id="input-firma" placeholder="Escribe aquí" maxlength="40">
+    <button class="boton" id="boton-empezar" type="button">INICIAR</button>
+  </div>
 
-  <main>
-    <div id="lienzo">
-      <svg id="trazos"></svg>
-    </div>
-  </main>
+  <div id="juego" hidden>
+    <header>
+      <div class="marca">0x000042</div>
+      <div class="subtitulo">EL VERSO SIN CRUZAR</div>
+      <p class="instrucciones">Sin soltar el mouse, conecta las palabras en el orden correcto para formar el verso. La palabra que parpadea es la siguiente. Si sueltas el mouse antes de terminar, o tu línea se cruza a sí misma, pierdes.</p>
+    </header>
 
-  <footer>
-    <div id="estado"></div>
-    <div id="verso-objetivo"></div>
-    <button class="boton" id="reintentar" hidden type="button">INTENTAR DE NUEVO</button>
-    <div id="panel-envio" hidden>
-      <input type="email" id="email" placeholder="tu@correo.com" autocomplete="email">
-      <button class="boton" id="enviar" type="button">ENVIAR CARTA</button>
-    </div>
-  </footer>
+    <main>
+      <div id="lienzo">
+        <svg id="trazos"></svg>
+      </div>
+    </main>
+
+    <footer>
+      <div id="estado"></div>
+      <div id="verso-objetivo"></div>
+      <button class="boton" id="reintentar" hidden type="button">INTENTAR DE NUEVO</button>
+      <div id="envio-estado" class="mensaje-estado" hidden></div>
+      <div id="lista-correos" class="lista-correos" hidden></div>
+    </footer>
+  </div>
 
 <script>
 (function(){
@@ -189,24 +245,30 @@
     'de':        { top:44, left:83 },
     'llegar':    { top:38, left:38 },
     'toda':      { top:27, left:74 },
-    
+
   };
 
   // ---------------------------------------------------------------
-  // Al ganar se manda un correo con el verso. Reemplaza esta URL por
-  // el endpoint real de Vercel + Resend que ya usan los otros juegos
-  // (el mismo que arma "escribir carta" en 0x000042.com).
+  // Mismo endpoint (Vercel + Resend) que ya usan las demás piezas de
+  // 0x000042.com. El backend valida un campo "juego" contra una lista
+  // de identificadores que reconoce; el de esta pieza es "efectos".
   // ---------------------------------------------------------------
   var ENDPOINT_ENVIO = 'https://com-three-inky.vercel.app/api/enviar-correo';
+  var JUEGO_ID = 'efectos';
+
+  var pantallaFirma = document.getElementById('pantalla-firma');
+  var juegoEl = document.getElementById('juego');
+  var inputFirma = document.getElementById('input-firma');
+  var botonEmpezar = document.getElementById('boton-empezar');
+  var firmaJugador = '';
 
   var lienzo = document.getElementById('lienzo');
   var svg = document.getElementById('trazos');
   var estadoEl = document.getElementById('estado');
   var versoObjetivoEl = document.getElementById('verso-objetivo');
   var reintentarBtn = document.getElementById('reintentar');
-  var panelEnvio = document.getElementById('panel-envio');
-  var emailInput = document.getElementById('email');
-  var enviarBtn = document.getElementById('enviar');
+  var envioEstadoEl = document.getElementById('envio-estado');
+  var listaCorreosEl = document.getElementById('lista-correos');
 
   var nodos = {};        // texto -> elemento .palabra
   var secuencia = [];     // elementos ya conectados en este intento
@@ -223,6 +285,23 @@
   var DIST_MINIMA = 14;
 
   versoObjetivoEl.textContent = '';
+
+  // ---------------------------------------------------------------
+  // Compuerta: hay que escribir una firma para poder jugar
+  // ---------------------------------------------------------------
+
+  function empezarConFirma(){
+    var valor = inputFirma.value.trim();
+    if (!valor) { inputFirma.focus(); return; }
+    firmaJugador = valor;
+    pantallaFirma.hidden = true;
+    juegoEl.hidden = false;
+  }
+
+  botonEmpezar.addEventListener('click', empezarConFirma);
+  inputFirma.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') empezarConFirma();
+  });
 
   // 1) crear las palabras como nodos reales del DOM
   VERSO.forEach(function(texto){
@@ -314,7 +393,8 @@
     estadoEl.textContent = '';
     estadoEl.className = '';
     reintentarBtn.hidden = true;
-    panelEnvio.hidden = true;
+    envioEstadoEl.hidden = true;
+    listaCorreosEl.hidden = true;
     marcarSiguiente();
   }
 
@@ -398,7 +478,7 @@
     estadoEl.className = 'gano';
     versoObjetivoEl.textContent = '— ' + VERSO_TEXTO;
     reintentarBtn.hidden = false;
-    panelEnvio.hidden = false;
+    enviarCorreo();
     Object.keys(nodos).forEach(function(t){ nodos[t].classList.remove('siguiente'); });
   }
 
@@ -412,7 +492,8 @@
     estadoEl.textContent = ''; estadoEl.className = '';
     versoObjetivoEl.textContent = '';
     reintentarBtn.hidden = true;
-    panelEnvio.hidden = true;
+    envioEstadoEl.hidden = true;
+    listaCorreosEl.hidden = true;
     marcarSiguiente();
   }
 
@@ -461,30 +542,47 @@
   reintentarBtn.addEventListener('click', reiniciarTodo);
 
   // ---------------------------------------------------------------
-  // Envío del correo al ganar. Placeholder: reemplazar ENDPOINT_ENVIO
-  // y el formato del body por los reales del backend en Vercel/Resend.
+  // Envío automático del correo al ganar: mismo endpoint (Vercel +
+  // Resend) que ya usan las demás piezas — se envía solo, apenas se
+  // gana, sin pedir correo. La firma que el jugador escribió antes de
+  // jugar hace las veces del "nombre" con el que firma.
   // ---------------------------------------------------------------
-  enviarBtn.addEventListener('click', function(){
-    var email = emailInput.value.trim();
-    if (!email) { emailInput.focus(); return; }
-    enviarBtn.disabled = true;
-    enviarBtn.textContent = 'ENVIANDO...';
+  function enviarCorreo(){
+    envioEstadoEl.hidden = false;
+    envioEstadoEl.textContent = 'Enviando…';
+    envioEstadoEl.className = 'mensaje-estado enviando';
+    listaCorreosEl.hidden = true;
+    listaCorreosEl.innerHTML = '';
 
     fetch(ENDPOINT_ENVIO, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, verso: VERSO_TEXTO })
+      body: JSON.stringify({ nombre: firmaJugador, juego: JUEGO_ID, verso: VERSO_TEXTO })
     })
-      .then(function(res){
-        if (!res.ok) throw new Error('respuesta no OK');
-        enviarBtn.textContent = 'ENVIADA ✓';
+      .then(function(respuesta){ return respuesta.json(); })
+      .then(function(datos){
+        if (datos && datos.success){
+          envioEstadoEl.textContent = 'Verso enviado a quien lo necesite ver.';
+          envioEstadoEl.className = 'mensaje-estado exito';
+          if (Array.isArray(datos.destinatarios) && datos.destinatarios.length > 0){
+            listaCorreosEl.hidden = false;
+            datos.destinatarios.forEach(function(correo){
+              var linea = document.createElement('div');
+              linea.textContent = correo;
+              listaCorreosEl.appendChild(linea);
+            });
+          }
+        } else {
+          envioEstadoEl.textContent = 'El verso no se pudo enviar.';
+          envioEstadoEl.className = 'mensaje-estado error';
+        }
       })
-      .catch(function(err){
-        console.error('Error al enviar la carta:', err);
-        enviarBtn.textContent = 'ERROR — REINTENTAR';
-        enviarBtn.disabled = false;
+      .catch(function(error){
+        console.error('Error al enviar el verso:', error);
+        envioEstadoEl.textContent = 'El verso no se pudo enviar.';
+        envioEstadoEl.className = 'mensaje-estado error';
       });
-  });
+  }
 })();
 </script>
 
