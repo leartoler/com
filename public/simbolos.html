@@ -1,268 +1,332 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carta</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<style>
-  :root {
-    --bg:#5f8265;
-    --linea:#d48ac8;
-    --ink:#7a3d70;
-    --white:#ffffff;
-    --muted:#6b6f3a;
-    --error:#b3251f;
-    --ok:#2f6b2a;
-    color-scheme: light;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carta</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
+  <style>
+    :root {
+      --bg: #5f8265;
+      --linea: #d48ac8;
+      --ink: #7a3d70;
+      --white: #ffffff;
+      --muted: #6b6f3a;
+      --error: #b3251f;
+      --ok: #2f6b2a;
+      color-scheme: light;
+    }
 
-  * { box-sizing: border-box; }
-  html,body{ margin:0; padding:0; }
+    * {
+      box-sizing: border-box;
+    }
 
-  body {
-    min-height: 100vh;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'Barlow Condensed', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px 12px;
-    position: relative;
-  }
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
 
-  .fondo-textura{
-    position:fixed; inset:0; z-index:0; pointer-events:none;
-    background: repeating-radial-gradient(circle at 50% 42%, rgba(0,0,0,.05) 0 1.5px, transparent 1.5px 22px);
-  }
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Barlow Condensed', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 12px;
+      position: relative;
+    }
 
-  .marca{
-    position:fixed; top:18px; left:50%; transform:translateX(-50%);
-    z-index:2;
-    font-family:'Archivo Black',sans-serif; font-size:.95rem; letter-spacing:.04em;
-    color: var(--ink);
-  }
+    .fondo-textura {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: repeating-radial-gradient(circle at 50% 42%, rgba(0, 0, 0, .05) 0 1.5px, transparent 1.5px 22px);
+    }
 
-  .pantalla {
-    position: relative; z-index: 1;
-    width: 100%;
-    max-width: 900px;
-    text-align: center;
-  }
+    /* imagen de fondo de la pantalla final — placeholder por ahora,
+       reemplaza fondo-final.png por la imagen real cuando la tengas */
+    .fondo-final {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: url('fondo-final.png');
+      background-size: cover;
+      background-position: center;
+    }
 
-  .oculto { display: none !important; }
+    .fondo-final.oculto {
+      display: none !important;
+    }
 
-  .subtitulo {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 600;
-    color: var(--ink);
-    font-size: 1.3rem;
-    margin: 0 0 24px;
-    line-height: 1.4;
-  }
+    .marca {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: .95rem;
+      letter-spacing: .04em;
+      color: var(--ink);
+    }
 
-  input[type="text"] {
-    width: 100%;
-    max-width: 320px;
-    padding: 12px 14px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: .95rem;
-    border: 2px solid var(--ink);
-    background: var(--white);
-    color: var(--ink);
-    outline: none;
-    border-radius: 0;
-  }
+    .pantalla {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 900px;
+      text-align: center;
+    }
 
-  input[type="text"]::placeholder{ color: var(--muted); }
+    .oculto {
+      display: none !important;
+    }
 
-  input[type="text"]:focus {
-    border-color: var(--linea);
-  }
+    .subtitulo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      color: var(--ink);
+      font-size: 1.3rem;
+      margin: 0 0 24px;
+      line-height: 1.4;
+    }
 
-  button {
-    display: inline-block;
-    margin-top: 20px;
-    margin-inline: 6px;
-    font-family: 'Archivo Black', sans-serif;
-    font-size: .7rem;
-    letter-spacing: .08em;
-    padding: 13px 24px;
-    border: 2px solid var(--ink);
-    border-radius: 0;
-    background: var(--ink);
-    color: var(--bg);
-    cursor: pointer;
-    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-    transition: background .15s ease, color .15s ease, border-color .15s ease;
-  }
+    input[type="text"] {
+      width: 100%;
+      max-width: 320px;
+      padding: 12px 14px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .95rem;
+      border: 2px solid var(--ink);
+      background: var(--white);
+      color: var(--ink);
+      outline: none;
+      border-radius: 0;
+    }
 
-  button.secundario {
-    background: transparent;
-    color: var(--ink);
-  }
+    input[type="text"]::placeholder {
+      color: var(--muted);
+    }
 
-  button:hover {
-    background: var(--linea);
-    border-color: var(--linea);
-    color: var(--white);
-  }
+    input[type="text"]:focus {
+      border-color: var(--linea);
+    }
 
-  button.secundario:hover{
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--bg);
-  }
+    button {
+      display: inline-block;
+      margin-top: 20px;
+      margin-inline: 6px;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: .7rem;
+      letter-spacing: .08em;
+      padding: 13px 24px;
+      border: 2px solid var(--ink);
+      border-radius: 0;
+      background: var(--ink);
+      color: var(--bg);
+      cursor: pointer;
+      clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
 
-  .instruccion {
-    max-width: 520px;
-    margin: 0 auto 28px;
-    font-size: .95rem;
-    line-height: 1.5;
-    font-style: italic;
-    color: var(--ink);
-  }
+    button.secundario {
+      background: rgba(255, 255, 255, .55);
+      color: var(--ink);
+    }
 
-  .instruccion strong {
-    display: block;
-    margin-top: 14px;
-    font-style: normal;
-    font-family: 'Archivo Black', sans-serif;
-    font-size: .72rem;
-    letter-spacing: .06em;
-    color: var(--linea);
-  }
+    button:hover {
+      background: var(--linea);
+      border-color: var(--linea);
+      color: var(--white);
+    }
 
-  .grupos-scroll {
-    overflow-x: auto;
-    padding: 8px 4px 16px;
-  }
+    button.secundario:hover {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--bg);
+    }
 
-  .grupos {
-    display: flex;
-    flex-direction: row;
-    gap: 32px;
-    justify-content: center;
-    align-items: flex-start;
-    width: fit-content;
-    margin: 0 auto;
-  }
+    .instruccion {
+      max-width: 520px;
+      margin: 0 auto 28px;
+      font-size: .95rem;
+      line-height: 1.5;
+      font-style: italic;
+      color: var(--ink);
+    }
 
-  .grid {
-    display: grid;
-    gap: 58px 7px;
-  }
+    .instruccion strong {
+      display: block;
+      margin-top: 14px;
+      font-style: normal;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: .72rem;
+      letter-spacing: .06em;
+      color: var(--linea);
+    }
 
-  .cuadro {
-    position: relative;
-    border-radius: 3px;
-    background: var(--linea);
-    border: 2px solid var(--linea);
-    overflow: hidden;
-    cursor: default;
-  }
+    .grupos-scroll {
+      overflow-x: auto;
+      padding: 8px 4px 16px;
+    }
 
-  .cuadro.activo {
-    cursor: pointer;
-    border-color: var(--ink);
-  }
+    .grupos {
+      display: flex;
+      flex-direction: row;
+      gap: 32px;
+      justify-content: center;
+      align-items: flex-start;
+      width: fit-content;
+      margin: 0 auto;
+    }
 
-  .cuadro.acierto {
-    overflow: visible;
-    background: var(--muted);
-    border-color: var(--ok);
-  }
+    .grid {
+      display: grid;
+      gap: 58px 7px;
+    }
 
-  .cuadro.fallo {
-    background: rgba(179, 37, 31, 0.12);
-    border-color: var(--error);
-  }
+    .cuadro {
+      position: relative;
+      border-radius: 3px;
+      background: var(--linea);
+      border: 2px solid var(--linea);
+      overflow: hidden;
+      cursor: default;
+    }
 
-  .zona-central {
-    position: absolute;
-    left: 40%;
-    width: 20%;
-    top: 0;
-    bottom: 0;
-    background: var(--ink);
-  }
+    .cuadro.activo {
+      cursor: pointer;
+      border-color: var(--ink);
+    }
 
-  .linea-centro {
-    position: absolute;
-    left: 50%;
-    top: 8%;
-    bottom: 8%;
-    width: 2px;
-    transform: translateX(-50%);
-    background: rgba(200, 85, 28, .55);
-  }
+    .cuadro.acierto {
+      overflow: visible;
+      background: var(--muted);
+      border-color: var(--ok);
+    }
 
-  .imagen-movil {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 60%;
-    height: 60%;
-    object-fit: contain;
-    border-radius: 4px;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-  }
+    .cuadro.fallo {
+      background: rgba(179, 37, 31, 0.12);
+      border-color: var(--error);
+    }
 
-  .imagen-revelada {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: 6px;
-    border-radius: 4px;
-    pointer-events: none;
-  }
+    .zona-central {
+      position: absolute;
+      left: 40%;
+      width: 20%;
+      top: 0;
+      bottom: 0;
+      background: var(--ink);
+    }
 
-  .palabra-revelada {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    width: 100%;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--ok);
-    text-align: center;
-    padding: 0 4px;
-    line-height: 1.15;
-    word-break: break-word;
-  }
+    .linea-centro {
+      position: absolute;
+      left: 50%;
+      top: 8%;
+      bottom: 8%;
+      width: 2px;
+      transform: translateX(-50%);
+      background: rgba(200, 85, 28, .55);
+    }
 
-  .mensaje-final {
-    font-family: 'Archivo Black', sans-serif;
-    font-size: 1rem;
-    letter-spacing: .02em;
-    margin: 0 0 16px;
-    line-height: 1.5;
-  }
+    .imagen-movil {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60%;
+      height: 60%;
+      object-fit: contain;
+      border-radius: 4px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
 
-  .lista-correos {
-    margin: 0 auto 24px;
-    max-width: 420px;
-    padding: 14px 18px;
-    background: var(--white);
-    border: 2px solid var(--ink);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: .78rem;
-    color: var(--muted);
-  }
+    .imagen-revelada {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 6px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
 
-  .lista-correos div {
-    padding: 2px 0;
-  }
-</style>
+    .palabra-revelada {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 100%;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--ok);
+      text-align: center;
+      padding: 0 4px;
+      line-height: 1.15;
+      word-break: break-word;
+    }
+
+    .mensaje-final {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1rem;
+      letter-spacing: .02em;
+      margin: 0 0 16px;
+      line-height: 1.5;
+      display: inline-block;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, .75);
+    }
+
+    /* espacio para el contenido producido (la carta reconstruida) en
+       la pantalla final, arriba de la lista de correos */
+    .contenido-resultado {
+      max-width: 420px;
+      margin: 0 auto 20px;
+      padding: 14px 18px;
+      background: var(--white);
+      border: 2px solid var(--ink);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--ink);
+      text-align: left;
+      white-space: pre-wrap;
+    }
+
+    .contenido-resultado.vacio {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .lista-correos {
+      margin: 0 auto 24px;
+      max-width: 420px;
+      padding: 14px 18px;
+      background: var(--white);
+      border: 2px solid var(--ink);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+
+    .lista-correos div {
+      padding: 2px 0;
+    }
+  </style>
 </head>
+
 <body>
 
   <div class="fondo-textura" aria-hidden="true"></div>
+  <div class="fondo-final oculto" id="fondo-final" aria-hidden="true"></div>
   <div class="marca">0x000042</div>
 
   <!-- Pantalla: nombre -->
@@ -276,7 +340,8 @@
   <!-- Pantalla: jugando -->
   <div id="pantalla-juego" class="pantalla oculto">
     <p class="instruccion">
-      Escribes una carta, con un lenguaje que apenas sobrevive, en un tiempo cada vez más escaso. Da click en la imagen en movimiento cuando se encuentre al centro del cuadro para poder escribir.
+      Escribes una carta, con un lenguaje que apenas sobrevive, en un tiempo cada vez más escaso. Da click en la imagen
+      en movimiento cuando se encuentre al centro del cuadro para poder escribir.
       <strong>Nuestro tiempo se agota</strong>
     </p>
     <div class="grupos-scroll">
@@ -287,6 +352,7 @@
   <!-- Pantalla: terminado -->
   <div id="pantalla-final" class="pantalla oculto">
     <p class="mensaje-final" id="mensaje-final"></p>
+    <div class="contenido-resultado oculto" id="contenido-resultado"></div>
     <div class="lista-correos oculto" id="lista-correos"></div>
     <div>
       <button id="boton-reiniciar">Escribir carta de nuevo</button>
@@ -294,395 +360,422 @@
     </div>
   </div>
 
-<script>
-(function () {
-  'use strict';
+  <script>
+    (function () {
+      'use strict';
 
-  // ---------- Configuración ----------
+      // ---------- Configuración ----------
 
-  // Grupos de la cuadrícula. Cada grupo es un array de filas, cada fila una
-  // cadena con 'x' (cuadro jugable) u 'o' (espacio vacío). Los tres grupos se
-  // muestran uno junto al otro, en horizontal.
-  const GRUPOS_PATRON = [
-    ['xxo', 'xxo', 'oxo'],
-    ['xxo', 'oxo', 'xxo', 'xxx'],
-    ['xoo', 'xoo', 'xxo', 'xoo', 'xoo'],
-  ];
+      // Grupos de la cuadrícula. Cada grupo es un array de filas, cada fila una
+      // cadena con 'x' (cuadro jugable) u 'o' (espacio vacío). Los tres grupos se
+      // muestran uno junto al otro, en horizontal.
+      const GRUPOS_PATRON = [
+        ['xxo', 'xxo', 'oxo'],
+        ['xxo', 'oxo', 'xxo', 'xxx'],
+        ['xoo', 'xoo', 'xxo', 'xoo', 'xoo'],
+      ];
 
-  const TAMANIO_CUADRO = 92; // px
+      const TAMANIO_CUADRO = 92; // px
 
-  // Duración que el dibujo está visible/en movimiento en cada cuadro (ms).
-  const DURACION_MS = 4500;
+      // Duración que el dibujo está visible/en movimiento en cada cuadro (ms).
+      const DURACION_MS = 4500;
 
-  // Zona central donde el click cuenta como acierto (porcentaje del ancho del cuadro).
-  const ZONA_CENTRAL_INICIO = 40;
-  const ZONA_CENTRAL_FIN = 60;
+      // Zona central donde el click cuenta como acierto (porcentaje del ancho del cuadro).
+      const ZONA_CENTRAL_INICIO = 40;
+      const ZONA_CENTRAL_FIN = 60;
 
-  // Qué tan lejos del centro oscila el dibujo (porcentaje).
-  const AMPLITUD = 35;
+      // Qué tan lejos del centro oscila el dibujo (porcentaje).
+      const AMPLITUD = 35;
 
-  // Porcentaje mínimo de aciertos para enviar la carta.
-  const PORCENTAJE_MINIMO = 0.2;
+      // Porcentaje mínimo de aciertos para enviar la carta.
+      const PORCENTAJE_MINIMO = 0.2;
 
-  // Endpoint de la API (Resend + KV) alojada en Vercel.
-  const API_ENVIAR_CORREO = 'https://com-three-inky.vercel.app/api/enviar-correo';
-
-
-
-  // A dónde lleva el botón "Regresar a la habitación". Reemplaza esta ruta.
-  const URL_HABITACION = 'https://simbolos.0x000042.com/desaparecidos.html';
+      // Endpoint de la API (Resend + KV) alojada en Vercel.
+      const API_ENVIAR_CORREO = 'https://com-three-inky.vercel.app/api/enviar-correo';
 
 
-  // ---------- Construcción de la estructura de grupos/celdas ----------
 
-  // Cada grupo se procesa por separado, pero el índice de cada celda activa es
-  // global y consecutivo entre los tres grupos (grupo 1, luego grupo 2, luego
-  // grupo 3). Ese índice global es el mismo que se usa para PALABRAS.
-  let indiceGlobal = 0;
-  const GRUPOS = GRUPOS_PATRON.map((filasGrupo) => {
-    const celdas = [];
-    filasGrupo.forEach((fila, indiceFila) => {
-      fila.split('').forEach((caracter, indiceColumna) => {
-        if (caracter === 'x') {
-          celdas.push({ fila: indiceFila, columna: indiceColumna, indice: indiceGlobal });
-          indiceGlobal += 1;
+      // A dónde lleva el botón "Regresar a la habitación". Reemplaza esta ruta.
+      const URL_HABITACION = 'https://simbolos.0x000042.com/desaparecidos.html';
+
+
+      // ---------- Construcción de la estructura de grupos/celdas ----------
+
+      // Cada grupo se procesa por separado, pero el índice de cada celda activa es
+      // global y consecutivo entre los tres grupos (grupo 1, luego grupo 2, luego
+      // grupo 3). Ese índice global es el mismo que se usa para PALABRAS.
+      let indiceGlobal = 0;
+      const GRUPOS = GRUPOS_PATRON.map((filasGrupo) => {
+        const celdas = [];
+        filasGrupo.forEach((fila, indiceFila) => {
+          fila.split('').forEach((caracter, indiceColumna) => {
+            if (caracter === 'x') {
+              celdas.push({ fila: indiceFila, columna: indiceColumna, indice: indiceGlobal });
+              indiceGlobal += 1;
+            }
+          });
+        });
+        return {
+          filas: filasGrupo.length,
+          columnas: filasGrupo[0].length,
+          celdas,
+        };
+      });
+
+      const TOTAL_CUADROS = indiceGlobal;
+
+
+
+
+
+      // Palabra asociada a cada cuadro jugable, por posición (índice 0 a TOTAL_CUADROS - 1).
+      // Reemplaza estos placeholders por las palabras reales, manteniendo la posición.
+      const PALABRAS = [
+        'Todo',
+        'pereció',
+        'solo la',
+        'tierra árida',
+        'de infertil naranja quedó.',
+        'Prometieron',
+        'trabajos,',
+        'tierras fértiles;',
+        'Nos prometieron',
+        'progreso.',
+        'Pero',
+        'se llevaron',
+        'todo:',
+        'nuestras vidas',
+        'la de ellos.',
+        'Y ellos,',
+        'sin saberlo,',
+        'o tal vez sí,',
+        'condenaron su futuro.',
+
+
+      ]
+      // Imagen asociada a cada cuadro jugable, por posición (índice 0 a TOTAL_CUADROS - 1).
+      // Reemplaza estos placeholders por las rutas reales de tus imágenes, manteniendo la
+      // misma posición que la palabra correspondiente. Deben subirse junto con este HTML
+      // (o cambiar la ruta a donde las alojes, ej. una carpeta 'imagenes/').
+      const IMAGENES = [
+        'a1.png',
+        'a2.png',
+        'a3.png',
+        'a4.png',
+        'a5.png',
+        'a6.png',
+        'a7.png',
+        'a8.png',
+        'a9.png',
+        'a10.png',
+        'a11.png',
+        'a12.png',
+        'a13.png',
+        'a14.png',
+        'a15.png',
+        'a16.png',
+        'a17.png',
+        'a18.png',
+        'a19.png',
+
+
+      ]
+      // ---------- Estado ----------
+
+      let nombreJugador = '';
+      let secuencia = [];
+      let turno = 0;
+      let resultados = new Array(TOTAL_CUADROS).fill(null); // null | 'acierto' | 'fallo'
+      let cuadroActivo = null;
+      let progresoActual = 50;
+      let direccion = 1;
+      let inicioAnimacion = 0;
+      let rafId = null;
+      let turnoTerminado = false;
+
+      // ---------- Elementos del DOM ----------
+
+      const pantallaNombre = document.getElementById('pantalla-nombre');
+      const pantallaJuego = document.getElementById('pantalla-juego');
+      const pantallaFinal = document.getElementById('pantalla-final');
+      const fondoFinal = document.getElementById('fondo-final');
+
+      const inputNombre = document.getElementById('input-nombre');
+      const botonEmpezar = document.getElementById('boton-empezar');
+      const botonReiniciar = document.getElementById('boton-reiniciar');
+      const botonRegresar = document.getElementById('boton-regresar');
+
+      const contenedorGrupos = document.getElementById('grupos');
+
+      const mensajeFinal = document.getElementById('mensaje-final');
+      const contenidoResultado = document.getElementById('contenido-resultado');
+      const listaCorreos = document.getElementById('lista-correos');
+
+      // ---------- Utilidades ----------
+
+      function mezclarArray(arr) {
+        const copia = arr.slice();
+        for (let i = copia.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copia[i], copia[j]] = [copia[j], copia[i]];
         }
-      });
-    });
-    return {
-      filas: filasGrupo.length,
-      columnas: filasGrupo[0].length,
-      celdas,
-    };
-  });
+        return copia;
+      }
 
-  const TOTAL_CUADROS = indiceGlobal;
+      function mostrarPantalla(pantalla) {
+        pantallaNombre.classList.add('oculto');
+        pantallaJuego.classList.add('oculto');
+        pantallaFinal.classList.add('oculto');
+        pantalla.classList.remove('oculto');
 
+        // la imagen de fondo solo se ve en la pantalla final
+        fondoFinal.classList.toggle('oculto', pantalla !== pantallaFinal);
+      }
 
+      // ---------- Construcción del grid ----------
 
+      function construirGrupos() {
+        contenedorGrupos.innerHTML = '';
 
+        GRUPOS.forEach((grupo) => {
+          const gridGrupo = document.createElement('div');
+          gridGrupo.className = 'grid';
+          gridGrupo.style.gridTemplateColumns = 'repeat(' + grupo.columnas + ', ' + TAMANIO_CUADRO + 'px)';
+          gridGrupo.style.gridTemplateRows = 'repeat(' + grupo.filas + ', ' + TAMANIO_CUADRO + 'px)';
 
-  // Palabra asociada a cada cuadro jugable, por posición (índice 0 a TOTAL_CUADROS - 1).
-  // Reemplaza estos placeholders por las palabras reales, manteniendo la posición.
-const PALABRAS = [
-    'Todo',
-    'pereció',
-    'solo la',
-    'tierra árida',
-    'de infertil naranja quedó.',
-    'Prometieron',
-    'trabajos,',
-    'tierras fértiles;',
-    'Nos prometieron',
-    'progreso.',
-    'Pero',
-    'se llevaron',
-    'todo:',
-    'nuestras vidas',
-    'la de ellos.',
-    'Y ellos,',
-    'sin saberlo,',
-    'o tal vez sí,',
-    'condenaron su futuro.',
+          grupo.celdas.forEach((posicion) => {
+            const celda = document.createElement('div');
+            celda.className = 'cuadro';
+            celda.dataset.indice = String(posicion.indice);
+            celda.style.gridColumn = String(posicion.columna + 1);
+            celda.style.gridRow = String(posicion.fila + 1);
+            celda.addEventListener('click', () => manejarClickCuadro(posicion.indice));
+            gridGrupo.appendChild(celda);
+          });
 
+          contenedorGrupos.appendChild(gridGrupo);
+        });
+      }
 
-  ]
-  // Imagen asociada a cada cuadro jugable, por posición (índice 0 a TOTAL_CUADROS - 1).
-  // Reemplaza estos placeholders por las rutas reales de tus imágenes, manteniendo la
-  // misma posición que la palabra correspondiente. Deben subirse junto con este HTML
-  // (o cambiar la ruta a donde las alojes, ej. una carpeta 'imagenes/').
-  const IMAGENES = [
-    'a1.png',
-    'a2.png',
-    'a3.png',
-    'a4.png',
-    'a5.png',
-    'a6.png',
-    'a7.png',
-    'a8.png',
-    'a9.png',
-    'a10.png',
-    'a11.png',
-    'a12.png',
-    'a13.png',
-    'a14.png',
-    'a15.png',
-    'a16.png',
-    'a17.png',
-    'a18.png',
-    'a19.png',
+      function obtenerCelda(indice) {
+        return contenedorGrupos.querySelector('[data-indice="' + indice + '"]');
+      }
 
+      function renderizarCelda(indice) {
+        const celda = obtenerCelda(indice);
+        if (!celda) return;
 
-  ]
-  // ---------- Estado ----------
+        celda.innerHTML = '';
+        celda.classList.remove('activo', 'acierto', 'fallo');
 
-  let nombreJugador = '';
-  let secuencia = [];
-  let turno = 0;
-  let resultados = new Array(TOTAL_CUADROS).fill(null); // null | 'acierto' | 'fallo'
-  let cuadroActivo = null;
-  let progresoActual = 50;
-  let direccion = 1;
-  let inicioAnimacion = 0;
-  let rafId = null;
-  let turnoTerminado = false;
+        const resultado = resultados[indice];
 
-  // ---------- Elementos del DOM ----------
+        if (resultado === 'acierto') {
+          celda.classList.add('acierto');
+          const img = document.createElement('img');
+          img.className = 'imagen-revelada';
+          img.src = IMAGENES[indice];
+          img.alt = 'dibujo';
+          celda.appendChild(img);
 
-  const pantallaNombre = document.getElementById('pantalla-nombre');
-  const pantallaJuego = document.getElementById('pantalla-juego');
-  const pantallaFinal = document.getElementById('pantalla-final');
+          const palabra = document.createElement('div');
+          palabra.className = 'palabra-revelada';
+          palabra.textContent = PALABRAS[indice];
+          celda.appendChild(palabra);
+          return;
+        }
 
-  const inputNombre = document.getElementById('input-nombre');
-  const botonEmpezar = document.getElementById('boton-empezar');
-  const botonReiniciar = document.getElementById('boton-reiniciar');
-  const botonRegresar = document.getElementById('boton-regresar');
+        if (resultado === 'fallo') {
+          celda.classList.add('fallo');
+          return;
+        }
 
-  const contenedorGrupos = document.getElementById('grupos');
+        if (cuadroActivo === indice) {
+          celda.classList.add('activo');
+          const zona = document.createElement('div');
+          zona.className = 'zona-central';
+          celda.appendChild(zona);
 
-  const mensajeFinal = document.getElementById('mensaje-final');
-  const listaCorreos = document.getElementById('lista-correos');
+          const img = document.createElement('img');
+          img.className = 'imagen-movil';
+          img.src = IMAGENES[indice];
+          img.alt = 'dibujo';
+          img.id = 'imagen-activa';
+          img.style.left = '50%';
+          celda.appendChild(img);
 
-  // ---------- Utilidades ----------
+          const linea = document.createElement('div');
+          linea.className = 'linea-centro';
+          linea.id = 'linea-activa';
+          linea.style.left = '50%';
+          celda.appendChild(linea);
+          return;
+        }
 
-  function mezclarArray(arr) {
-    const copia = arr.slice();
-    for (let i = copia.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copia[i], copia[j]] = [copia[j], copia[i]];
-    }
-    return copia;
-  }
+        const zona = document.createElement('div');
+        zona.className = 'zona-central';
+        celda.appendChild(zona);
+      }
 
-  function mostrarPantalla(pantalla) {
-    pantallaNombre.classList.add('oculto');
-    pantallaJuego.classList.add('oculto');
-    pantallaFinal.classList.add('oculto');
-    pantalla.classList.remove('oculto');
-  }
+      // ---------- Lógica del turno ----------
 
-  // ---------- Construcción del grid ----------
+      function iniciarJuego() {
+        nombreJugador = inputNombre.value.trim();
+        if (!nombreJugador) return;
 
-  function construirGrupos() {
-    contenedorGrupos.innerHTML = '';
+        secuencia = mezclarArray(Array.from({ length: TOTAL_CUADROS }, (_, i) => i));
+        resultados = new Array(TOTAL_CUADROS).fill(null);
+        turno = 0;
 
-    GRUPOS.forEach((grupo) => {
-      const gridGrupo = document.createElement('div');
-      gridGrupo.className = 'grid';
-      gridGrupo.style.gridTemplateColumns = 'repeat(' + grupo.columnas + ', ' + TAMANIO_CUADRO + 'px)';
-      gridGrupo.style.gridTemplateRows = 'repeat(' + grupo.filas + ', ' + TAMANIO_CUADRO + 'px)';
+        construirGrupos();
+        for (let i = 0; i < TOTAL_CUADROS; i++) renderizarCelda(i);
 
-      grupo.celdas.forEach((posicion) => {
-        const celda = document.createElement('div');
-        celda.className = 'cuadro';
-        celda.dataset.indice = String(posicion.indice);
-        celda.style.gridColumn = String(posicion.columna + 1);
-        celda.style.gridRow = String(posicion.fila + 1);
-        celda.addEventListener('click', () => manejarClickCuadro(posicion.indice));
-        gridGrupo.appendChild(celda);
-      });
+        mostrarPantalla(pantallaJuego);
+        siguienteTurno();
+      }
 
-      contenedorGrupos.appendChild(gridGrupo);
-    });
-  }
+      function siguienteTurno() {
+        if (turno >= secuencia.length) {
+          finalizarJuego();
+          return;
+        }
 
-  function obtenerCelda(indice) {
-    return contenedorGrupos.querySelector('[data-indice="' + indice + '"]');
-  }
+        const indiceAnterior = cuadroActivo;
+        const indiceCuadro = secuencia[turno];
 
-  function renderizarCelda(indice) {
-    const celda = obtenerCelda(indice);
-    if (!celda) return;
+        cuadroActivo = indiceCuadro;
+        turnoTerminado = false;
+        direccion = Math.random() < 0.5 ? 1 : -1;
+        progresoActual = 50;
 
-    celda.innerHTML = '';
-    celda.classList.remove('activo', 'acierto', 'fallo');
+        if (indiceAnterior !== null) renderizarCelda(indiceAnterior);
+        renderizarCelda(indiceCuadro);
 
-    const resultado = resultados[indice];
+        inicioAnimacion = performance.now();
+        rafId = requestAnimationFrame(animar);
+      }
 
-    if (resultado === 'acierto') {
-      celda.classList.add('acierto');
-      const img = document.createElement('img');
-      img.className = 'imagen-revelada';
-      img.src = IMAGENES[indice];
-      img.alt = 'dibujo';
-      celda.appendChild(img);
+      function animar(ahora) {
+        const transcurrido = ahora - inicioAnimacion;
+        const t = transcurrido / DURACION_MS;
+        const progreso = 50 - direccion * AMPLITUD * Math.cos(t * Math.PI * 4);
+        progresoActual = progreso;
 
-      const palabra = document.createElement('div');
-      palabra.className = 'palabra-revelada';
-      palabra.textContent = PALABRAS[indice];
-      celda.appendChild(palabra);
-      return;
-    }
+        const imagenActiva = document.getElementById('imagen-activa');
+        if (imagenActiva) imagenActiva.style.left = progreso + '%';
 
-    if (resultado === 'fallo') {
-      celda.classList.add('fallo');
-      return;
-    }
+        const lineaActiva = document.getElementById('linea-activa');
+        if (lineaActiva) lineaActiva.style.left = progreso + '%';
 
-    if (cuadroActivo === indice) {
-      celda.classList.add('activo');
-      const zona = document.createElement('div');
-      zona.className = 'zona-central';
-      celda.appendChild(zona);
-
-      const img = document.createElement('img');
-      img.className = 'imagen-movil';
-      img.src = IMAGENES[indice];
-      img.alt = 'dibujo';
-      img.id = 'imagen-activa';
-      img.style.left = '50%';
-      celda.appendChild(img);
-
-      const linea = document.createElement('div');
-      linea.className = 'linea-centro';
-      linea.id = 'linea-activa';
-      linea.style.left = '50%';
-      celda.appendChild(linea);
-      return;
-    }
-
-    const zona = document.createElement('div');
-    zona.className = 'zona-central';
-    celda.appendChild(zona);
-  }
-
-  // ---------- Lógica del turno ----------
-
-  function iniciarJuego() {
-    nombreJugador = inputNombre.value.trim();
-    if (!nombreJugador) return;
-
-    secuencia = mezclarArray(Array.from({ length: TOTAL_CUADROS }, (_, i) => i));
-    resultados = new Array(TOTAL_CUADROS).fill(null);
-    turno = 0;
-
-    construirGrupos();
-    for (let i = 0; i < TOTAL_CUADROS; i++) renderizarCelda(i);
-
-    mostrarPantalla(pantallaJuego);
-    siguienteTurno();
-  }
-
-  function siguienteTurno() {
-    if (turno >= secuencia.length) {
-      finalizarJuego();
-      return;
-    }
-
-    const indiceAnterior = cuadroActivo;
-    const indiceCuadro = secuencia[turno];
-
-    cuadroActivo = indiceCuadro;
-    turnoTerminado = false;
-    direccion = Math.random() < 0.5 ? 1 : -1;
-    progresoActual = 50;
-
-    if (indiceAnterior !== null) renderizarCelda(indiceAnterior);
-    renderizarCelda(indiceCuadro);
-
-    inicioAnimacion = performance.now();
-    rafId = requestAnimationFrame(animar);
-  }
-
-  function animar(ahora) {
-    const transcurrido = ahora - inicioAnimacion;
-    const t = transcurrido / DURACION_MS;
-    const progreso = 50 - direccion * AMPLITUD * Math.cos(t * Math.PI * 4);
-    progresoActual = progreso;
-
-    const imagenActiva = document.getElementById('imagen-activa');
-    if (imagenActiva) imagenActiva.style.left = progreso + '%';
-
-    const lineaActiva = document.getElementById('linea-activa');
-    if (lineaActiva) lineaActiva.style.left = progreso + '%';
-
-    if (transcurrido < DURACION_MS) {
-      rafId = requestAnimationFrame(animar);
-    } else {
-      terminarTurno('fallo', cuadroActivo);
-    }
-  }
-
-  function manejarClickCuadro(indice) {
-    if (cuadroActivo !== indice || turnoTerminado) return;
-    const acierto = progresoActual >= ZONA_CENTRAL_INICIO && progresoActual <= ZONA_CENTRAL_FIN;
-    terminarTurno(acierto ? 'acierto' : 'fallo', indice);
-  }
-
-  function terminarTurno(resultado, indice) {
-    if (turnoTerminado) return;
-    turnoTerminado = true;
-    if (rafId) cancelAnimationFrame(rafId);
-
-    resultados[indice] = resultado;
-    cuadroActivo = null;
-    renderizarCelda(indice);
-
-    turno += 1;
-    siguienteTurno();
-  }
-
-  // ---------- Fin del juego ----------
-
-  function finalizarJuego() {
-    const totalAciertos = resultados.filter((r) => r === 'acierto').length;
-    mostrarPantalla(pantallaFinal);
-    listaCorreos.classList.add('oculto');
-    listaCorreos.innerHTML = '';
-
-    if (totalAciertos / TOTAL_CUADROS >= PORCENTAJE_MINIMO) {
-      mensajeFinal.textContent = 'Enviando la carta...';
-      enviarCorreo(nombreJugador);
-    } else {
-      mensajeFinal.textContent = 'La carta no se envió esta vez.';
-    }
-  }
-
-  function enviarCorreo(nombre) {
-    fetch(API_ENVIAR_CORREO, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre, juego: 'simbolos' }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.success) {
-          mensajeFinal.textContent = 'Carta enviada a quien la necesite ver';
-          if (Array.isArray(data.destinatarios) && data.destinatarios.length > 0) {
-            listaCorreos.classList.remove('oculto');
-            data.destinatarios.forEach((correo) => {
-              const linea = document.createElement('div');
-              linea.textContent = correo;
-              listaCorreos.appendChild(linea);
-            });
-          }
+        if (transcurrido < DURACION_MS) {
+          rafId = requestAnimationFrame(animar);
         } else {
-          mensajeFinal.textContent = 'La carta no se pudo enviar.';
+          terminarTurno('fallo', cuadroActivo);
         }
-      })
-      .catch(() => {
-        mensajeFinal.textContent = 'La carta no se pudo enviar.';
+      }
+
+      function manejarClickCuadro(indice) {
+        if (cuadroActivo !== indice || turnoTerminado) return;
+        const acierto = progresoActual >= ZONA_CENTRAL_INICIO && progresoActual <= ZONA_CENTRAL_FIN;
+        terminarTurno(acierto ? 'acierto' : 'fallo', indice);
+      }
+
+      function terminarTurno(resultado, indice) {
+        if (turnoTerminado) return;
+        turnoTerminado = true;
+        if (rafId) cancelAnimationFrame(rafId);
+
+        resultados[indice] = resultado;
+        cuadroActivo = null;
+        renderizarCelda(indice);
+
+        turno += 1;
+        siguienteTurno();
+      }
+
+      // ---------- Fin del juego ----------
+
+      // Reconstruye el texto de la carta a partir de las palabras
+      // acertadas, en su orden original — es lo que se muestra en el
+      // espacio de "contenido producido" de la pantalla final.
+      function reconstruirCarta() {
+        return resultados
+          .map((r, i) => (r === 'acierto' ? PALABRAS[i] : null))
+          .filter((palabra) => palabra !== null)
+          .join(' ');
+      }
+
+      function mostrarContenidoResultado(texto) {
+        if (texto) {
+          contenidoResultado.textContent = texto;
+          contenidoResultado.classList.remove('oculto', 'vacio');
+        } else {
+          contenidoResultado.textContent = 'Aquí aparecerá la carta reconstruida…';
+          contenidoResultado.classList.remove('oculto');
+          contenidoResultado.classList.add('vacio');
+        }
+      }
+
+      function finalizarJuego() {
+        const totalAciertos = resultados.filter((r) => r === 'acierto').length;
+        mostrarPantalla(pantallaFinal);
+        mostrarContenidoResultado(reconstruirCarta());
+        listaCorreos.classList.add('oculto');
+        listaCorreos.innerHTML = '';
+
+        if (totalAciertos / TOTAL_CUADROS >= PORCENTAJE_MINIMO) {
+          mensajeFinal.textContent = 'Enviando la carta...';
+          enviarCorreo(nombreJugador);
+        } else {
+          mensajeFinal.textContent = 'La carta no se envió esta vez.';
+        }
+      }
+
+      function enviarCorreo(nombre) {
+        fetch(API_ENVIAR_CORREO, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre, juego: 'simbolos' }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data && data.success) {
+              mensajeFinal.textContent = 'Carta enviada a quien la necesite ver';
+              if (Array.isArray(data.destinatarios) && data.destinatarios.length > 0) {
+                listaCorreos.classList.remove('oculto');
+                data.destinatarios.forEach((correo) => {
+                  const linea = document.createElement('div');
+                  linea.textContent = correo;
+                  listaCorreos.appendChild(linea);
+                });
+              }
+            } else {
+              mensajeFinal.textContent = 'La carta no se pudo enviar.';
+            }
+          })
+          .catch(() => {
+            mensajeFinal.textContent = 'La carta no se pudo enviar.';
+          });
+      }
+
+      // ---------- Eventos ----------
+
+      botonEmpezar.addEventListener('click', iniciarJuego);
+      inputNombre.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') iniciarJuego();
       });
-  }
+      botonReiniciar.addEventListener('click', () => {
+        mostrarPantalla(pantallaNombre);
+        inputNombre.value = '';
+        inputNombre.focus();
+      });
+      botonRegresar.addEventListener('click', () => {
+        window.location.href = URL_HABITACION;
+      });
 
-  // ---------- Eventos ----------
-
-  botonEmpezar.addEventListener('click', iniciarJuego);
-  inputNombre.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') iniciarJuego();
-  });
-  botonReiniciar.addEventListener('click', () => {
-    mostrarPantalla(pantallaNombre);
-    inputNombre.value = '';
-    inputNombre.focus();
-  });
-  botonRegresar.addEventListener('click', () => {
-    window.location.href = URL_HABITACION;
-  });
-
-})();
-</script>
+    })();
+  </script>
 
 </body>
-</html>
 
+</html>

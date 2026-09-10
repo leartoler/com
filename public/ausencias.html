@@ -7,13 +7,13 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
 <style>
   :root{
-    --bg:#1c39d6;
-    --linea:#ffffff;
+    --bg:#cdcf2e;
+    --linea:#c8551c;
     --ink:#191c14;
     --white:#ffffff;
-    --muted:#5865ad;
+    --muted:#6b6f3a;
     --error:#b3251f;
-    --ok:#25a399;
+    --ok:#2f6b2a;
     color-scheme: light;
 
     /* alias del sistema anterior, para no tener que retocar cada regla */
@@ -45,6 +45,19 @@
   .fondo-textura{
     position: fixed; inset: 0; z-index: 0; pointer-events: none;
     background: repeating-radial-gradient(circle at 50% 42%, rgba(0,0,0,.05) 0 1.5px, transparent 1.5px 22px);
+  }
+
+  /* imagen de fondo de la pantalla final — placeholder por ahora,
+     reemplaza fondo-final.png por la imagen real cuando la tengas */
+  .fondo-final{
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url('fondo-final.png');
+    background-size: cover;
+    background-position: center;
+  }
+
+  .fondo-final.oculto{
+    display: none !important;
   }
 
   .marca{
@@ -85,27 +98,15 @@
     max-width: 560px;
   }
 
-  /* --- Pantallas (juego / resultado) --- */
+  /* --- Pantallas (nombre / juego / final) --- */
 
   .pantalla{
-    display: none;
-  }
-
-  .pantalla.activa{
-    display: block;
-    animation: aparecerPantalla 0.5s ease;
-  }
-
-  @keyframes aparecerPantalla{
-    from{ opacity: 0; transform: translateY(6px); }
-    to{ opacity: 1; transform: translateY(0); }
+    position: relative;
+    z-index: 1;
+    width: 100%;
   }
 
   .oculto{
-    display: none !important;
-  }
-
-  [hidden]{
     display: none !important;
   }
 
@@ -125,21 +126,14 @@
     color: var(--ink);
   }
 
-  .panel p.aviso{
-    font-size: 0.92rem;
-    font-style: italic;
-    color: var(--texto-tenue);
-    line-height: 1.5;
-    margin: 0 0 18px;
-  }
+  /* --- Compuerta (nombre) y pantalla final: mismo tratamiento de
+     pantalla completa, centrado, que el resto de las piezas --- */
 
-  /* --- Compuerta: mensaje antes de jugar (pantalla completa,
-     mismo tratamiento que la compuerta de firma de "Verso") --- */
-
-  #pantalla-mensaje{
-    position: relative;
-    z-index: 1;
+  #pantalla-nombre,
+  #pantalla-final{
     min-height: 100vh;
+    max-width: 900px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -149,7 +143,8 @@
     text-align: center;
   }
 
-  #pantalla-mensaje .subtitulo-mensaje{
+  #pantalla-nombre .subtitulo,
+  #pantalla-final .subtitulo{
     font-family: var(--fuente);
     font-weight: 600;
     font-size: 1.2rem;
@@ -159,40 +154,25 @@
     color: var(--ink);
   }
 
-  #pantalla-mensaje form{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
+  #pantalla-nombre input[type="text"]{
     width: 100%;
-    max-width: 460px;
-  }
-
-  #pantalla-mensaje textarea{
-    width: 100%;
-    background: var(--white);
-    border: 2px solid var(--borde);
-    border-radius: 0;
+    max-width: 320px;
     padding: 12px 14px;
-    color: var(--texto);
-    font-size: 0.95rem;
     font-family: var(--fuente-mono);
-    min-height: 110px;
-    resize: vertical;
-    line-height: 1.5;
+    font-size: .95rem;
+    border: 2px solid var(--borde);
+    background: var(--white);
+    color: var(--texto);
+    outline: none;
+    border-radius: 0;
   }
 
-  #pantalla-mensaje textarea::placeholder{
+  #pantalla-nombre input[type="text"]::placeholder{
     color: var(--texto-tenue);
   }
 
-  #pantalla-mensaje textarea:focus{
-    outline: none;
+  #pantalla-nombre input[type="text"]:focus{
     border-color: var(--linea);
-  }
-
-  #pantalla-mensaje button.enviar{
-    margin-top: 0;
   }
 
   button.enviar{
@@ -227,6 +207,32 @@
     transform: scale(0.98);
   }
 
+  /* botón de la compuerta y de la pantalla final: chicos, del ancho
+     de su texto — no ocupan todo el ancho como otros botones del sitio */
+  #pantalla-nombre button.enviar,
+  #pantalla-final button.enviar{
+    display: inline-block;
+    width: auto;
+    margin-top: 0;
+    margin-inline: 6px;
+    padding: 13px 24px;
+  }
+
+  button.secundario{
+    background: rgba(255, 255, 255, .55);
+    color: var(--texto);
+  }
+
+  button.secundario:hover{
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+  }
+
+  #pantalla-final .botones{
+    margin-top: 4px;
+  }
+
   /* --- Pantalla de juego --- */
 
   .tablero{
@@ -247,6 +253,7 @@
     font-size: 1.05rem;
     line-height: 2.05;
     color: var(--ink);
+    text-align: left;
   }
 
   /* el texto es uniforme: las palabras del poema no se distinguen
@@ -372,6 +379,7 @@
     font-size: 1.1rem;
     line-height: 1.9;
     color: var(--ink);
+    text-align: left;
   }
 
   .poema-resultado .linea{
@@ -390,80 +398,49 @@
     font-size: 0.95rem;
   }
 
-  /* --- Pantalla de resultado --- */
+  /* --- Pantalla final --- */
 
-  #pantalla-resultado .panel{
-    max-width: 520px;
-    margin: 20px auto 0;
-    text-align: center;
-  }
-
-  #pantalla-resultado .poema-resultado{
-    text-align: left;
-    margin: 6px auto 20px;
-    max-width: 320px;
-  }
-
-  .mensaje-guardado{
-    text-align: left;
-    max-width: 320px;
-    margin: 0 auto 20px;
-    padding: 12px 14px;
-    background: rgba(200, 85, 28, 0.06);
-    border: 2px solid var(--borde);
-    border-radius: 0;
-  }
-
-  .mensaje-guardado h3{
-    margin: 0 0 6px;
-    font-family: var(--fuente-mono);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--texto-tenue);
-    font-weight: 400;
-  }
-
-  .mensaje-guardado p{
-    margin: 0;
-    font-size: 0.92rem;
+  .mensaje-final{
+    font-family: var(--fuente-titulo);
+    font-size: 1rem;
+    letter-spacing: .02em;
+    margin: 0 0 16px;
     line-height: 1.5;
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, .75);
+  }
+
+  /* espacio para el contenido producido (el poema reunido) en la
+     pantalla final, arriba de la lista de correos */
+  .contenido-resultado{
+    max-width: 420px;
+    margin: 0 auto 20px;
+    padding: 14px 18px;
+    background: var(--fondo-panel);
+    border: 2px solid var(--borde);
+    font-family: var(--fuente);
+    font-size: 1rem;
+    line-height: 1.6;
     color: var(--texto);
+    text-align: left;
     white-space: pre-wrap;
   }
 
-  #pantalla-resultado form{
-    max-width: 320px;
-    margin: 0 auto;
-    text-align: left;
+  .contenido-resultado.vacio{
+    color: var(--texto-tenue);
+    font-style: italic;
   }
-
-  #bloque-reintento{
-    max-width: 320px;
-    margin: 0 auto;
-  }
-
-  .mensaje-estado{
-    font-family: var(--fuente-mono);
-    font-size: 0.85rem;
-    min-height: 1.3em;
-    margin-top: 10px;
-    text-align: center;
-  }
-
-  .mensaje-estado.exito{ color: var(--exito); }
-  .mensaje-estado.error{ color: var(--error); }
-  .mensaje-estado.enviando{ color: var(--texto-tenue); }
 
   .lista-correos{
-    margin: 14px auto 0;
-    max-width: 320px;
-    padding: 12px 14px;
+    margin: 0 auto 24px;
+    max-width: 420px;
+    padding: 14px 18px;
     background: var(--white);
     border: 2px solid var(--borde);
     border-radius: 0;
     font-family: var(--fuente-mono);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--texto-tenue);
     text-align: left;
   }
@@ -476,26 +453,25 @@
 <body>
 
 <div class="fondo-textura" aria-hidden="true"></div>
+<div class="fondo-final oculto" id="fondo-final" aria-hidden="true"></div>
 <div class="marca">0x000042</div>
 
-<!-- Compuerta: hay que escribir un mensaje para poder jugar -->
-<div id="pantalla-mensaje">
-  <p class="subtitulo-mensaje">Escribe un mensaje que quieras enviar antes de jugar</p>
-  <form id="form-mensaje">
-    <textarea id="campo-mensaje" placeholder="Escribe un mensaje que quieras enviar…" required></textarea>
-    <button type="submit" class="enviar">JUGAR</button>
-  </form>
+<!-- Pantalla: nombre -->
+<div id="pantalla-nombre" class="pantalla">
+  <p class="subtitulo">Nombre, expresión o concepto con el que quieras firmar y jugar</p>
+  <input type="text" id="input-nombre" placeholder="Escribe aquí" maxlength="40">
+  <br>
+  <button id="boton-empezar" class="enviar">Iniciar</button>
 </div>
 
-<div class="contenedor" id="contenedor-juego" hidden>
+<!-- Pantalla: jugando -->
+<div id="pantalla-juego" class="pantalla oculto">
+  <div class="contenedor">
 
-  <header>
-    <h1>lo que queda cuando algo desaparece</h1>
-    <p id="texto-encabezado">Tienes 15 segundos: todas las palabras del texto se van a ir borrando solas, así que toca las resaltadas antes de que desaparezcan. Cada una que alcances se vuelve parte de un poema. Al reunir más de la mitad, ganas y el poema se envía solo por correo.</p>
-  </header>
-
-  <!-- Pantalla del juego -->
-  <section class="pantalla activa" id="pantalla-juego">
+    <header>
+      <h1>lo que queda cuando algo desaparece</h1>
+      <p id="texto-encabezado">Tienes 15 segundos: todas las palabras del texto se van a ir borrando solas, así que toca las resaltadas antes de que desaparezcan. Cada una que alcances se vuelve parte de un poema. Al reunir más de la mitad, ganas y el poema se envía solo por correo.</p>
+    </header>
 
     <div class="tablero" id="tablero">
 
@@ -581,32 +557,18 @@
       </div>
 
     </div>
-  </section>
+  </div>
+</div>
 
-  <!-- Pantalla de resultado -->
-  <section class="pantalla" id="pantalla-resultado">
-    <div class="panel">
-      <h2 id="resultado-titulo">¡ganaste el poema!</h2>
-
-      <div class="poema-resultado" id="poema-final"></div>
-
-      <div class="mensaje-guardado" id="mensaje-guardado">
-        <h3>tu mensaje</h3>
-        <p id="mensaje-guardado-texto"></p>
-      </div>
-
-      <div id="bloque-envio">
-        <div class="mensaje-estado" id="mensaje-estado-final"></div>
-        <div class="lista-correos oculto" id="lista-correos"></div>
-      </div>
-
-      <div id="bloque-reintento" class="oculto">
-        <p class="aviso" id="texto-reintento"></p>
-        <button type="button" class="enviar" id="boton-jugar-de-nuevo">Jugar de nuevo</button>
-      </div>
-    </div>
-  </section>
-
+<!-- Pantalla: terminado -->
+<div id="pantalla-final" class="pantalla oculto">
+  <p class="mensaje-final" id="mensaje-final"></p>
+  <div class="contenido-resultado oculto" id="contenido-resultado"></div>
+  <div class="lista-correos oculto" id="lista-correos"></div>
+  <div class="botones">
+    <button id="boton-reiniciar" class="enviar">Escribir poema de nuevo</button>
+    <button id="boton-regresar" class="enviar secundario">Regresar a la habitación</button>
+  </div>
 </div>
 
 <script>
@@ -629,6 +591,9 @@
   // Duración de la partida. 15 segundos es solo para probar —
   // súbelo a lo que quieras para la versión final (30, 60, etc.)
   const TIEMPO_TOTAL_MS = 15 * 1000;
+
+  // A dónde lleva el botón "Regresar a la habitación". Reemplaza esta ruta.
+  const URL_HABITACION = 'https://simbolos.0x000042.com/desaparecidos.html';
 
   // ---------------------------------------------------------------
   // Preparar el texto: envuelve cada palabra suelta (las que no son
@@ -665,7 +630,7 @@
   // Estado
   // ---------------------------------------------------------------
 
-  let mensajeJugador = "";
+  let nombreJugador = "";
   let juegoActivo = false;
   let juegoGanado = false;
 
@@ -678,13 +643,13 @@
   let idIntervaloReloj = null;
   let inicioPartidaMs = 0;
 
-  const elPantallaJuego = document.getElementById("pantalla-juego");
-  const elPantallaResultado = document.getElementById("pantalla-resultado");
+  const pantallaNombre = document.getElementById("pantalla-nombre");
+  const pantallaJuego = document.getElementById("pantalla-juego");
+  const pantallaFinal = document.getElementById("pantalla-final");
+  const fondoFinal = document.getElementById("fondo-final");
 
-  const elPantallaMensaje = document.getElementById("pantalla-mensaje");
-  const elContenedorJuego = document.getElementById("contenedor-juego");
-  const elFormMensaje = document.getElementById("form-mensaje");
-  const elTablero = document.getElementById("tablero");
+  const inputNombre = document.getElementById("input-nombre");
+  const botonEmpezar = document.getElementById("boton-empezar");
 
   const elProgresoRelleno = document.getElementById("progreso-relleno");
   const elProgresoConteo = document.getElementById("progreso-conteo");
@@ -693,21 +658,20 @@
   const elTiempoRestante = document.getElementById("tiempo-restante");
   const elObjetivoLista = document.getElementById("objetivo-lista");
 
-  const elResultadoTitulo = document.getElementById("resultado-titulo");
-  const elPoemaFinal = document.getElementById("poema-final");
-  const elMensajeGuardadoTexto = document.getElementById("mensaje-guardado-texto");
-  const elBloqueEnvio = document.getElementById("bloque-envio");
-  const elBloqueReintento = document.getElementById("bloque-reintento");
-  const elTextoReintento = document.getElementById("texto-reintento");
-  const elMensajeEstadoFinal = document.getElementById("mensaje-estado-final");
-  const elListaCorreos = document.getElementById("lista-correos");
-  const elBotonJugarDeNuevo = document.getElementById("boton-jugar-de-nuevo");
+  const mensajeFinal = document.getElementById("mensaje-final");
+  const contenidoResultado = document.getElementById("contenido-resultado");
+  const listaCorreos = document.getElementById("lista-correos");
+  const botonReiniciar = document.getElementById("boton-reiniciar");
+  const botonRegresar = document.getElementById("boton-regresar");
 
-  function mostrarPantalla(elemento){
-    [elPantallaJuego, elPantallaResultado].forEach(function(p){
-      p.classList.remove("activa");
-    });
-    elemento.classList.add("activa");
+  function mostrarPantalla(pantalla){
+    pantallaNombre.classList.add("oculto");
+    pantallaJuego.classList.add("oculto");
+    pantallaFinal.classList.add("oculto");
+    pantalla.classList.remove("oculto");
+
+    // la imagen de fondo solo se ve en la pantalla final
+    fondoFinal.classList.toggle("oculto", pantalla !== pantallaFinal);
   }
 
   // ---------------------------------------------------------------
@@ -730,17 +694,20 @@
   }
 
   // ---------------------------------------------------------------
-  // Compuerta: hay que escribir un mensaje para poder jugar
+  // Compuerta: hay que firmar con un nombre para poder jugar
   // ---------------------------------------------------------------
 
-  elFormMensaje.addEventListener("submit", function(evento){
-    evento.preventDefault();
-    mensajeJugador = document.getElementById("campo-mensaje").value.trim();
-    if (!mensajeJugador) return;
+  function iniciarJuego(){
+    nombreJugador = inputNombre.value.trim();
+    if (!nombreJugador) return;
 
-    elPantallaMensaje.hidden = true;
-    elContenedorJuego.hidden = false;
+    mostrarPantalla(pantallaJuego);
     iniciarPartida();
+  }
+
+  botonEmpezar.addEventListener("click", iniciarJuego);
+  inputNombre.addEventListener("keydown", function(e){
+    if (e.key === "Enter") iniciarJuego();
   });
 
   // ---------------------------------------------------------------
@@ -879,71 +846,76 @@
     mostrarResultado(false, palabrasElegidas());
   }
 
-  function mostrarResultado(gano, elegidas){
-    renderizarPoemaEn(elPoemaFinal, elegidas);
-    elMensajeGuardadoTexto.textContent = mensajeJugador;
-
-    if (gano){
-      elResultadoTitulo.textContent = "¡ganaste el poema!";
-      elBloqueEnvio.classList.remove("oculto");
-      elBloqueReintento.classList.add("oculto");
-      mostrarPantalla(elPantallaResultado);
-      enviarPoema(elegidas);
+  // Muestra, en el espacio de "contenido producido" de la pantalla
+  // final, el poema reunido con las palabras encontradas hasta el momento.
+  function mostrarContenidoResultado(elegidas){
+    const texto = elegidas.map(function(n){ return n.dataset.palabra; }).join("\n");
+    if (texto){
+      contenidoResultado.textContent = texto;
+      contenidoResultado.classList.remove("oculto", "vacio");
     } else {
-      elResultadoTitulo.textContent = "se acabó el tiempo";
-      elTextoReintento.textContent = "Reuniste " + elegidas.length + " de " + totalPalabrasPoema + " palabras — no fue suficiente esta vez.";
-      elBloqueEnvio.classList.add("oculto");
-      elBloqueReintento.classList.remove("oculto");
-      mostrarPantalla(elPantallaResultado);
+      contenidoResultado.textContent = "Aquí aparecerá el poema…";
+      contenidoResultado.classList.remove("oculto");
+      contenidoResultado.classList.add("vacio");
     }
   }
 
-  elBotonJugarDeNuevo.addEventListener("click", function(){
+  function mostrarResultado(gano, elegidas){
+    mostrarPantalla(pantallaFinal);
+    mostrarContenidoResultado(elegidas);
+    listaCorreos.classList.add("oculto");
+    listaCorreos.innerHTML = "";
+
+    if (gano){
+      mensajeFinal.textContent = "Enviando el poema...";
+      enviarPoema(elegidas);
+    } else {
+      mensajeFinal.textContent = "El poema no se envió esta vez.";
+    }
+  }
+
+  botonReiniciar.addEventListener("click", function(){
     location.reload();
+  });
+
+  botonRegresar.addEventListener("click", function(){
+    window.location.href = URL_HABITACION;
   });
 
   // ---------------------------------------------------------------
   // Envío del poema por correo: mismo endpoint (Vercel + Resend) que
   // ya usa "Carta" — se envía solo, apenas se gana, sin pedir correo.
-  // El campo "mensaje" que el jugador escribió antes de jugar hace
-  // las veces del "nombre" con el que firma, igual que en "Carta".
+  // El nombre con el que el jugador firmó en la compuerta hace las
+  // veces del "nombre" del remitente, igual que en "Carta".
   // ---------------------------------------------------------------
 
   function enviarPoema(elegidas){
     const poemaTexto = elegidas.map(function(n){ return n.dataset.palabra; }).join("\n");
 
-    elMensajeEstadoFinal.textContent = "Enviando el poema…";
-    elMensajeEstadoFinal.className = "mensaje-estado enviando";
-    elListaCorreos.classList.add("oculto");
-    elListaCorreos.innerHTML = "";
-
     fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nombre: mensajeJugador, juego: JUEGO_ID, poema: poemaTexto })
+      body: JSON.stringify({ nombre: nombreJugador, juego: JUEGO_ID, poema: poemaTexto })
     })
       .then(function(respuesta){ return respuesta.json(); })
       .then(function(datos){
         if (datos && datos.success){
-          elMensajeEstadoFinal.textContent = "Poema enviado a quien lo necesite ver.";
-          elMensajeEstadoFinal.className = "mensaje-estado exito";
+          mensajeFinal.textContent = "Poema enviado a quien lo necesite ver.";
           if (Array.isArray(datos.destinatarios) && datos.destinatarios.length > 0){
-            elListaCorreos.classList.remove("oculto");
+            listaCorreos.classList.remove("oculto");
             datos.destinatarios.forEach(function(correo){
               const linea = document.createElement("div");
               linea.textContent = correo;
-              elListaCorreos.appendChild(linea);
+              listaCorreos.appendChild(linea);
             });
           }
         } else {
-          elMensajeEstadoFinal.textContent = "El poema no se pudo enviar.";
-          elMensajeEstadoFinal.className = "mensaje-estado error";
+          mensajeFinal.textContent = "El poema no se pudo enviar.";
         }
       })
       .catch(function(error){
         console.error("Error al enviar el poema:", error);
-        elMensajeEstadoFinal.textContent = "El poema no se pudo enviar.";
-        elMensajeEstadoFinal.className = "mensaje-estado error";
+        mensajeFinal.textContent = "El poema no se pudo enviar.";
       });
   }
 
