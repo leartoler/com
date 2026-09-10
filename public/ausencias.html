@@ -105,6 +105,10 @@
     display: none !important;
   }
 
+  [hidden]{
+    display: none !important;
+  }
+
   .panel{
     background: var(--fondo-panel);
     border: 2px solid var(--borde);
@@ -129,49 +133,66 @@
     margin: 0 0 18px;
   }
 
-  /* --- Compuerta: mensaje antes de jugar --- */
+  /* --- Compuerta: mensaje antes de jugar (pantalla completa,
+     mismo tratamiento que la compuerta de firma de "Verso") --- */
 
-  .panel-mensaje{
+  #pantalla-mensaje{
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 24px 16px;
+    text-align: center;
+  }
+
+  #pantalla-mensaje .subtitulo-mensaje{
+    font-family: var(--fuente);
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.4;
+    max-width: 50ch;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  #pantalla-mensaje form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
     max-width: 460px;
-    margin: 0 auto 18px;
   }
 
-  .campo{
-    margin-bottom: 12px;
-  }
-
-  .campo label{
-    display: block;
-    font-family: var(--fuente-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.7rem;
-    color: var(--texto-tenue);
-    margin-bottom: 6px;
-  }
-
-  .campo input,
-  .campo textarea{
+  #pantalla-mensaje textarea{
     width: 100%;
     background: var(--white);
     border: 2px solid var(--borde);
     border-radius: 0;
-    padding: 10px 12px;
+    padding: 12px 14px;
     color: var(--texto);
     font-size: 0.95rem;
     font-family: var(--fuente-mono);
-  }
-
-  .campo textarea{
+    min-height: 110px;
     resize: vertical;
-    min-height: 70px;
     line-height: 1.5;
   }
 
-  .campo input:focus,
-  .campo textarea:focus{
+  #pantalla-mensaje textarea::placeholder{
+    color: var(--texto-tenue);
+  }
+
+  #pantalla-mensaje textarea:focus{
     outline: none;
     border-color: var(--linea);
+  }
+
+  #pantalla-mensaje button.enviar{
+    margin-top: 0;
   }
 
   button.enviar{
@@ -457,27 +478,26 @@
 <div class="fondo-textura" aria-hidden="true"></div>
 <div class="marca">0x000042</div>
 
-<div class="contenedor">
+<!-- Compuerta: hay que escribir un mensaje para poder jugar -->
+<div id="pantalla-mensaje">
+  <p class="subtitulo-mensaje">Escribe un mensaje que quieras enviar antes de jugar</p>
+  <form id="form-mensaje">
+    <textarea id="campo-mensaje" placeholder="Escribe un mensaje que quieras enviar…" required></textarea>
+    <button type="submit" class="enviar">JUGAR</button>
+  </form>
+</div>
+
+<div class="contenedor" id="contenedor-juego" hidden>
 
   <header>
     <h1>lo que queda cuando algo desaparece</h1>
-    <p id="texto-encabezado">Escribe un mensaje para poder jugar. Tienes 15 segundos: todas las palabras del texto se van a ir borrando solas, así que toca las resaltadas antes de que desaparezcan. Cada una que alcances se vuelve parte de un poema. Al reunir más de la mitad, ganas y el poema se envía solo por correo.</p>
+    <p id="texto-encabezado">Tienes 15 segundos: todas las palabras del texto se van a ir borrando solas, así que toca las resaltadas antes de que desaparezcan. Cada una que alcances se vuelve parte de un poema. Al reunir más de la mitad, ganas y el poema se envía solo por correo.</p>
   </header>
 
-  <!-- Pantalla del juego (incluye la compuerta del mensaje) -->
+  <!-- Pantalla del juego -->
   <section class="pantalla activa" id="pantalla-juego">
 
-    <div class="panel panel-mensaje" id="panel-mensaje">
-      <form id="form-mensaje">
-        <div class="campo">
-          <label for="campo-mensaje">Escribe un mensaje que quieras enviar</label>
-          <textarea id="campo-mensaje" placeholder="Escribe un mensaje que quieras enviar…" required></textarea>
-        </div>
-        <button type="submit" class="enviar">Jugar</button>
-      </form>
-    </div>
-
-    <div class="tablero oculto" id="tablero">
+    <div class="tablero" id="tablero">
 
       <div class="panel panel-texto">
         <p class="texto" id="texto-fuente">
@@ -661,7 +681,8 @@
   const elPantallaJuego = document.getElementById("pantalla-juego");
   const elPantallaResultado = document.getElementById("pantalla-resultado");
 
-  const elPanelMensaje = document.getElementById("panel-mensaje");
+  const elPantallaMensaje = document.getElementById("pantalla-mensaje");
+  const elContenedorJuego = document.getElementById("contenedor-juego");
   const elFormMensaje = document.getElementById("form-mensaje");
   const elTablero = document.getElementById("tablero");
 
@@ -717,8 +738,8 @@
     mensajeJugador = document.getElementById("campo-mensaje").value.trim();
     if (!mensajeJugador) return;
 
-    elPanelMensaje.classList.add("oculto");
-    elTablero.classList.remove("oculto");
+    elPantallaMensaje.hidden = true;
+    elContenedorJuego.hidden = false;
     iniciarPartida();
   });
 
