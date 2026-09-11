@@ -10,7 +10,7 @@
   :root{
     --bg:#6e8e99ff;
     --linea:rgb(74, 96, 104);
-    --ink:#aacedf;
+    --ink:#316e8a;
     --white:#ffffff;
     --muted:rgb(65, 89, 97);
     --error:#b3251f;
@@ -490,6 +490,13 @@
   </head>
   <body>
 
+
+
+<div class="stage" id="stage">
+
+     <div class="glitch-noise" aria-hidden="true"></div>
+  <div class="glitch-line" id="glitchLine" aria-hidden="true"></div>
+
     <div class="fondo-textura" aria-hidden="true"></div>
     <div class="fondo-final oculto" id="fondo-final" aria-hidden="true"></div>
     <div class="marca">0x000042</div>
@@ -510,11 +517,10 @@
 
         <header>
           <h1>lo que queda cuando algo desaparece</h1>
-          <p id="texto-encabezado">Tienes 15 segundos: todas las palabras del
-            texto se van a ir borrando solas, así que toca las resaltadas antes
-            de que desaparezcan. Cada una que alcances se vuelve parte de un
-            poema. Al reunir más de la mitad, ganas y el poema se envía solo por
-            correo.</p>
+          <p id="texto-encabezado">Tienes 45 segundos: las palabras se iran desapareciendo. Da click en 
+            en las palabras que componen el poema para poderlo realizar. 
+            
+          </p>
         </header>
 
         <div class="tablero" id="tablero">
@@ -606,13 +612,17 @@
       <div class="botones">
         <button id="boton-reiniciar" class="enviar">Escribir poema de
           nuevo</button>
-        <button id="boton-regresar" class="enviar secundario">Regresar a la
-          habitación</button>
+        <button id="boton-regresar" class="enviar secundario">Regresar a la vida...</button>
       </div>
     </div>
 
     <script>
 (function(){
+
+  "use strict";
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function(id){ return document.getElementById(id); };
+  var stage = $('stage');
   // ---------------------------------------------------------------
   // Configuración
 
@@ -623,12 +633,12 @@
   // identificadores que reconoce; el de esta pieza es "ausencias".
   const JUEGO_ID = "ausencias";
 
-  const UMBRAL_VICTORIA = 0.6;
+  const UMBRAL_VICTORIA = 0.4;
 
  // ---------------------------------------------------------------
   // tiempo
   // ---------------------------------------------------------------
-  const TIEMPO_TOTAL_MS = 25 * 1000;
+  const TIEMPO_TOTAL_MS = 40 * 1000;
 
 // ---------------------------------------------------------------
   // tiempo

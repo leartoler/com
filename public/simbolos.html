@@ -432,6 +432,10 @@
 </head>
 
 <body>
+  <div class="stage" id="stage">
+    <div class="glitch-noise" aria-hidden="true"></div>
+    <div class="glitch-line" id="glitchLine" aria-hidden="true"></div>
+
 
   <div class="fondo-textura" aria-hidden="true"></div>
   <div class="fondo-final oculto" id="fondo-final" aria-hidden="true"></div>
@@ -463,14 +467,18 @@
     <div class="lista-correos oculto" id="lista-correos"></div>
     <div>
       <button id="boton-reiniciar">Escribir carta de nuevo</button>
-      <button id="boton-regresar" class="secundario">Regresar al menu
-        inicial</button>
+      <button id="boton-regresar" class="secundario">Regresar a la vida...</button>
     </div>
   </div>
 
   <script>
     (function () {
       'use strict';
+        var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var $ = function(id){ return document.getElementById(id); };
+
+        var stage = $('stage');
+
 
 
       const GRUPOS_PATRON = [

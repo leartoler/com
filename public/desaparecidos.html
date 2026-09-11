@@ -298,38 +298,7 @@
     <div class="bolt-spark" id="sparkStart" aria-hidden="true"></div>
     <div class="bolt-spark" id="sparkEnd" aria-hidden="true"></div>
 
-    <div class="panel-card chamf/* ---------------- glitch intermitente (falla de señal) ---------------- */
-  .stage.glitching{ animation: glitch-flicker .32s steps(2,end); }
-  @keyframes glitch-flicker{
-    0%{ filter:none; transform:translate(0,0); }
-    10%{ filter:brightness(1.5) contrast(1.3); transform:translate(-3px,1px); }
-    22%{ filter:brightness(.3) saturate(0); transform:translate(3px,-1px); }
-    38%{ filter:brightness(1.8) hue-rotate(15deg); transform:translate(-2px,0); }
-    52%{ filter:none; transform:translate(1px,1px); }
-    68%{ filter:brightness(.4); transform:translate(-1px,0); }
-    100%{ filter:none; transform:translate(0,0); }
-  }
-  .glitch-line{
-    position:fixed; left:0; width:100%; height:0; background:var(--accent);
-    opacity:0; mix-blend-mode:difference; z-index:50; pointer-events:none;
-  }
-  .stage.glitching .glitch-line{ animation: glitch-line-anim .3s steps(4,end); }
-  @keyframes glitch-line-anim{
-    0%{ height:0; opacity:0; }
-    15%{ height:8px; opacity:.85; }
-    40%{ height:2px; opacity:.5; }
-    65%{ height:14px; opacity:.7; }
-    100%{ height:0; opacity:0; }
-  }
-  .glitch-noise{
-    position:fixed; inset:0; z-index:49; pointer-events:none; opacity:0;
-    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.5) 0 1px, transparent 1px 4px);
-  }
-  .stage.glitching .glitch-noise{ animation: glitch-noise-anim .32s steps(2,end); }
-  @keyframes glitch-noise-anim{
-    0%,100%{ opacity:0; }
-    20%,55%{ opacity:.12; }
-  }er" role="dialog" aria-modal="true" aria-labelledby="panelTitleFocus">
+    <div class="panel-card chamfer" role="dialog" aria-modal="true" aria-labelledby="panelTitleFocus">
       <button class="panel-close chamfer" id="panelClose" aria-label="Cerrar">✕</button>
 
       <div class="content-card" id="panel-juego">
