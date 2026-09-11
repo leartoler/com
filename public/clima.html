@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nodos — intro, glitch y panel</title>
+<title>Clima</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
 <style>
   :root{
@@ -348,7 +348,7 @@
       <div class="content-card" id="panel-carta" hidden>
         <span class="content-kicker">CORRESPONDENCIA</span>
         <h1 class="content-title">Carta</h1>
-        <p class="carta-body">Antes de llegar, toda carta fue silencio: un texto que todavía no existe, esperando a que alguien lo escriba y lo suelte en la red.</p>
+        <p class="carta-body">Era ineludible. No les fue suficiente callarnos y desaparecernos, tambien eliminaron nuestro entorno, el lugar que compartimos. Pero al hacer, al hacer caso a su codicia, ellos tambien desapareceran junro a nosotros; porque al final, todos habitamos el mismo planeta y somos parte de la misma sociedad.</p>
       </div>
     </div>
   </div>
@@ -593,7 +593,7 @@
 
   /* ---------------- calendario (funcional) ---------------- */
   (function initCalendar(){
-    var now = new Date();
+    var now = new Date(2051,8,10);
     var monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     var dow = ['L','M','X','J','V','S','D'];
     $('calMonth').textContent = monthNames[now.getMonth()] + ' ' + now.getFullYear();

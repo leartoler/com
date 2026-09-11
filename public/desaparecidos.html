@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cultura</title>
+<title>Desaparecidos</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
 <style>
   :root{
@@ -275,7 +275,7 @@
   <div class="intro" id="intro">
     <div class="intro-op" aria-hidden="true"></div>
     <span class="intro-text">0x000042</span>
-    <p class="intro-poem">El juego,<br>como forma de manifestación.</p>
+    <p class="intro-poem">El juego<br>como forma de manifestación.</p>
     <span class="intro-sub">Obra lúdica interactiva</span>
   </div>
 
@@ -298,7 +298,38 @@
     <div class="bolt-spark" id="sparkStart" aria-hidden="true"></div>
     <div class="bolt-spark" id="sparkEnd" aria-hidden="true"></div>
 
-    <div class="panel-card chamfer" role="dialog" aria-modal="true" aria-labelledby="panelTitleFocus">
+    <div class="panel-card chamf/* ---------------- glitch intermitente (falla de señal) ---------------- */
+  .stage.glitching{ animation: glitch-flicker .32s steps(2,end); }
+  @keyframes glitch-flicker{
+    0%{ filter:none; transform:translate(0,0); }
+    10%{ filter:brightness(1.5) contrast(1.3); transform:translate(-3px,1px); }
+    22%{ filter:brightness(.3) saturate(0); transform:translate(3px,-1px); }
+    38%{ filter:brightness(1.8) hue-rotate(15deg); transform:translate(-2px,0); }
+    52%{ filter:none; transform:translate(1px,1px); }
+    68%{ filter:brightness(.4); transform:translate(-1px,0); }
+    100%{ filter:none; transform:translate(0,0); }
+  }
+  .glitch-line{
+    position:fixed; left:0; width:100%; height:0; background:var(--accent);
+    opacity:0; mix-blend-mode:difference; z-index:50; pointer-events:none;
+  }
+  .stage.glitching .glitch-line{ animation: glitch-line-anim .3s steps(4,end); }
+  @keyframes glitch-line-anim{
+    0%{ height:0; opacity:0; }
+    15%{ height:8px; opacity:.85; }
+    40%{ height:2px; opacity:.5; }
+    65%{ height:14px; opacity:.7; }
+    100%{ height:0; opacity:0; }
+  }
+  .glitch-noise{
+    position:fixed; inset:0; z-index:49; pointer-events:none; opacity:0;
+    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.5) 0 1px, transparent 1px 4px);
+  }
+  .stage.glitching .glitch-noise{ animation: glitch-noise-anim .32s steps(2,end); }
+  @keyframes glitch-noise-anim{
+    0%,100%{ opacity:0; }
+    20%,55%{ opacity:.12; }
+  }er" role="dialog" aria-modal="true" aria-labelledby="panelTitleFocus">
       <button class="panel-close chamfer" id="panelClose" aria-label="Cerrar">✕</button>
 
       <div class="content-card" id="panel-juego">
@@ -333,7 +364,7 @@
       <div class="content-card" id="panel-carta" hidden>
         <span class="content-kicker">CORRESPONDENCIA</span>
         <h1 class="content-title">Carta</h1>
-        <p class="carta-body">Antes de llegar, toda carta fue silencio: un texto que todavía no existe, esperando a que alguien lo escriba y lo suelte en la grilla.</p>
+        <p class="carta-body">Mi hermana, mi madre, todas desaparecieron. Me quedan sus recuerdos, sus aprendizajes y su lucha contante. Temo que en algun momento vengan por mi, temo no regresar hoy a mi casa; porque el hogar, ya lo perdi hace mucho tiempo.</p>
       </div>
     </div>
   </div>
@@ -536,7 +567,7 @@
 
   /* ---------------- calendario (funcional) ---------------- */
   (function initCalendar(){
-    var now = new Date(2050, 11, 11);
+    var now = new Date(2051, 1, 8);
     var monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     var dow = ['L','M','X','J','V','S','D'];
     $('calMonth').textContent = monthNames[now.getMonth()] + ' ' + now.getFullYear();

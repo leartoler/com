@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verso — sin cruzar la línea</title>
+    <title>Efectos</title>
     <link rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
     <style>
@@ -335,6 +335,51 @@
       .palabra {
         padding: 11px 16px;
       }
+
+      .stage.glitching{ animation: glitch-flicker .32s steps(2,end); }
+  @keyframes glitch-flicker{
+    0%{ filter:none; transform:translate(0,0); }
+    10%{ filter:brightness(1.5) contrast(1.3); transform:translate(-3px,1px); }
+    22%{ filter:brightness(.3) saturate(0); transform:translate(3px,-1px); }
+    38%{ filter:brightness(1.8) hue-rotate(15deg); transform:translate(-2px,0); }
+    52%{ filter:none; transform:translate(1px,1px); }
+    68%{ filter:brightness(.4); transform:translate(-1px,0); }
+    100%{ filter:none; transform:translate(0,0); }
+  }
+  .glitch-line{
+    position:fixed; left:0; width:100%; height:0; background:var(--accent);
+    opacity:0; mix-blend-mode:difference; z-index:50; pointer-events:none;
+  }
+  .stage.glitching .glitch-line{ animation: glitch-line-anim .3s steps(4,end); }
+  @keyframes glitch-line-anim{
+    0%{ height:0; opacity:0; }
+    15%{ height:8px; opacity:.85; }
+    40%{ height:2px; opacity:.5; }
+    65%{ height:14px; opacity:.7; }
+    100%{ height:0; opacity:0; }
+  }
+  .glitch-noise{
+    position:fixed; inset:0; z-index:49; pointer-events:none; opacity:0;
+    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.5) 0 1px, transparent 1px 4px);
+  }
+  .stage.glitching .glitch-noise{ animation: glitch-noise-anim .32s steps(2,end); }
+  @keyframes glitch-noise-anim{
+    0%,100%{ opacity:0; }
+    20%,55%{ opacity:.12; }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
   </style>
   </head>
@@ -432,7 +477,7 @@
       var JUEGO_ID = 'efectos';
 
       // A dónde lleva el botón "Regresar a la habitación". Reemplaza esta ruta.
-      var URL_HABITACION = 'https://simbolos.0x000042.com/desaparecidos.html';
+      var URL_HABITACION = 'https://simbolos.0x000042.com/cultura.html';
 
       var pantallaFirma = document.getElementById('pantalla-firma');
       var juegoEl = document.getElementById('juego');
@@ -594,11 +639,7 @@
         marcarSiguiente();
       }
 
-      // fija permanentemente el tramo entre el último punto y "destino": pasa
-      // a formar parte del trazo real (y de la lista de segmentos contra la
-      // que se comprueban futuros cruces). Si el destino prácticamente ya es
-      // el último punto (p. ej. justo al llegar a una palabra) no agrega un
-      // tramo de largo casi cero — solo actualiza el punto.
+
       function fijarTramo(destino) {
         if (distancia(ultimoPunto, destino) < 0.5) { ultimoPunto = destino; return; }
         dibujarSegmento(ultimoPunto, destino, false);
@@ -606,15 +647,7 @@
         ultimoPunto = destino;
       }
 
-      // se llama cuando el mouse pasa sobre la palabra que sigue en el verso.
-      // NO fuerza el trazo a saltar hasta el centro exacto (el trazo ya venía
-      // pasando por ahí, por eso se detectó) — solo marca la palabra como
-      // alcanzada y avanza la secuencia. Forzar ese salto causaba un pequeño
-      // "rebote" hacia atrás cuando el mouse, todavía en movimiento, terminaba
-      // de llegar al punto exacto, y ese rebote se cruzaba con el siguiente
-      // tramo. La excepción es la ÚLTIMA palabra: ahí sí se cierra el trazo
-      // en su centro, porque el juego termina de inmediato y ya no hay más
-      // movimiento que pueda generar ese rebote.
+     
       function avanzar(nodo) {
         document.querySelectorAll('.palabra.activa').forEach(function (n) { n.classList.remove('activa'); });
         nodo.classList.add('usada', 'activa');
@@ -634,10 +667,7 @@
         }
       }
 
-      // se llama en cada movimiento del mouse: dibuja el tramo "vivo" desde el
-      // último punto fijado hasta el mouse y comprueba el cruce en tiempo real;
-      // al alejarse lo suficiente, ese tramo se fija y el trazo sigue desde ahí
-      // — así la línea sigue de verdad el camino que dibuja el jugador
+
       function actualizarLineaViva(pos) {
         if (!ultimoPunto || terminado) return;
         if (!lineaViva) lineaViva = dibujarSegmento(ultimoPunto, pos, true);
@@ -742,11 +772,23 @@
       });
 
       // ---------------------------------------------------------------
-      // Envío automático del correo al ganar: mismo endpoint (Vercel +
-      // Resend) que ya usan las demás piezas — se envía solo, apenas se
-      // gana, sin pedir correo. La firma que el jugador escribió antes de
-      // jugar hace las veces del "nombre" con el que firma.
-      // ---------------------------------------------------------------
+      // Envío automático del correo al ganar: 
+
+var glitchLine = $('glitchLine');
+  function triggerGlitch(){
+    glitchLine.style.top = (Math.random()*88 + 4) + '%';
+    stage.classList.remove('glitching');
+    void stage.offsetWidth;
+    stage.classList.add('glitching');
+    setTimeout(function(){ stage.classList.remove('glitching'); }, 340);
+  }
+  function scheduleGlitch(){
+    var delay = 5000 + Math.random()*11000;
+    setTimeout(function(){ triggerGlitch(); scheduleGlitch(); }, delay);
+  }
+  if(!reduceMotion){ scheduleGlitch(); }
+
+
       function enviarCorreo() {
         listaCorreosEl.classList.add('oculto');
         listaCorreosEl.innerHTML = '';
@@ -754,7 +796,7 @@
         fetch(ENDPOINT_ENVIO, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nombre: firmaJugador, juego: JUEGO_ID, verso: VERSO_TEXTO })
+          body: JSON.stringify({ nombre: firmaJugador, juego: JUEGO_ID, contenido: VERSO_TEXTO })
         })
           .then(function (respuesta) { return respuesta.json(); })
           .then(function (datos) {

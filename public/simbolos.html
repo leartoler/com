@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carta</title>
+  <title>Simbolos</title>
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
   <style>
@@ -193,7 +193,7 @@
     .cuadro {
       position: relative;
       border-radius: 3px;
-      background: var(--linea);
+      background: var(--bg);
       border: 2px solid var(--linea);
       overflow: hidden;
       cursor: default;
@@ -316,6 +316,118 @@
     .lista-correos div {
       padding: 2px 0;
     }
+
+    /*glitch*/
+
+    .stage.glitching {
+      animation: glitch-flicker .32s steps(2, end);
+    }
+
+    @keyframes glitch-flicker {
+      0% {
+        filter: none;
+        transform: translate(0, 0);
+      }
+
+      10% {
+        filter: brightness(1.5) contrast(1.3);
+        transform: translate(-3px, 1px);
+      }
+
+      22% {
+        filter: brightness(.3) saturate(0);
+        transform: translate(3px, -1px);
+      }
+
+      38% {
+        filter: brightness(1.8) hue-rotate(15deg);
+        transform: translate(-2px, 0);
+      }
+
+      52% {
+        filter: none;
+        transform: translate(1px, 1px);
+      }
+
+      68% {
+        filter: brightness(.4);
+        transform: translate(-1px, 0);
+      }
+
+      100% {
+        filter: none;
+        transform: translate(0, 0);
+      }
+    }
+
+    .glitch-line {
+      position: fixed;
+      left: 0;
+      width: 100%;
+      height: 0;
+      background: var(--accent);
+      opacity: 0;
+      mix-blend-mode: difference;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .stage.glitching .glitch-line {
+      animation: glitch-line-anim .3s steps(4, end);
+    }
+
+    @keyframes glitch-line-anim {
+      0% {
+        height: 0;
+        opacity: 0;
+      }
+
+      15% {
+        height: 8px;
+        opacity: .85;
+      }
+
+      40% {
+        height: 2px;
+        opacity: .5;
+      }
+
+      65% {
+        height: 14px;
+        opacity: .7;
+      }
+
+      100% {
+        height: 0;
+        opacity: 0;
+      }
+    }
+
+    .glitch-noise {
+      position: fixed;
+      inset: 0;
+      z-index: 49;
+      pointer-events: none;
+      opacity: 0;
+      background: repeating-linear-gradient(to bottom, rgba(255, 255, 255, .5) 0 1px, transparent 1px 4px);
+    }
+
+    .stage.glitching .glitch-noise {
+      animation: glitch-noise-anim .32s steps(2, end);
+    }
+
+    @keyframes glitch-noise-anim {
+
+      0%,
+      100% {
+        opacity: 0;
+      }
+
+      20%,
+      55% {
+        opacity: .12;
+      }
+    }
   </style>
 </head>
 
@@ -326,7 +438,8 @@
   <div class="marca">0x000042</div>
 
   <div id="pantalla-nombre" class="pantalla">
-    <p class="subtitulo">Nombre, expresión o concepto con el que quieras firmar y jugar</p>
+    <p class="subtitulo">Nombre, expresión o concepto con el que quieras
+      firmar y jugar</p>
     <input type="text" id="input-nombre" placeholder="Escribe aquí" maxlength="40">
     <br>
     <button id="boton-empezar">Iniciar</button>
@@ -334,8 +447,8 @@
 
   <div id="pantalla-juego" class="pantalla oculto">
     <p class="instruccion">
-      Escribes una carta, con un lenguaje que apenas sobrevive, en un tiempo cada vez más escaso. Da click en la imagen
-      en movimiento cuando se encuentre al centro del cuadro para poder escribir.
+      Escribes una carta. Figuras repetidas, productos culturales similares,
+      solo queda un simbolismo aparente.
       <strong>Nuestro tiempo se agota</strong>
     </p>
     <div class="grupos-scroll">
@@ -350,7 +463,8 @@
     <div class="lista-correos oculto" id="lista-correos"></div>
     <div>
       <button id="boton-reiniciar">Escribir carta de nuevo</button>
-      <button id="boton-regresar" class="secundario">Regresar a la habitación</button>
+      <button id="boton-regresar" class="secundario">Regresar al menu
+        inicial</button>
     </div>
   </div>
 
@@ -358,7 +472,6 @@
     (function () {
       'use strict';
 
-      // ---------- Configuración ----------
 
       const GRUPOS_PATRON = [
         ['xxo', 'xxo', 'oxo'],
@@ -386,11 +499,8 @@
       const URL_HABITACION = 'https://simbolos.0x000042.com/desaparecidos.html';
 
 
-      // ---------- Construcción de la estructura de grupos/celdas ----------
+      /*estructura*/
 
-      // Cada grupo se procesa por separado, pero el índice de cada celda activa es
-      // global y consecutivo entre los tres grupos (grupo 1, luego grupo 2, luego
-      // grupo 3). Ese índice global es el mismo que se usa para PALABRAS.
       let indiceGlobal = 0;
       const GRUPOS = GRUPOS_PATRON.map((filasGrupo) => {
         const celdas = [];
@@ -413,37 +523,32 @@
 
 
 
-
-
-      // Palabra asociada a cada cuadro jugable, por posición (índice 0 a TOTAL_CUADROS - 1).
-      // Reemplaza estos placeholders por las palabras reales, manteniendo la posición.
       const PALABRAS = [
-        'Todo',
-        'pereció',
-        'solo la',
-        'tierra árida',
-        'de infertil naranja quedó.',
-        'Prometieron',
-        'trabajos,',
-        'tierras fértiles;',
-        'Nos prometieron',
-        'progreso.',
-        'Pero',
-        'se llevaron',
-        'todo:',
-        'nuestras vidas',
-        'la de ellos.',
-        'Y ellos,',
-        'sin saberlo,',
-        'o tal vez sí,',
-        'condenaron su futuro.',
+        'La voz',
+        'no debe callar',
+        'El cuerpo,',
+        'no debe parar.',
+        'La letra',
+        'debe fluir.',
+        'Porque',
+        'ante,',
+        'este futuro',
+        'incierto,',
+        'el arte,',
+        'nuestra',
+        'expresión,',
+        'nuestra',
+        'voz',
+        'se',
+        'convierte',
+        'en',
+        'deber.',
+
 
 
       ]
-      // Imagen asociada a cada cuadro jugable, por posición (índice 0 a TOTAL_CUADROS - 1).
-      // Reemplaza estos placeholders por las rutas reales de tus imágenes, manteniendo la
-      // misma posición que la palabra correspondiente. Deben subirse junto con este HTML
-      // (o cambiar la ruta a donde las alojes, ej. una carpeta 'imagenes/').
+
+
       const IMAGENES = [
         'c2.png',
         'c2.png',
@@ -467,7 +572,7 @@
 
 
       ]
-      // ---------- Estado ----------
+      //  Estado 
 
       let nombreJugador = '';
       let secuencia = [];
@@ -480,7 +585,7 @@
       let rafId = null;
       let turnoTerminado = false;
 
-      // ---------- Elementos del DOM ----------
+      //  Elementos del DOM 
 
       const pantallaNombre = document.getElementById('pantalla-nombre');
       const pantallaJuego = document.getElementById('pantalla-juego');
@@ -498,7 +603,7 @@
       const contenidoResultado = document.getElementById('contenido-resultado');
       const listaCorreos = document.getElementById('lista-correos');
 
-      // ---------- Utilidades ----------
+      //  Utilidades 
 
       function mezclarArray(arr) {
         const copia = arr.slice();
@@ -515,11 +620,26 @@
         pantallaFinal.classList.add('oculto');
         pantalla.classList.remove('oculto');
 
-        // la imagen de fondo solo se ve en la pantalla final
         fondoFinal.classList.toggle('oculto', pantalla !== pantallaFinal);
       }
 
-      // ---------- Construcción del grid ----------
+      //    grid 
+
+      var glitchLine = $('glitchLine');
+      function triggerGlitch() {
+        glitchLine.style.top = (Math.random() * 88 + 4) + '%';
+        stage.classList.remove('glitching');
+        void stage.offsetWidth;
+        stage.classList.add('glitching');
+        setTimeout(function () { stage.classList.remove('glitching'); }, 340);
+      }
+      function scheduleGlitch() {
+        var delay = 5000 + Math.random() * 11000;
+        setTimeout(function () { triggerGlitch(); scheduleGlitch(); }, delay);
+      }
+      if (!reduceMotion) { scheduleGlitch(); }
+
+
 
       function construirGrupos() {
         contenedorGrupos.innerHTML = '';
@@ -604,7 +724,7 @@
         celda.appendChild(zona);
       }
 
-      // ---------- Lógica del turno ----------
+      //  Lógica del turno 
 
       function iniciarJuego() {
         nombreJugador = inputNombre.value.trim();
@@ -680,11 +800,9 @@
         siguienteTurno();
       }
 
-      // ---------- Fin del juego ----------
+      //  Fin del juego 
 
-      // Reconstruye el texto de la carta a partir de las palabras
-      // acertadas, en su orden original — es lo que se muestra en el
-      // espacio de "contenido producido" de la pantalla final.
+
       function reconstruirCarta() {
         return resultados
           .map((r, i) => (r === 'acierto' ? PALABRAS[i] : null))
@@ -697,7 +815,7 @@
           contenidoResultado.textContent = texto;
           contenidoResultado.classList.remove('oculto', 'vacio');
         } else {
-          contenidoResultado.textContent = 'Aquí aparecerá la carta reconstruida…';
+          contenidoResultado.textContent = 'carta…';
           contenidoResultado.classList.remove('oculto');
           contenidoResultado.classList.add('vacio');
         }
@@ -714,7 +832,7 @@
           mensajeFinal.textContent = 'Enviando la carta...';
           enviarCorreo(nombreJugador);
         } else {
-          mensajeFinal.textContent = 'La carta no se envió esta vez.';
+          mensajeFinal.textContent = 'La carta no se envió.';
         }
       }
 
@@ -722,7 +840,7 @@
         fetch(API_ENVIAR_CORREO, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nombre, juego: 'simbolos' }),
+          body: JSON.stringify({ nombre, juego: 'simbolos', contenido: reconstruirCarta() }),
         })
           .then((res) => res.json())
           .then((data) => {
@@ -745,7 +863,7 @@
           });
       }
 
-      // ---------- Eventos ----------
+      //  Eventos 
 
       botonEmpezar.addEventListener('click', iniciarJuego);
       inputNombre.addEventListener('keydown', (e) => {

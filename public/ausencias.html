@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poema oculto</title>
+    <title>Ausencias</title>
     <link rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
     <style>
   :root{
     --bg:#6e8e99ff;
     --linea:rgb(74, 96, 104);
-    --ink:#ffffff;
+    --ink:#aacedf;
     --white:#ffffff;
     --muted:rgb(65, 89, 97);
     --error:#b3251f;
@@ -52,7 +52,7 @@
      reemplaza fondo-final.png por la imagen real cuando la tengas */
   .fondo-final{
     position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background-image: url('fondo-final.png');
+    background-image: url('desaparecidos.png');
     background-size: cover;
     background-position: center;
   }
@@ -163,7 +163,7 @@
     font-size: .95rem;
     border: 2px solid var(--borde);
     background: var(--white);
-    color: var(--texto);
+    color: var(--muted);
     outline: none;
     border-radius: 0;
   }
@@ -253,7 +253,7 @@
   .texto{
     font-size: 1.05rem;
     line-height: 2.05;
-    color: var(--ink);
+    color: var(--muted);
     text-align: left;
   }
 
@@ -449,6 +449,43 @@
   .lista-correos div{
     padding: 2px 0;
   }
+
+/* ---------------- glitch intermitente (falla de señal) ---------------- */
+  .stage.glitching{ animation: glitch-flicker .32s steps(2,end); }
+  @keyframes glitch-flicker{
+    0%{ filter:none; transform:translate(0,0); }
+    10%{ filter:brightness(1.5) contrast(1.3); transform:translate(-3px,1px); }
+    22%{ filter:brightness(.3) saturate(0); transform:translate(3px,-1px); }
+    38%{ filter:brightness(1.8) hue-rotate(15deg); transform:translate(-2px,0); }
+    52%{ filter:none; transform:translate(1px,1px); }
+    68%{ filter:brightness(.4); transform:translate(-1px,0); }
+    100%{ filter:none; transform:translate(0,0); }
+  }
+  .glitch-line{
+    position:fixed; left:0; width:100%; height:0; background:var(--accent);
+    opacity:0; mix-blend-mode:difference; z-index:50; pointer-events:none;
+  }
+  .stage.glitching .glitch-line{ animation: glitch-line-anim .3s steps(4,end); }
+  @keyframes glitch-line-anim{
+    0%{ height:0; opacity:0; }
+    15%{ height:8px; opacity:.85; }
+    40%{ height:2px; opacity:.5; }
+    65%{ height:14px; opacity:.7; }
+    100%{ height:0; opacity:0; }
+  }
+  .glitch-noise{
+    position:fixed; inset:0; z-index:49; pointer-events:none; opacity:0;
+    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.5) 0 1px, transparent 1px 4px);
+  }
+  .stage.glitching .glitch-noise{ animation: glitch-noise-anim .32s steps(2,end); }
+  @keyframes glitch-noise-anim{
+    0%,100%{ opacity:0; }
+    20%,55%{ opacity:.12; }
+  }
+
+
+
+
 </style>
   </head>
   <body>
@@ -578,31 +615,42 @@
 (function(){
   // ---------------------------------------------------------------
   // Configuración
-  // ---------------------------------------------------------------
 
   // Mismo endpoint (Vercel + Resend) que ya usa "Carta" para enviar
-  // correos — se reutiliza tal cual, sin ruta nueva que desplegar.
   const API_URL = "https://com-three-inky.vercel.app/api/enviar-correo";
 
   // El backend valida un campo "juego" contra una lista de
   // identificadores que reconoce; el de esta pieza es "ausencias".
   const JUEGO_ID = "ausencias";
 
-  // Se gana el juego al superar el 60% de las palabras-poema
   const UMBRAL_VICTORIA = 0.6;
 
-  // Duración de la partida. 15 segundos es solo para probar —
-  // súbelo a lo que quieras para la versión final (30, 60, etc.)
-  const TIEMPO_TOTAL_MS = 15 * 1000;
-
-  // A dónde lleva el botón "Regresar a la habitación". Reemplaza esta ruta.
-  const URL_HABITACION = 'https://simbolos.0x000042.com/desaparecidos.html';
-
+ // ---------------------------------------------------------------
+  // tiempo
   // ---------------------------------------------------------------
-  // Preparar el texto: envuelve cada palabra suelta (las que no son
-  // "palabra-poema") en su propio span, para poder ir borrándolas
-  // una por una con el temporizador.
+  const TIEMPO_TOTAL_MS = 25 * 1000;
+
+// ---------------------------------------------------------------
+  // tiempo
   // ---------------------------------------------------------------
+ var glitchLine = $('glitchLine');
+  function triggerGlitch(){
+    glitchLine.style.top = (Math.random()*88 + 4) + '%';
+    stage.classList.remove('glitching');
+    void stage.offsetWidth;
+    stage.classList.add('glitching');
+    setTimeout(function(){ stage.classList.remove('glitching'); }, 340);
+  }
+  function scheduleGlitch(){
+    var delay = 5000 + Math.random()*11000;
+    setTimeout(function(){ triggerGlitch(); scheduleGlitch(); }, delay);
+  }
+  if(!reduceMotion){ scheduleGlitch(); }
+
+
+  const URL_HABITACION = 'https://efectos.0x000042.com';
+
+
 
   function envolverPalabrasSueltas(contenedor){
     Array.from(contenedor.childNodes).forEach(function(nodo){
@@ -629,7 +677,7 @@
 
   document.querySelectorAll(".texto").forEach(envolverPalabrasSueltas);
 
-  // ---------------------------------------------------------------
+  
   // Estado
   // ---------------------------------------------------------------
 
@@ -673,11 +721,9 @@
     pantallaFinal.classList.add("oculto");
     pantalla.classList.remove("oculto");
 
-    // la imagen de fondo solo se ve en la pantalla final
     fondoFinal.classList.toggle("oculto", pantalla !== pantallaFinal);
   }
 
-  // ---------------------------------------------------------------
   // Muestra, del lado derecho, cuáles son las palabras a encontrar
   // ---------------------------------------------------------------
 
@@ -697,8 +743,6 @@
   }
 
   // ---------------------------------------------------------------
-  // Compuerta: hay que firmar con un nombre para poder jugar
-  // ---------------------------------------------------------------
 
   function iniciarJuego(){
     nombreJugador = inputNombre.value.trim();
@@ -713,10 +757,6 @@
     if (e.key === "Enter") iniciarJuego();
   });
 
-  // ---------------------------------------------------------------
-  // Arranque de la partida: reloj + desvanecido automático de
-  // todas las palabras, repartido a lo largo de TIEMPO_TOTAL_MS
-  // ---------------------------------------------------------------
 
   function iniciarPartida(){
     juegoActivo = true;
@@ -757,15 +797,10 @@
     }
   }
 
-  // ---------------------------------------------------------------
-  // Una palabra se desvanece: a mano (clic) o sola (temporizador)
-  // ---------------------------------------------------------------
-
   function desvanecerPalabra(nodo){
     if (nodo.classList.contains("desaparece")) return;
 
-    // solo se desvanece (opacidad a 0): no se le quita el espacio,
-    // para que el resto del texto no se recorra ni cambie de posición
+
     nodo.classList.add("desaparece");
   }
 
@@ -781,9 +816,7 @@
     });
   });
 
-  // ---------------------------------------------------------------
-  // Reconstruir el poema (siempre en el orden original del texto,
-  // sin importar en qué orden se hayan elegido las palabras)
+  // Reconstruir el poema 
   // ---------------------------------------------------------------
 
   function palabrasElegidas(){
@@ -832,7 +865,6 @@
     detenerPartida();
 
     // deja que se vea terminar la animación de la última palabra
-    // recolectada antes de cambiar de pantalla
     setTimeout(function(){
       mostrarResultado(true, elegidas);
     }, 700);
@@ -843,21 +875,20 @@
     detenerPartida();
 
     // barrido final: cualquier palabra que quedara sin desvanecerse
-    // desaparece de inmediato, para que el texto quede vacío
     todasLasPalabras.forEach(desvanecerPalabra);
 
     mostrarResultado(false, palabrasElegidas());
   }
 
   // Muestra, en el espacio de "contenido producido" de la pantalla
-  // final, el poema reunido con las palabras encontradas hasta el momento.
+
   function mostrarContenidoResultado(elegidas){
     const texto = elegidas.map(function(n){ return n.dataset.palabra; }).join("\n");
     if (texto){
       contenidoResultado.textContent = texto;
       contenidoResultado.classList.remove("oculto", "vacio");
     } else {
-      contenidoResultado.textContent = "Aquí aparecerá el poema…";
+      contenidoResultado.textContent = "Carta…";
       contenidoResultado.classList.remove("oculto");
       contenidoResultado.classList.add("vacio");
     }
@@ -870,10 +901,10 @@
     listaCorreos.innerHTML = "";
 
     if (gano){
-      mensajeFinal.textContent = "Enviando el poema...";
+      mensajeFinal.textContent = "Enviando la carta...";
       enviarPoema(elegidas);
     } else {
-      mensajeFinal.textContent = "El poema no se envió esta vez.";
+      mensajeFinal.textContent = "La carta no se envió";
     }
   }
 
@@ -884,13 +915,7 @@
   botonRegresar.addEventListener("click", function(){
     window.location.href = URL_HABITACION;
   });
-
-  // ---------------------------------------------------------------
-  // Envío del poema por correo: mismo endpoint (Vercel + Resend) que
-  // ya usa "Carta" — se envía solo, apenas se gana, sin pedir correo.
-  // El nombre con el que el jugador firmó en la compuerta hace las
-  // veces del "nombre" del remitente, igual que en "Carta".
-  // ---------------------------------------------------------------
+/*endpoint*/
 
   function enviarPoema(elegidas){
     const poemaTexto = elegidas.map(function(n){ return n.dataset.palabra; }).join("\n");
@@ -898,7 +923,7 @@
     fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nombre: nombreJugador, juego: JUEGO_ID, poema: poemaTexto })
+      body: JSON.stringify({ nombre: nombreJugador, juego: JUEGO_ID, contenido: poemaTexto })
     })
       .then(function(respuesta){ return respuesta.json(); })
       .then(function(datos){
@@ -927,3 +952,5 @@
 
   </body>
 </html>
+
+
