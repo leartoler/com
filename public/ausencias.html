@@ -595,8 +595,7 @@
             </div>
 
             <div class="poema-resultado" id="poema-resultado">
-              <p class="poema-vacio">Aquí va apareciendo el poema, palabra por
-                palabra…</p>
+              <p class="poema-vacio">Aquí aparece la carta…</p>
             </div>
           </div>
 
@@ -610,7 +609,7 @@
       <div class="contenido-resultado oculto" id="contenido-resultado"></div>
       <div class="lista-correos oculto" id="lista-correos"></div>
       <div class="botones">
-        <button id="boton-reiniciar" class="enviar">Escribir poema de
+        <button id="boton-reiniciar" class="enviar">Escribir carta de
           nuevo</button>
         <button id="boton-regresar" class="enviar secundario">Regresar a la vida...</button>
       </div>
@@ -938,7 +937,7 @@
       .then(function(respuesta){ return respuesta.json(); })
       .then(function(datos){
         if (datos && datos.success){
-          mensajeFinal.textContent = "Poema enviado a quien lo necesite ver.";
+          mensajeFinal.textContent = "Carta enviada a quien lo necesite ver.";
           if (Array.isArray(datos.destinatarios) && datos.destinatarios.length > 0){
             listaCorreos.classList.remove("oculto");
             datos.destinatarios.forEach(function(correo){
@@ -948,12 +947,12 @@
             });
           }
         } else {
-          mensajeFinal.textContent = "El poema no se pudo enviar.";
+          mensajeFinal.textContent = "La carta no se pudo enviar.";
         }
       })
       .catch(function(error){
         console.error("Error al enviar el poema:", error);
-        mensajeFinal.textContent = "El poema no se pudo enviar.";
+        mensajeFinal.textContent = "La carta no se pudo enviar.";
       });
   }
 

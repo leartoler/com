@@ -433,7 +433,7 @@
         <button class="boton primario" id="reintentar" type="button">Intentar de
           nuevo</button>
         <button class="boton secundario" id="boton-regresar"
-          type="button">Regresar</button>
+          type="button">Iniciar de nuevo... Todo</button>
       </div>
     </div>
 
@@ -484,7 +484,7 @@
       var JUEGO_ID = 'efectos';
 
       // A dónde lleva el botón "Regresar a la habitación". Reemplaza esta ruta.
-      var URL_HABITACION = 'https://simbolos.0x000042.com/clima.html';
+      var URL_HABITACION = 'https://simbolos.0x000042.com';
 
       var pantallaFirma = document.getElementById('pantalla-firma');
       var juegoEl = document.getElementById('juego');
@@ -818,12 +818,12 @@ var glitchLine = $('glitchLine');
                 });
               }
             } else {
-              mensajeFinal.textContent = 'El verso no se pudo enviar.';
+              mensajeFinal.textContent = 'La carta no se pudo enviar.';
             }
           })
           .catch(function (error) {
-            console.error('Error al enviar el verso:', error);
-            mensajeFinal.textContent = 'El verso no se pudo enviar.';
+            console.error('Error al enviar la carta:', error);
+            mensajeFinal.textContent = 'La carta no se pudo enviar.';
           });
       }
     })();
