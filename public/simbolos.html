@@ -15,7 +15,7 @@
       --white: #ffffff;
       --muted: #6b6f3a;
       --error: #b3251f;
-      --ok: #2f6b2a;
+      --ok: #7a3d70;
       color-scheme: light;
     }
 
@@ -49,14 +49,12 @@
       background: repeating-radial-gradient(circle at 50% 42%, rgba(0, 0, 0, .05) 0 1.5px, transparent 1.5px 22px);
     }
 
-    /* imagen de fondo de la pantalla final — placeholder por ahora,
-       reemplaza fondo-final.png por la imagen real cuando la tengas */
     .fondo-final {
       position: fixed;
       inset: 0;
       z-index: 0;
       pointer-events: none;
-      background-image: url('fondo-final.png');
+      background-image: url('./cultura.png');
       background-size: cover;
       background-position: center;
     }
@@ -285,8 +283,6 @@
       background: rgba(255, 255, 255, .75);
     }
 
-    /* espacio para el contenido producido (la carta reconstruida) en
-       la pantalla final, arriba de la lista de correos */
     .contenido-resultado {
       max-width: 420px;
       margin: 0 auto 20px;
@@ -329,7 +325,6 @@
   <div class="fondo-final oculto" id="fondo-final" aria-hidden="true"></div>
   <div class="marca">0x000042</div>
 
-  <!-- Pantalla: nombre -->
   <div id="pantalla-nombre" class="pantalla">
     <p class="subtitulo">Nombre, expresión o concepto con el que quieras firmar y jugar</p>
     <input type="text" id="input-nombre" placeholder="Escribe aquí" maxlength="40">
@@ -337,7 +332,6 @@
     <button id="boton-empezar">Iniciar</button>
   </div>
 
-  <!-- Pantalla: jugando -->
   <div id="pantalla-juego" class="pantalla oculto">
     <p class="instruccion">
       Escribes una carta, con un lenguaje que apenas sobrevive, en un tiempo cada vez más escaso. Da click en la imagen
@@ -366,9 +360,6 @@
 
       // ---------- Configuración ----------
 
-      // Grupos de la cuadrícula. Cada grupo es un array de filas, cada fila una
-      // cadena con 'x' (cuadro jugable) u 'o' (espacio vacío). Los tres grupos se
-      // muestran uno junto al otro, en horizontal.
       const GRUPOS_PATRON = [
         ['xxo', 'xxo', 'oxo'],
         ['xxo', 'oxo', 'xxo', 'xxx'],
@@ -377,20 +368,16 @@
 
       const TAMANIO_CUADRO = 92; // px
 
-      // Duración que el dibujo está visible/en movimiento en cada cuadro (ms).
       const DURACION_MS = 4500;
 
-      // Zona central donde el click cuenta como acierto (porcentaje del ancho del cuadro).
       const ZONA_CENTRAL_INICIO = 40;
+
       const ZONA_CENTRAL_FIN = 60;
 
-      // Qué tan lejos del centro oscila el dibujo (porcentaje).
       const AMPLITUD = 35;
 
-      // Porcentaje mínimo de aciertos para enviar la carta.
       const PORCENTAJE_MINIMO = 0.2;
 
-      // Endpoint de la API (Resend + KV) alojada en Vercel.
       const API_ENVIAR_CORREO = 'https://com-three-inky.vercel.app/api/enviar-correo';
 
 
@@ -458,25 +445,25 @@
       // misma posición que la palabra correspondiente. Deben subirse junto con este HTML
       // (o cambiar la ruta a donde las alojes, ej. una carpeta 'imagenes/').
       const IMAGENES = [
-        'a1.png',
-        'a2.png',
-        'a3.png',
-        'a4.png',
-        'a5.png',
-        'a6.png',
-        'a7.png',
-        'a8.png',
-        'a9.png',
-        'a10.png',
-        'a11.png',
-        'a12.png',
-        'a13.png',
-        'a14.png',
-        'a15.png',
-        'a16.png',
-        'a17.png',
-        'a18.png',
-        'a19.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
+        'c2.png',
 
 
       ]

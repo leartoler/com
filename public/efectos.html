@@ -1,654 +1,785 @@
 <!doctype html>
 <html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verso — sin cruzar la línea</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
-<style>
-  :root{
-    --bg:#cdcf2e;
-    --linea:#c8551c;
-    --ink:#191c14;
-    --white:#ffffff;
-    --muted:#6b6f3a;
-    --error:#b3251f;
-    --ok:#2f6b2a;
-    color-scheme: light;
-  }
-  *{ box-sizing:border-box; }
-  html,body{ margin:0; padding:0; }
 
-  body{
-    position:relative;
-    background: var(--bg);
-    color: var(--ink);
-    font-family:'Barlow Condensed',sans-serif;
-    min-height:100vh;
-    overflow:hidden;
-    height:100vh; width:100vw;
-  }
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verso — sin cruzar la línea</title>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
+    <style>
+    :root {
+      --bg: #cdcf2e;
+      --linea: #c8551c;
+      --ink: #191c14;
+      --white: #ffffff;
+      --muted: #6b6f3a;
+      --error: #b3251f;
+      --ok: #2f6b2a;
+      color-scheme: light;
+    }
 
-  .fondo-textura{
-    position:fixed; inset:0; z-index:0; pointer-events:none;
-    background: repeating-radial-gradient(circle at 50% 42%, rgba(0,0,0,.05) 0 1.5px, transparent 1.5px 22px);
-  }
+    * {
+      box-sizing: border-box;
+    }
 
-  /* imagen de fondo de la pantalla final — placeholder por ahora,
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      position: relative;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Barlow Condensed', sans-serif;
+      min-height: 100vh;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .fondo-textura {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: repeating-radial-gradient(circle at 50% 42%, rgba(0, 0, 0, .05) 0 1.5px, transparent 1.5px 22px);
+    }
+
+    /* imagen de fondo de la pantalla final — placeholder por ahora,
      reemplaza fondo-final.png por la imagen real cuando la tengas */
-  .fondo-final{
-    position:fixed; inset:0; z-index:0; pointer-events:none;
-    background-image:url('fondo-final.png');
-    background-size:cover;
-    background-position:center;
-  }
-  .fondo-final.oculto{ display:none !important; }
+    .fondo-final {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: url('fondo-final.png');
+      background-size: cover;
+      background-position: center;
+    }
 
-  .marca{
-    position:fixed; top:18px; left:50%; transform:translateX(-50%);
-    z-index:2;
-    font-family:'Archivo Black',sans-serif; font-size:.95rem; letter-spacing:.04em;
-    color:var(--ink);
-  }
+    .fondo-final.oculto {
+      display: none !important;
+    }
 
-  .oculto{ display:none !important; }
+    .marca {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: .95rem;
+      letter-spacing: .04em;
+      color: var(--ink);
+    }
 
-  .pantalla{
-    position:relative; z-index:1;
-  }
+    .oculto {
+      display: none !important;
+    }
 
-  /* --- Compuerta (firma) y pantalla final: mismo tratamiento de
+    .pantalla {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* --- Compuerta (firma) y pantalla final: mismo tratamiento de
      pantalla completa, centrado --- */
 
-  #pantalla-firma,
-  #pantalla-final{
-    height:100%; width:100%;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:18px;
-    padding:24px 16px;
-    text-align:center;
-  }
-
-  #pantalla-firma .subtitulo-firma{
-    font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:1.2rem; line-height:1.4;
-    max-width:50ch; margin:0; color:var(--ink);
-  }
-
-  #pantalla-firma input[type="text"]{
-    width:100%; max-width:320px;
-    font-family:'IBM Plex Mono',monospace; font-size:.95rem;
-    padding:12px 14px; border:2px solid var(--ink); background:var(--white); color:var(--ink);
-    outline:none;
-  }
-  #pantalla-firma input[type="text"]::placeholder{ color:var(--muted); }
-  #pantalla-firma input[type="text"]:focus{ border-color:var(--linea); }
-
-  /* --- Pantalla de juego --- */
-
-  #juego{
-    display:flex; flex-direction:column;
-    height:100%; width:100%;
-  }
-
-  header{
-    position:relative; z-index:2;
-    text-align:center; padding:48px 16px 4px;
-  }
-  .subtitulo{ font-size:.62rem; letter-spacing:.4em; color:var(--muted); font-weight:600; margin-top:2px; }
-  .instrucciones{
-    margin:10px auto 0; max-width:50ch; font-size:.92rem; line-height:1.4; color:var(--ink);
-    font-style:italic;
-  }
-
-  main{
-    position:relative; z-index:1;
-    flex:1;
-    display:flex; align-items:center; justify-content:center;
-    padding:8px 16px;
-  }
-
-  #lienzo{
-    position:relative;
-    width:min(92vw, 1000px);
-    height:min(56vh, 560px);
-    touch-action:none;
-  }
-
-  #trazos{
-    position:absolute; inset:0;
-    width:100%; height:100%;
-    pointer-events:none;
-    overflow:visible;
-  }
-
-  .palabra{
-    position:absolute;
-    transform:translate(-50%,-50%);
-    background:var(--linea);
-    color:var(--white);
-    font-family:'Archivo Black',sans-serif;
-    font-size:clamp(.78rem, 1.6vw, 1.05rem);
-    letter-spacing:.02em;
-    padding:14px 22px;
-    border-radius:999px;
-    cursor:pointer;
-    user-select:none;
-    -webkit-user-select:none;
-    box-shadow:0 3px 0 rgba(0,0,0,.12);
-    transition: transform .12s ease, opacity .3s ease, background .2s ease, box-shadow .2s ease;
-    opacity:.6;
-    white-space:nowrap;
-  }
-  .palabra.usada{ opacity:1; background:var(--ink); }
-  .palabra.activa{ transform:translate(-50%,-50%) scale(1.14); }
-  .palabra.siguiente{
-    box-shadow: 0 0 0 4px rgba(25,28,20,.25), 0 3px 0 rgba(0,0,0,.12);
-    animation: pulso 1.1s ease-in-out infinite;
-  }
-  @keyframes pulso{
-    0%,100%{ transform:translate(-50%,-50%) scale(1); }
-    50%{ transform:translate(-50%,-50%) scale(1.07); }
-  }
-
-  /* --- Botones (misma convención achaflanada del resto del sitio) --- */
-
-  .boton{
-    font-family:'Archivo Black',sans-serif; font-size:.7rem; letter-spacing:.08em;
-    border:2px solid var(--ink);
-    padding:13px 24px; cursor:pointer;
-    margin-inline:6px;
-    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-    transition: background .15s ease, color .15s ease, border-color .15s ease;
-  }
-
-  .boton.primario{
-    background:var(--ink); color:var(--bg);
-  }
-  .boton.primario:hover{
-    background:var(--linea); border-color:var(--linea); color:var(--white);
-  }
-
-  .boton.secundario{
-    background:rgba(255, 255, 255, .55); color:var(--ink);
-  }
-  .boton.secundario:hover{
-    background:var(--ink); border-color:var(--ink); color:var(--bg);
-  }
-
-  /* --- Pantalla final --- */
-
-  .mensaje-final{
-    font-family:'Archivo Black',sans-serif;
-    font-size:1rem;
-    letter-spacing:.02em;
-    margin:0 0 16px;
-    line-height:1.5;
-    display:inline-block;
-    padding:8px 16px;
-    background:rgba(255, 255, 255, .75);
-  }
-  .mensaje-final.gano{ color:var(--ok); }
-  .mensaje-final.perdio{ color:var(--error); }
-
-  /* espacio para el contenido producido (el verso logrado) en la
-     pantalla final, arriba de la lista de correos */
-  .contenido-resultado{
-    max-width:420px;
-    margin:0 auto 20px;
-    padding:14px 18px;
-    background:var(--white);
-    border:2px solid var(--ink);
-    font-family:'Barlow Condensed',sans-serif;
-    font-style:italic;
-    font-weight:600;
-    font-size:1.1rem;
-    line-height:1.6;
-    color:var(--ink);
-    text-align:center;
-    white-space:pre-wrap;
-  }
-  .contenido-resultado.vacio{
-    color:var(--muted);
-    font-weight:600;
-  }
-
-  .lista-correos{
-    margin:0 auto 24px;
-    max-width:420px;
-    padding:14px 18px;
-    background:var(--white);
-    border:2px solid var(--ink);
-    font-family:'IBM Plex Mono',monospace;
-    font-size:.78rem;
-    color:var(--muted);
-    text-align:left;
-  }
-  .lista-correos div{ padding:2px 0; }
-
-  @media (max-width: 600px){
-    .palabra{ padding:11px 16px; }
-  }
-</style>
-</head>
-<body>
-
-  <div class="fondo-textura" aria-hidden="true"></div>
-  <div class="fondo-final oculto" id="fondo-final" aria-hidden="true"></div>
-  <div class="marca">0x000042</div>
-
-  <!-- Pantalla: firma -->
-  <div id="pantalla-firma" class="pantalla">
-    <p class="subtitulo-firma">Nombre, expresión o concepto con el que quieras firmar y jugar</p>
-    <input type="text" id="input-firma" placeholder="Escribe aquí" maxlength="40">
-    <button class="boton primario" id="boton-empezar" type="button">Iniciar</button>
-  </div>
-
-  <!-- Pantalla: jugando -->
-  <div id="juego" class="pantalla oculto">
-    <header>
-      <div class="subtitulo">EL VERSO SIN CRUZAR</div>
-      <p class="instrucciones">Sin soltar el mouse, conecta las palabras en el orden correcto para formar el verso. La palabra que parpadea es la siguiente. Si sueltas el mouse antes de terminar, o tu línea se cruza a sí misma, pierdes.</p>
-    </header>
-
-    <main>
-      <div id="lienzo">
-        <svg id="trazos"></svg>
-      </div>
-    </main>
-  </div>
-
-  <!-- Pantalla: terminado -->
-  <div id="pantalla-final" class="pantalla oculto">
-    <p class="mensaje-final" id="mensaje-final"></p>
-    <div class="contenido-resultado oculto" id="contenido-resultado"></div>
-    <div class="lista-correos oculto" id="lista-correos"></div>
-    <div class="botones">
-      <button class="boton primario" id="reintentar" type="button">Intentar de nuevo</button>
-      <button class="boton secundario" id="boton-regresar" type="button">Regresar a la habitación</button>
-    </div>
-  </div>
-
-<script>
-(function(){
-  "use strict";
-
-  // ---------------------------------------------------------------
-  // El verso objetivo: cámbialo por el texto real. El orden de VERSO
-  // es el orden correcto en el que hay que conectar las palabras.
-  // ---------------------------------------------------------------
-  var VERSO_TEXTO = 'Antes de llegar, toda';
-  var VERSO = ['antes', 'de', 'llegar', 'toda'];
-
-  // Posiciones puramente al azar (solo para probar) — SIN ninguna garantía
-  // geométrica de que el camino correcto no se cruce a sí mismo. Puede que
-  // el verso ya no tenga un "camino fácil": quizás solo se pueda ganar
-  // curveando con cuidado, o incluso puede quedar imposible si dos tramos
-  // necesarios se cruzan sin remedio. Es a propósito, para ver qué tan
-  // difícil se pone.
-  var POSICIONES = {
-    'antes':     { top:54, left:86 },
-    'de':        { top:44, left:83 },
-    'llegar':    { top:38, left:38 },
-    'toda':      { top:27, left:74 },
-
-  };
-
-  // ---------------------------------------------------------------
-  // Mismo endpoint (Vercel + Resend) que ya usan las demás piezas de
-  // 0x000042.com. El backend valida un campo "juego" contra una lista
-  // de identificadores que reconoce; el de esta pieza es "efectos".
-  // ---------------------------------------------------------------
-  var ENDPOINT_ENVIO = 'https://com-three-inky.vercel.app/api/enviar-correo';
-  var JUEGO_ID = 'efectos';
-
-  // A dónde lleva el botón "Regresar a la habitación". Reemplaza esta ruta.
-  var URL_HABITACION = 'https://simbolos.0x000042.com/desaparecidos.html';
-
-  var pantallaFirma = document.getElementById('pantalla-firma');
-  var juegoEl = document.getElementById('juego');
-  var pantallaFinal = document.getElementById('pantalla-final');
-  var fondoFinal = document.getElementById('fondo-final');
-
-  var inputFirma = document.getElementById('input-firma');
-  var botonEmpezar = document.getElementById('boton-empezar');
-  var firmaJugador = '';
-
-  var lienzo = document.getElementById('lienzo');
-  var svg = document.getElementById('trazos');
-  var mensajeFinal = document.getElementById('mensaje-final');
-  var contenidoResultado = document.getElementById('contenido-resultado');
-  var reintentarBtn = document.getElementById('reintentar');
-  var botonRegresar = document.getElementById('boton-regresar');
-  var listaCorreosEl = document.getElementById('lista-correos');
-
-  var nodos = {};        // texto -> elemento .palabra
-  var secuencia = [];     // elementos ya conectados en este intento
-  var segmentos = [];     // {p1,p2} de cada tramo YA FIJADO del trazo real
-  var arrastrando = false;
-  var terminado = false;  // true tras ganar o perder, bloquea más input
-  var lineaViva = null;
-  var grupo = null;
-  var ultimoPunto = null; // último punto fijado del trazo (de aquí sale la línea viva)
-
-  // cada cuántos px de movimiento se "fija" un nuevo tramo del trazo — así
-  // la línea sigue de verdad la trayectoria del mouse (como un hilo real,
-  // al estilo tripas de gato) en vez de saltar recto de palabra a palabra
-  var DIST_MINIMA = 14;
-
-  function mostrarPantalla(pantalla){
-    pantallaFirma.classList.add('oculto');
-    juegoEl.classList.add('oculto');
-    pantallaFinal.classList.add('oculto');
-    pantalla.classList.remove('oculto');
-
-    // la imagen de fondo solo se ve en la pantalla final
-    fondoFinal.classList.toggle('oculto', pantalla !== pantallaFinal);
-  }
-
-  // Muestra, en el espacio de "contenido producido" de la pantalla
-  // final, el verso logrado (o un estado vacío si no se ganó).
-  function mostrarContenidoResultado(texto){
-    if (texto){
-      contenidoResultado.textContent = texto;
-      contenidoResultado.classList.remove('oculto', 'vacio');
-    } else {
-      contenidoResultado.textContent = 'Aquí aparecerá el verso…';
-      contenidoResultado.classList.remove('oculto');
-      contenidoResultado.classList.add('vacio');
+    #pantalla-firma,
+    #pantalla-final {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 24px 16px;
+      text-align: center;
     }
-  }
 
-  // ---------------------------------------------------------------
-  // Compuerta: hay que escribir una firma para poder jugar
-  // ---------------------------------------------------------------
-
-  function empezarConFirma(){
-    var valor = inputFirma.value.trim();
-    if (!valor) { inputFirma.focus(); return; }
-    firmaJugador = valor;
-    mostrarPantalla(juegoEl);
-  }
-
-  botonEmpezar.addEventListener('click', empezarConFirma);
-  inputFirma.addEventListener('keydown', function(e){
-    if (e.key === 'Enter') empezarConFirma();
-  });
-
-  // 1) crear las palabras como nodos reales del DOM
-  VERSO.forEach(function(texto){
-    var pos = POSICIONES[texto];
-    var nodo = document.createElement('div');
-    nodo.className = 'palabra';
-    nodo.textContent = texto;
-    nodo.style.top = pos.top + '%';
-    nodo.style.left = pos.left + '%';
-    lienzo.appendChild(nodo);
-    nodos[texto] = nodo;
-  });
-
-  function marcarSiguiente(){
-    Object.keys(nodos).forEach(function(t){ nodos[t].classList.remove('siguiente'); });
-    if (!terminado && secuencia.length < VERSO.length) {
-      nodos[VERSO[secuencia.length]].classList.add('siguiente');
+    #pantalla-firma .subtitulo-firma {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 1.2rem;
+      line-height: 1.4;
+      max-width: 50ch;
+      margin: 0;
+      color: var(--ink);
     }
-  }
-  marcarSiguiente();
 
-  function posicionEnLienzo(clientX, clientY){
-    var r = lienzo.getBoundingClientRect();
-    return { x: clientX - r.left, y: clientY - r.top };
-  }
-  function centroDe(nodo){
-    var r = nodo.getBoundingClientRect();
-    var rl = lienzo.getBoundingClientRect();
-    return { x: r.left - rl.left + r.width/2, y: r.top - rl.top + r.height/2 };
-  }
-  function distancia(a, b){
-    var dx = a.x - b.x, dy = a.y - b.y;
-    return Math.sqrt(dx*dx + dy*dy);
-  }
-
-  // --------- test geométrico: ¿el segmento a-b cruza el segmento c-d? ---------
-  function orientacion(a, b, c){
-    var val = (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
-    if (Math.abs(val) < 1e-9) return 0;
-    return val > 0 ? 1 : 2;
-  }
-  function enSegmento(a, b, c){
-    return Math.min(a.x,b.x) - 0.01 <= c.x && c.x <= Math.max(a.x,b.x) + 0.01 &&
-           Math.min(a.y,b.y) - 0.01 <= c.y && c.y <= Math.max(a.y,b.y) + 0.01;
-  }
-  function seCruzan(p1, p2, p3, p4){
-    var o1 = orientacion(p1,p2,p3), o2 = orientacion(p1,p2,p4);
-    var o3 = orientacion(p3,p4,p1), o4 = orientacion(p3,p4,p2);
-    if (o1 !== o2 && o3 !== o4) return true;
-    if (o1 === 0 && enSegmento(p1,p2,p3)) return true;
-    if (o2 === 0 && enSegmento(p1,p2,p4)) return true;
-    if (o3 === 0 && enSegmento(p3,p4,p1)) return true;
-    if (o4 === 0 && enSegmento(p3,p4,p2)) return true;
-    return false;
-  }
-  // ¿el segmento (origen -> destino) cruza alguno de los ya trazados?
-  // se excluye cualquier tramo que TERMINE justo en "origen" (por punto, no
-  // por índice): ese tramo simplemente continúa ahí, tocarse en ese punto
-  // no cuenta como cruce — solo cuenta cruzar por en medio de otro tramo
-  function cruzaAlgunSegmento(origen, destino){
-    for (var i = 0; i < segmentos.length; i++) {
-      var s = segmentos[i];
-      if (distancia(s.p2, origen) < 0.5) continue;
-      if (seCruzan(origen, destino, s.p1, s.p2)) return true;
+    #pantalla-firma input[type="text"] {
+      width: 100%;
+      max-width: 320px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .95rem;
+      padding: 12px 14px;
+      border: 2px solid var(--ink);
+      background: var(--white);
+      color: var(--ink);
+      outline: none;
     }
-    return false;
-  }
 
-  function dibujarSegmento(p1, p2, temporal){
-    var l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    l.setAttribute('x1', p1.x); l.setAttribute('y1', p1.y);
-    l.setAttribute('x2', p2.x); l.setAttribute('y2', p2.y);
-    l.setAttribute('stroke', temporal ? 'var(--linea)' : 'var(--linea)');
-    l.setAttribute('stroke-width', 6);
-    l.setAttribute('stroke-linecap', 'round');
-    if (temporal) l.setAttribute('stroke-dasharray', '2 10');
-    (temporal ? svg : grupo).appendChild(l);
-    return l;
-  }
+    #pantalla-firma input[type="text"]::placeholder {
+      color: var(--muted);
+    }
 
-  function empezar(nodo, puntoInicio){
-    terminado = false;
-    secuencia = [nodo];
-    segmentos = [];
-    ultimoPunto = puntoInicio;
-    nodo.classList.add('usada', 'activa');
-    grupo = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    svg.appendChild(grupo);
-    marcarSiguiente();
-  }
+    #pantalla-firma input[type="text"]:focus {
+      border-color: var(--linea);
+    }
 
-  // fija permanentemente el tramo entre el último punto y "destino": pasa
-  // a formar parte del trazo real (y de la lista de segmentos contra la
-  // que se comprueban futuros cruces). Si el destino prácticamente ya es
-  // el último punto (p. ej. justo al llegar a una palabra) no agrega un
-  // tramo de largo casi cero — solo actualiza el punto.
-  function fijarTramo(destino){
-    if (distancia(ultimoPunto, destino) < 0.5) { ultimoPunto = destino; return; }
-    dibujarSegmento(ultimoPunto, destino, false);
-    segmentos.push({ p1: ultimoPunto, p2: destino });
-    ultimoPunto = destino;
-  }
+    /* --- Pantalla de juego --- */
 
-  // se llama cuando el mouse pasa sobre la palabra que sigue en el verso.
-  // NO fuerza el trazo a saltar hasta el centro exacto (el trazo ya venía
-  // pasando por ahí, por eso se detectó) — solo marca la palabra como
-  // alcanzada y avanza la secuencia. Forzar ese salto causaba un pequeño
-  // "rebote" hacia atrás cuando el mouse, todavía en movimiento, terminaba
-  // de llegar al punto exacto, y ese rebote se cruzaba con el siguiente
-  // tramo. La excepción es la ÚLTIMA palabra: ahí sí se cierra el trazo
-  // en su centro, porque el juego termina de inmediato y ya no hay más
-  // movimiento que pueda generar ese rebote.
-  function avanzar(nodo){
-    document.querySelectorAll('.palabra.activa').forEach(function(n){ n.classList.remove('activa'); });
-    nodo.classList.add('usada', 'activa');
-    secuencia.push(nodo);
-    marcarSiguiente();
+    #juego {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
 
-    if (secuencia.length === VERSO.length) {
-      var destino = centroDe(nodo);
-      if (lineaViva) { lineaViva.remove(); lineaViva = null; }
-      if (cruzaAlgunSegmento(ultimoPunto, destino)) {
-        fijarTramo(destino);
-        perder();
-        return;
+    header {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 48px 16px 4px;
+    }
+
+    .subtitulo {
+      font-size: .62rem;
+      letter-spacing: .4em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .instrucciones {
+      margin: 10px auto 0;
+      max-width: 50ch;
+      font-size: .92rem;
+      line-height: 1.4;
+      color: var(--ink);
+      font-style: italic;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+    }
+
+    #lienzo {
+      position: relative;
+      width: min(92vw, 1000px);
+      height: min(56vh, 560px);
+      touch-action: none;
+    }
+
+    #trazos {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .palabra {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      background: var(--linea);
+      color: var(--white);
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(.78rem, 1.6vw, 1.05rem);
+      letter-spacing: .02em;
+      padding: 14px 22px;
+      border-radius: 999px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      box-shadow: 0 3px 0 rgba(0, 0, 0, .12);
+      transition: transform .12s ease, opacity .3s ease, background .2s ease, box-shadow .2s ease;
+      opacity: .6;
+      white-space: nowrap;
+    }
+
+    .palabra.usada {
+      opacity: 1;
+      background: var(--ink);
+    }
+
+    .palabra.activa {
+      transform: translate(-50%, -50%) scale(1.14);
+    }
+
+    .palabra.siguiente {
+      box-shadow: 0 0 0 4px rgba(25, 28, 20, .25), 0 3px 0 rgba(0, 0, 0, .12);
+      animation: pulso 1.1s ease-in-out infinite;
+    }
+
+    @keyframes pulso {
+
+      0%,
+      100% {
+        transform: translate(-50%, -50%) scale(1);
       }
-      fijarTramo(destino);
-      ganar();
-    }
-  }
 
-  // se llama en cada movimiento del mouse: dibuja el tramo "vivo" desde el
-  // último punto fijado hasta el mouse y comprueba el cruce en tiempo real;
-  // al alejarse lo suficiente, ese tramo se fija y el trazo sigue desde ahí
-  // — así la línea sigue de verdad el camino que dibuja el jugador
-  function actualizarLineaViva(pos){
-    if (!ultimoPunto || terminado) return;
-    if (!lineaViva) lineaViva = dibujarSegmento(ultimoPunto, pos, true);
-    lineaViva.setAttribute('x1', ultimoPunto.x); lineaViva.setAttribute('y1', ultimoPunto.y);
-    lineaViva.setAttribute('x2', pos.x); lineaViva.setAttribute('y2', pos.y);
-
-    if (cruzaAlgunSegmento(ultimoPunto, pos)) {
-      fijarTramo(pos);
-      perder();
-      return;
+      50% {
+        transform: translate(-50%, -50%) scale(1.07);
+      }
     }
 
-    if (distancia(ultimoPunto, pos) >= DIST_MINIMA) {
-      lineaViva.remove(); lineaViva = null;
-      fijarTramo(pos);
+    /* --- Botones (misma convención achaflanada del resto del sitio) --- */
+
+    .boton {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: .7rem;
+      letter-spacing: .08em;
+      border: 2px solid var(--ink);
+      padding: 13px 24px;
+      cursor: pointer;
+      margin-inline: 6px;
+      clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
     }
-  }
 
-  function perder(motivo){
-    terminado = true;
-    arrastrando = false;
-    if (lineaViva) { lineaViva.setAttribute('stroke', 'var(--error)'); }
-    Object.keys(nodos).forEach(function(t){ nodos[t].classList.remove('siguiente'); });
-
-    mostrarPantalla(pantallaFinal);
-    mensajeFinal.textContent = 'Perdiste — ' + (motivo || 'tu línea se cruzó a sí misma');
-    mensajeFinal.className = 'mensaje-final perdio';
-    mostrarContenidoResultado('');
-    listaCorreosEl.classList.add('oculto');
-    listaCorreosEl.innerHTML = '';
-  }
-
-  function ganar(){
-    terminado = true;
-    arrastrando = false;
-    if (lineaViva) { lineaViva.remove(); lineaViva = null; }
-    Object.keys(nodos).forEach(function(t){ nodos[t].classList.remove('siguiente'); });
-
-    mostrarPantalla(pantallaFinal);
-    mensajeFinal.textContent = 'Enviando el verso...';
-    mensajeFinal.className = 'mensaje-final gano';
-    mostrarContenidoResultado(VERSO_TEXTO);
-    enviarCorreo();
-  }
-
-  function reiniciarTodo(){
-    Object.keys(nodos).forEach(function(t){ nodos[t].classList.remove('usada','activa','siguiente'); });
-    secuencia = []; segmentos = []; terminado = false; ultimoPunto = null;
-    if (grupo) grupo.remove();
-    if (lineaViva) lineaViva.remove();
-    grupo = null; lineaViva = null;
-    svg.innerHTML = '';
-    marcarSiguiente();
-    mostrarPantalla(pantallaFirma);
-  }
-
-  // 2) interacción
-  lienzo.addEventListener('pointerdown', function(e){
-    if (terminado) return;
-    var nodo = e.target.closest('.palabra');
-    if (!nodo) return;
-    // solo se puede empezar por la primera palabra del verso
-    if (nodo !== nodos[VERSO[0]]) return;
-    if (secuencia.length > 0) { Object.keys(nodos).forEach(function(t){ nodos[t].classList.remove('usada','activa'); }); secuencia = []; segmentos = []; if (grupo) grupo.remove(); svg.innerHTML=''; }
-    arrastrando = true;
-    lienzo.setPointerCapture(e.pointerId);
-    empezar(nodo, posicionEnLienzo(e.clientX, e.clientY));
-    e.preventDefault();
-  });
-
-  lienzo.addEventListener('pointermove', function(e){
-    if (!arrastrando || terminado) return;
-    var pos = posicionEnLienzo(e.clientX, e.clientY);
-    actualizarLineaViva(pos);
-    if (terminado) return; // pudo perder recién en la línea de arriba
-
-    var bajoElPuntero = document.elementFromPoint(e.clientX, e.clientY);
-    var nodo = bajoElPuntero && bajoElPuntero.closest ? bajoElPuntero.closest('.palabra') : null;
-    var siguienteEsperada = nodos[VERSO[secuencia.length]];
-    if (nodo && nodo === siguienteEsperada) {
-      avanzar(nodo);
+    .boton.primario {
+      background: var(--ink);
+      color: var(--bg);
     }
-  });
 
-  function terminarArrastre(e){
-    if (!arrastrando) return;
-    arrastrando = false;
-    try { lienzo.releasePointerCapture(e.pointerId); } catch(err){}
-    if (lineaViva) { lineaViva.remove(); lineaViva = null; }
-    // hay que sostener el mouse todo el trayecto: soltarlo antes de llegar
-    // a la última palabra también pierde el juego
-    if (!terminado && secuencia.length > 0 && secuencia.length < VERSO.length) {
-      perder('soltaste el mouse antes de terminar el verso');
+    .boton.primario:hover {
+      background: var(--linea);
+      border-color: var(--linea);
+      color: var(--white);
     }
-  }
-  lienzo.addEventListener('pointerup', terminarArrastre);
-  lienzo.addEventListener('pointercancel', terminarArrastre);
 
-  reintentarBtn.addEventListener('click', reiniciarTodo);
-  botonRegresar.addEventListener('click', function(){
-    window.location.href = URL_HABITACION;
-  });
+    .boton.secundario {
+      background: rgba(255, 255, 255, .55);
+      color: var(--ink);
+    }
 
-  // ---------------------------------------------------------------
-  // Envío automático del correo al ganar: mismo endpoint (Vercel +
-  // Resend) que ya usan las demás piezas — se envía solo, apenas se
-  // gana, sin pedir correo. La firma que el jugador escribió antes de
-  // jugar hace las veces del "nombre" con el que firma.
-  // ---------------------------------------------------------------
-  function enviarCorreo(){
-    listaCorreosEl.classList.add('oculto');
-    listaCorreosEl.innerHTML = '';
+    .boton.secundario:hover {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--bg);
+    }
 
-    fetch(ENDPOINT_ENVIO, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre: firmaJugador, juego: JUEGO_ID, verso: VERSO_TEXTO })
-    })
-      .then(function(respuesta){ return respuesta.json(); })
-      .then(function(datos){
-        if (datos && datos.success){
-          mensajeFinal.textContent = 'Verso enviado a quien lo necesite ver.';
-          if (Array.isArray(datos.destinatarios) && datos.destinatarios.length > 0){
-            listaCorreosEl.classList.remove('oculto');
-            datos.destinatarios.forEach(function(correo){
-              var linea = document.createElement('div');
-              linea.textContent = correo;
-              listaCorreosEl.appendChild(linea);
-            });
-          }
+    /* --- Pantalla final --- */
+
+    .mensaje-final {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1rem;
+      letter-spacing: .02em;
+      margin: 0 0 16px;
+      line-height: 1.5;
+      display: inline-block;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, .75);
+    }
+
+    .mensaje-final.gano {
+      color: var(--ok);
+    }
+
+    .mensaje-final.perdio {
+      color: var(--error);
+    }
+
+    /* espacio para el contenido producido (el verso logrado) en la
+     pantalla final, arriba de la lista de correos */
+    .contenido-resultado {
+      max-width: 420px;
+      margin: 0 auto 20px;
+      padding: 14px 18px;
+      background: var(--white);
+      border: 2px solid var(--ink);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--ink);
+      text-align: center;
+      white-space: pre-wrap;
+    }
+
+    .contenido-resultado.vacio {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .lista-correos {
+      margin: 0 auto 24px;
+      max-width: 420px;
+      padding: 14px 18px;
+      background: var(--white);
+      border: 2px solid var(--ink);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .78rem;
+      color: var(--muted);
+      text-align: left;
+    }
+
+    .lista-correos div {
+      padding: 2px 0;
+    }
+
+    @media (max-width: 600px) {
+      .palabra {
+        padding: 11px 16px;
+      }
+    }
+  </style>
+  </head>
+
+  <body>
+
+    <div class="fondo-textura" aria-hidden="true"></div>
+    <div class="fondo-final oculto" id="fondo-final" aria-hidden="true"></div>
+    <div class="marca">0x000042</div>
+
+    <!-- Pantalla: firma -->
+    <div id="pantalla-firma" class="pantalla">
+      <p class="subtitulo-firma">Nombre, expresión o concepto con el que quieras
+        firmar y jugar</p>
+      <input type="text" id="input-firma" placeholder="Escribe aquí"
+        maxlength="40">
+      <button class="boton primario" id="boton-empezar"
+        type="button">Iniciar</button>
+    </div>
+
+    <!-- Pantalla: jugando -->
+    <div id="juego" class="pantalla oculto">
+      <header>
+        <div class="subtitulo">EL VERSO SIN CRUZAR</div>
+        <p class="instrucciones">Sin soltar el mouse, conecta las palabras en el
+          orden correcto para formar el verso. La
+          palabra que parpadea es la siguiente. Si sueltas el mouse antes de
+          terminar, o tu línea se cruza a sí misma,
+          pierdes.</p>
+      </header>
+
+      <main>
+        <div id="lienzo">
+          <svg id="trazos"></svg>
+        </div>
+      </main>
+    </div>
+
+    <!-- Pantalla: terminado -->
+    <div id="pantalla-final" class="pantalla oculto">
+      <p class="mensaje-final" id="mensaje-final"></p>
+      <div class="contenido-resultado oculto" id="contenido-resultado"></div>
+      <div class="lista-correos oculto" id="lista-correos"></div>
+      <div class="botones">
+        <button class="boton primario" id="reintentar" type="button">Intentar de
+          nuevo</button>
+        <button class="boton secundario" id="boton-regresar"
+          type="button">Regresar a la habitación</button>
+      </div>
+    </div>
+
+    <script>
+    (function () {
+      "use strict";
+
+      // ---------------------------------------------------------------
+      // El verso objetivo: cámbialo por el texto real. El orden de VERSO
+      // es el orden correcto en el que hay que conectar las palabras.
+      // ---------------------------------------------------------------
+      var VERSO_TEXTO = 'Antes de llegar, toda';
+      var VERSO = ['antes', 'de', 'llegar', 'toda'];
+
+      // Posiciones puramente al azar (solo para probar) — SIN ninguna garantía
+      // geométrica de que el camino correcto no se cruce a sí mismo. Puede que
+      // el verso ya no tenga un "camino fácil": quizás solo se pueda ganar
+      // curveando con cuidado, o incluso puede quedar imposible si dos tramos
+      // necesarios se cruzan sin remedio. Es a propósito, para ver qué tan
+      // difícil se pone.
+      var POSICIONES = {
+        'Todo': { top: 54, left: 86 },
+        'pereció': { top: 44, left: 83 },
+        'Solo ': { top: 38, left: 38 },
+        'la': { top: 27, left: 74 },
+        'tierra': { top: 72, left: 78 },
+        'árida': { top: 69, left: 43 },
+        'de': { top: 27, left: 53 },
+        'infertil': { top: 17, left: 45 },
+        'naranja': { top: 84, left: 21 },
+        'Nos': { top: 79, left: 30 },
+        'prometieron': { top: 74, left: 59 },
+        'progreso': { top: 49, left: 21 },
+        'Pero': { top: 78, left: 10 },
+        'condenaron': { top: 59, left: 20 },
+        'su': { top: 26, left: 90 },
+        'futuro': { top: 11, left: 35 },
+
+      };
+
+      // ---------------------------------------------------------------
+      // Mismo endpoint (Vercel + Resend) que ya usan las demás piezas de
+      // 0x000042.com. El backend valida un campo "juego" contra una lista
+      // de identificadores que reconoce; el de esta pieza es "efectos".
+      // ---------------------------------------------------------------
+      var ENDPOINT_ENVIO = 'https://com-three-inky.vercel.app/api/enviar-correo';
+      var JUEGO_ID = 'efectos';
+
+      // A dónde lleva el botón "Regresar a la habitación". Reemplaza esta ruta.
+      var URL_HABITACION = 'https://simbolos.0x000042.com/desaparecidos.html';
+
+      var pantallaFirma = document.getElementById('pantalla-firma');
+      var juegoEl = document.getElementById('juego');
+      var pantallaFinal = document.getElementById('pantalla-final');
+      var fondoFinal = document.getElementById('fondo-final');
+
+      var inputFirma = document.getElementById('input-firma');
+      var botonEmpezar = document.getElementById('boton-empezar');
+      var firmaJugador = '';
+
+      var lienzo = document.getElementById('lienzo');
+      var svg = document.getElementById('trazos');
+      var mensajeFinal = document.getElementById('mensaje-final');
+      var contenidoResultado = document.getElementById('contenido-resultado');
+      var reintentarBtn = document.getElementById('reintentar');
+      var botonRegresar = document.getElementById('boton-regresar');
+      var listaCorreosEl = document.getElementById('lista-correos');
+
+      var nodos = {};        // texto -> elemento .palabra
+      var secuencia = [];     // elementos ya conectados en este intento
+      var segmentos = [];     // {p1,p2} de cada tramo YA FIJADO del trazo real
+      var arrastrando = false;
+      var terminado = false;  // true tras ganar o perder, bloquea más input
+      var lineaViva = null;
+      var grupo = null;
+      var ultimoPunto = null; // último punto fijado del trazo (de aquí sale la línea viva)
+
+      // cada cuántos px de movimiento se "fija" un nuevo tramo del trazo — así
+      // la línea sigue de verdad la trayectoria del mouse (como un hilo real,
+      // al estilo tripas de gato) en vez de saltar recto de palabra a palabra
+      var DIST_MINIMA = 14;
+
+      function mostrarPantalla(pantalla) {
+        pantallaFirma.classList.add('oculto');
+        juegoEl.classList.add('oculto');
+        pantallaFinal.classList.add('oculto');
+        pantalla.classList.remove('oculto');
+
+        // la imagen de fondo solo se ve en la pantalla final
+        fondoFinal.classList.toggle('oculto', pantalla !== pantallaFinal);
+      }
+
+      // Muestra, en el espacio de "contenido producido" de la pantalla
+      // final, el verso logrado (o un estado vacío si no se ganó).
+      function mostrarContenidoResultado(texto) {
+        if (texto) {
+          contenidoResultado.textContent = texto;
+          contenidoResultado.classList.remove('oculto', 'vacio');
         } else {
-          mensajeFinal.textContent = 'El verso no se pudo enviar.';
+          contenidoResultado.textContent = 'Aquí aparecerá el verso…';
+          contenidoResultado.classList.remove('oculto');
+          contenidoResultado.classList.add('vacio');
         }
-      })
-      .catch(function(error){
-        console.error('Error al enviar el verso:', error);
-        mensajeFinal.textContent = 'El verso no se pudo enviar.';
-      });
-  }
-})();
-</script>
+      }
 
-</body>
+      // ---------------------------------------------------------------
+      // Compuerta: hay que escribir una firma para poder jugar
+      // ---------------------------------------------------------------
+
+      function empezarConFirma() {
+        var valor = inputFirma.value.trim();
+        if (!valor) { inputFirma.focus(); return; }
+        firmaJugador = valor;
+        mostrarPantalla(juegoEl);
+      }
+
+      botonEmpezar.addEventListener('click', empezarConFirma);
+      inputFirma.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') empezarConFirma();
+      });
+
+      // 1) crear las palabras como nodos reales del DOM
+      VERSO.forEach(function (texto) {
+        var pos = POSICIONES[texto];
+        var nodo = document.createElement('div');
+        nodo.className = 'palabra';
+        nodo.textContent = texto;
+        nodo.style.top = pos.top + '%';
+        nodo.style.left = pos.left + '%';
+        lienzo.appendChild(nodo);
+        nodos[texto] = nodo;
+      });
+
+      function marcarSiguiente() {
+        Object.keys(nodos).forEach(function (t) { nodos[t].classList.remove('siguiente'); });
+        if (!terminado && secuencia.length < VERSO.length) {
+          nodos[VERSO[secuencia.length]].classList.add('siguiente');
+        }
+      }
+      marcarSiguiente();
+
+      function posicionEnLienzo(clientX, clientY) {
+        var r = lienzo.getBoundingClientRect();
+        return { x: clientX - r.left, y: clientY - r.top };
+      }
+      function centroDe(nodo) {
+        var r = nodo.getBoundingClientRect();
+        var rl = lienzo.getBoundingClientRect();
+        return { x: r.left - rl.left + r.width / 2, y: r.top - rl.top + r.height / 2 };
+      }
+      function distancia(a, b) {
+        var dx = a.x - b.x, dy = a.y - b.y;
+        return Math.sqrt(dx * dx + dy * dy);
+      }
+
+      // --------- test geométrico: ¿el segmento a-b cruza el segmento c-d? ---------
+      function orientacion(a, b, c) {
+        var val = (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
+        if (Math.abs(val) < 1e-9) return 0;
+        return val > 0 ? 1 : 2;
+      }
+      function enSegmento(a, b, c) {
+        return Math.min(a.x, b.x) - 0.01 <= c.x && c.x <= Math.max(a.x, b.x) + 0.01 &&
+          Math.min(a.y, b.y) - 0.01 <= c.y && c.y <= Math.max(a.y, b.y) + 0.01;
+      }
+      function seCruzan(p1, p2, p3, p4) {
+        var o1 = orientacion(p1, p2, p3), o2 = orientacion(p1, p2, p4);
+        var o3 = orientacion(p3, p4, p1), o4 = orientacion(p3, p4, p2);
+        if (o1 !== o2 && o3 !== o4) return true;
+        if (o1 === 0 && enSegmento(p1, p2, p3)) return true;
+        if (o2 === 0 && enSegmento(p1, p2, p4)) return true;
+        if (o3 === 0 && enSegmento(p3, p4, p1)) return true;
+        if (o4 === 0 && enSegmento(p3, p4, p2)) return true;
+        return false;
+      }
+      // ¿el segmento (origen -> destino) cruza alguno de los ya trazados?
+      // se excluye cualquier tramo que TERMINE justo en "origen" (por punto, no
+      // por índice): ese tramo simplemente continúa ahí, tocarse en ese punto
+      // no cuenta como cruce — solo cuenta cruzar por en medio de otro tramo
+      function cruzaAlgunSegmento(origen, destino) {
+        for (var i = 0; i < segmentos.length; i++) {
+          var s = segmentos[i];
+          if (distancia(s.p2, origen) < 0.5) continue;
+          if (seCruzan(origen, destino, s.p1, s.p2)) return true;
+        }
+        return false;
+      }
+
+      function dibujarSegmento(p1, p2, temporal) {
+        var l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        l.setAttribute('x1', p1.x); l.setAttribute('y1', p1.y);
+        l.setAttribute('x2', p2.x); l.setAttribute('y2', p2.y);
+        l.setAttribute('stroke', temporal ? 'var(--linea)' : 'var(--linea)');
+        l.setAttribute('stroke-width', 6);
+        l.setAttribute('stroke-linecap', 'round');
+        if (temporal) l.setAttribute('stroke-dasharray', '2 10');
+        (temporal ? svg : grupo).appendChild(l);
+        return l;
+      }
+
+      function empezar(nodo, puntoInicio) {
+        terminado = false;
+        secuencia = [nodo];
+        segmentos = [];
+        ultimoPunto = puntoInicio;
+        nodo.classList.add('usada', 'activa');
+        grupo = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        svg.appendChild(grupo);
+        marcarSiguiente();
+      }
+
+      // fija permanentemente el tramo entre el último punto y "destino": pasa
+      // a formar parte del trazo real (y de la lista de segmentos contra la
+      // que se comprueban futuros cruces). Si el destino prácticamente ya es
+      // el último punto (p. ej. justo al llegar a una palabra) no agrega un
+      // tramo de largo casi cero — solo actualiza el punto.
+      function fijarTramo(destino) {
+        if (distancia(ultimoPunto, destino) < 0.5) { ultimoPunto = destino; return; }
+        dibujarSegmento(ultimoPunto, destino, false);
+        segmentos.push({ p1: ultimoPunto, p2: destino });
+        ultimoPunto = destino;
+      }
+
+      // se llama cuando el mouse pasa sobre la palabra que sigue en el verso.
+      // NO fuerza el trazo a saltar hasta el centro exacto (el trazo ya venía
+      // pasando por ahí, por eso se detectó) — solo marca la palabra como
+      // alcanzada y avanza la secuencia. Forzar ese salto causaba un pequeño
+      // "rebote" hacia atrás cuando el mouse, todavía en movimiento, terminaba
+      // de llegar al punto exacto, y ese rebote se cruzaba con el siguiente
+      // tramo. La excepción es la ÚLTIMA palabra: ahí sí se cierra el trazo
+      // en su centro, porque el juego termina de inmediato y ya no hay más
+      // movimiento que pueda generar ese rebote.
+      function avanzar(nodo) {
+        document.querySelectorAll('.palabra.activa').forEach(function (n) { n.classList.remove('activa'); });
+        nodo.classList.add('usada', 'activa');
+        secuencia.push(nodo);
+        marcarSiguiente();
+
+        if (secuencia.length === VERSO.length) {
+          var destino = centroDe(nodo);
+          if (lineaViva) { lineaViva.remove(); lineaViva = null; }
+          if (cruzaAlgunSegmento(ultimoPunto, destino)) {
+            fijarTramo(destino);
+            perder();
+            return;
+          }
+          fijarTramo(destino);
+          ganar();
+        }
+      }
+
+      // se llama en cada movimiento del mouse: dibuja el tramo "vivo" desde el
+      // último punto fijado hasta el mouse y comprueba el cruce en tiempo real;
+      // al alejarse lo suficiente, ese tramo se fija y el trazo sigue desde ahí
+      // — así la línea sigue de verdad el camino que dibuja el jugador
+      function actualizarLineaViva(pos) {
+        if (!ultimoPunto || terminado) return;
+        if (!lineaViva) lineaViva = dibujarSegmento(ultimoPunto, pos, true);
+        lineaViva.setAttribute('x1', ultimoPunto.x); lineaViva.setAttribute('y1', ultimoPunto.y);
+        lineaViva.setAttribute('x2', pos.x); lineaViva.setAttribute('y2', pos.y);
+
+        if (cruzaAlgunSegmento(ultimoPunto, pos)) {
+          fijarTramo(pos);
+          perder();
+          return;
+        }
+
+        if (distancia(ultimoPunto, pos) >= DIST_MINIMA) {
+          lineaViva.remove(); lineaViva = null;
+          fijarTramo(pos);
+        }
+      }
+
+      function perder(motivo) {
+        terminado = true;
+        arrastrando = false;
+        if (lineaViva) { lineaViva.setAttribute('stroke', 'var(--error)'); }
+        Object.keys(nodos).forEach(function (t) { nodos[t].classList.remove('siguiente'); });
+
+        mostrarPantalla(pantallaFinal);
+        mensajeFinal.textContent = 'Perdiste — ' + (motivo || 'tu línea se cruzó a sí misma');
+        mensajeFinal.className = 'mensaje-final perdio';
+        mostrarContenidoResultado('');
+        listaCorreosEl.classList.add('oculto');
+        listaCorreosEl.innerHTML = '';
+      }
+
+      function ganar() {
+        terminado = true;
+        arrastrando = false;
+        if (lineaViva) { lineaViva.remove(); lineaViva = null; }
+        Object.keys(nodos).forEach(function (t) { nodos[t].classList.remove('siguiente'); });
+
+        mostrarPantalla(pantallaFinal);
+        mensajeFinal.textContent = 'Enviando el verso...';
+        mensajeFinal.className = 'mensaje-final gano';
+        mostrarContenidoResultado(VERSO_TEXTO);
+        enviarCorreo();
+      }
+
+      function reiniciarTodo() {
+        Object.keys(nodos).forEach(function (t) { nodos[t].classList.remove('usada', 'activa', 'siguiente'); });
+        secuencia = []; segmentos = []; terminado = false; ultimoPunto = null;
+        if (grupo) grupo.remove();
+        if (lineaViva) lineaViva.remove();
+        grupo = null; lineaViva = null;
+        svg.innerHTML = '';
+        marcarSiguiente();
+        mostrarPantalla(pantallaFirma);
+      }
+
+      // 2) interacción
+      lienzo.addEventListener('pointerdown', function (e) {
+        if (terminado) return;
+        var nodo = e.target.closest('.palabra');
+        if (!nodo) return;
+        // solo se puede empezar por la primera palabra del verso
+        if (nodo !== nodos[VERSO[0]]) return;
+        if (secuencia.length > 0) { Object.keys(nodos).forEach(function (t) { nodos[t].classList.remove('usada', 'activa'); }); secuencia = []; segmentos = []; if (grupo) grupo.remove(); svg.innerHTML = ''; }
+        arrastrando = true;
+        lienzo.setPointerCapture(e.pointerId);
+        empezar(nodo, posicionEnLienzo(e.clientX, e.clientY));
+        e.preventDefault();
+      });
+
+      lienzo.addEventListener('pointermove', function (e) {
+        if (!arrastrando || terminado) return;
+        var pos = posicionEnLienzo(e.clientX, e.clientY);
+        actualizarLineaViva(pos);
+        if (terminado) return; // pudo perder recién en la línea de arriba
+
+        var bajoElPuntero = document.elementFromPoint(e.clientX, e.clientY);
+        var nodo = bajoElPuntero && bajoElPuntero.closest ? bajoElPuntero.closest('.palabra') : null;
+        var siguienteEsperada = nodos[VERSO[secuencia.length]];
+        if (nodo && nodo === siguienteEsperada) {
+          avanzar(nodo);
+        }
+      });
+
+      function terminarArrastre(e) {
+        if (!arrastrando) return;
+        arrastrando = false;
+        try { lienzo.releasePointerCapture(e.pointerId); } catch (err) { }
+        if (lineaViva) { lineaViva.remove(); lineaViva = null; }
+        // hay que sostener el mouse todo el trayecto: soltarlo antes de llegar
+        // a la última palabra también pierde el juego
+        if (!terminado && secuencia.length > 0 && secuencia.length < VERSO.length) {
+          perder('soltaste el mouse antes de terminar el verso');
+        }
+      }
+      lienzo.addEventListener('pointerup', terminarArrastre);
+      lienzo.addEventListener('pointercancel', terminarArrastre);
+
+      reintentarBtn.addEventListener('click', reiniciarTodo);
+      botonRegresar.addEventListener('click', function () {
+        window.location.href = URL_HABITACION;
+      });
+
+      // ---------------------------------------------------------------
+      // Envío automático del correo al ganar: mismo endpoint (Vercel +
+      // Resend) que ya usan las demás piezas — se envía solo, apenas se
+      // gana, sin pedir correo. La firma que el jugador escribió antes de
+      // jugar hace las veces del "nombre" con el que firma.
+      // ---------------------------------------------------------------
+      function enviarCorreo() {
+        listaCorreosEl.classList.add('oculto');
+        listaCorreosEl.innerHTML = '';
+
+        fetch(ENDPOINT_ENVIO, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre: firmaJugador, juego: JUEGO_ID, verso: VERSO_TEXTO })
+        })
+          .then(function (respuesta) { return respuesta.json(); })
+          .then(function (datos) {
+            if (datos && datos.success) {
+              mensajeFinal.textContent = 'Verso enviado a quien lo necesite ver.';
+              if (Array.isArray(datos.destinatarios) && datos.destinatarios.length > 0) {
+                listaCorreosEl.classList.remove('oculto');
+                datos.destinatarios.forEach(function (correo) {
+                  var linea = document.createElement('div');
+                  linea.textContent = correo;
+                  listaCorreosEl.appendChild(linea);
+                });
+              }
+            } else {
+              mensajeFinal.textContent = 'El verso no se pudo enviar.';
+            }
+          })
+          .catch(function (error) {
+            console.error('Error al enviar el verso:', error);
+            mensajeFinal.textContent = 'El verso no se pudo enviar.';
+          });
+      }
+    })();
+  </script>
+
+  </body>
+
 </html>

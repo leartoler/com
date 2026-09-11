@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
+        
         {
           source: '/',
           destination: '/ausencias.html',
