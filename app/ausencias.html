@@ -544,7 +544,7 @@
 
   // Duración de la partida. 15 segundos es solo para probar —
   // súbelo a lo que quieras para la versión final (30, 60, etc.)
-  const TIEMPO_TOTAL_MS = 60 * 1000;
+  const TIEMPO_TOTAL_MS = 80 * 1000;
 
   // ---------------------------------------------------------------
   // Preparar el texto: envuelve cada palabra suelta (las que no son
@@ -577,9 +577,7 @@
 
   document.querySelectorAll(".texto").forEach(envolverPalabrasSueltas);
 
-  // ---------------------------------------------------------------
-  // Estado
-  // ---------------------------------------------------------------
+  
 
   let mensajeJugador = "";
   let juegoActivo = false;
@@ -727,10 +725,7 @@
     });
   });
 
-  // ---------------------------------------------------------------
-  // Reconstruir el poema (siempre en el orden original del texto,
-  // sin importar en qué orden se hayan elegido las palabras)
-  // ---------------------------------------------------------------
+  //
 
   function palabrasElegidas(){
     return palabrasPoema.filter(function(n){ return recolectadas.has(n); });
@@ -762,9 +757,6 @@
     }
   }
 
-  // ---------------------------------------------------------------
-  // Fin de la partida: se ganó o se acabó el tiempo
-  // ---------------------------------------------------------------
 
   function detenerPartida(){
     juegoActivo = false;
@@ -788,8 +780,7 @@
     if (!juegoActivo) return;
     detenerPartida();
 
-    // barrido final: cualquier palabra que quedara sin desvanecerse
-    // desaparece de inmediato, para que el texto quede vacío
+
     todasLasPalabras.forEach(desvanecerPalabra);
 
     mostrarResultado(false, palabrasElegidas());
@@ -817,8 +808,6 @@
     location.reload();
   });
 
-  // ---------------------------------------------------------------
-  // Envío del poema por correo (Vercel + Resend)
   // ---------------------------------------------------------------
 
   elFormEnvioFinal.addEventListener("submit", function(evento){
